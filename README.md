@@ -90,4 +90,6 @@ Nova - [Github](https://github.com/FoxDev12)
 
 Emanuele Zini - [Github](https://github.com/Gr3it)
 
+Yuri Paoloni - [Github](https://github.com/yuripaoloni)
+
 
