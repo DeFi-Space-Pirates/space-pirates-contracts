@@ -40,16 +40,27 @@ Universal Vending Machine is a platform where user can interact earning 2 tokens
 
 ## Functionalities
 
+### Screws and Bolts (ERC20)Token
 
-<div align="center">
-  <a>
-    <img  src="https://lelolobi.com/wp-content/uploads/2021/11/Test-Logo-Small-Black-transparent-1-1.png" width="350" height="210">
-   <img  src="https://lelolobi.com/wp-content/uploads/2021/11/Test-Logo-Small-Black-transparent-1-1.png" width="350" height="210">
-  </a>
-</div>
-<br>
 
 ```solidity
+
+//Bolts 
+
+contract BoltsToken is ERC20 {
+    constructor() ERC20("Bolts", "BOLT") {
+        _mint(msg.sender, 100 ether);
+    }
+}
+
+//Screws
+
+contract ScrewsToken is ERC20 {
+    constructor() ERC20("Screws", "SCRW") {
+        _mint(msg.sender, 100 ether);
+    }
+}
+
 
   ```
 ---
