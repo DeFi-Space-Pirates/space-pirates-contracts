@@ -1,4 +1,5 @@
 const { expect } = require("chai");
+
 describe("Screws Token contract", function () {
 
     let Token;
@@ -10,7 +11,7 @@ describe("Screws Token contract", function () {
 
     beforeEach(async function () {
         // Get the ContractFactory and Signers here.
-        Token = await ethers.getContractFactory("Token");
+        Token = await ethers.getContractFactory("ScrewsToken");
         [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
         hardhatToken = await Token.deploy();
     });
