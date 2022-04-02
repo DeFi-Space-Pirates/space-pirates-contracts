@@ -1,6 +1,5 @@
 <div align="center">
    <h1 align="center">Defi Space Pirates</h3>
-   <h4 align="center">Smart Contracts</h4> 
 </div>
 <br>
 <div align="center">
@@ -9,20 +8,14 @@
 
 </div>
 <br>
-<div align="center">
-  
-   ![tests](https://github.com/MatteoLeonesi/Universal-Vending-Machine/actions/workflows/animalcrossing-bank-test.yml/badge.svg)
 
-</div>
+# Project Roadmap (work in progress)
 
+<h6>Disclaimer : This project is born to give me (and anyone who wants to contribute to the project) the possibility to learn Solidity and Hardhat</h6>
 
-## Project Roadmap (work in progress)
+## Functionalities
 
-<h6>Discalimer : This project is born to give me (and anyone who wants to contribute to the project) the possibility to learn Solidity and Hardhat</h6>
-
-# Functionalities
-
-## Doubloons (Common ERC1155 Token) : 
+### Doubloons (Common ERC1155 Token) : 
 
 **Description**
 - Multiverse utility tokens are implemented by compiling the standard ERC20 in the
@@ -52,15 +45,7 @@ Land categories. Thet can also be staked for product passive revenue.
 - Cosmetic object 
 - Land 
 
-
-```solidity
-
-
-  ```
----
-
-
-## Asteroids (Rare ERC1155 Token) : 
+### Asteroids (Rare ERC1155 Token) : 
 
 **Description**
 - Multiverse rare tokens are implemented by compiling the standard ERC20 in the
@@ -89,12 +74,8 @@ The x version of the token can be staked receiving common tokens as rewards.
 - Buy new NFT 
 - Breeding
 - Buy Gadgets 
-```solidity
 
-
-  ```
----
-## other functionalities (details added after created the above functionalities)
+### Other functionalities (details will be added after the creation of the above functionalities)
 Defi:
 - **Quest**(n-game and out-of-game quests the rewards player with tokens, EIP712 + ECDSA) 
 - **Events**
@@ -111,7 +92,6 @@ Defi:
 **Other:**
 - Voting
  -SSI
-
 
 ## Getting Started with Hardhat 
 
@@ -151,7 +131,6 @@ Don't forget to give the project a star! Thanks again! ❤️
 
 [Solidity Style Guide](https://docs.soliditylang.org/en/v0.8.11/style-guide.html)
 
-
 ## Team
 
 Matteo Leonesi - [Github](https://github.com/MatteoLeonesi) - matteo.leonesi@gmail.com
@@ -161,4 +140,3 @@ Emanuele Zini - [Github](https://github.com/Gr3it)
 Yuri Paoloni - [Github](https://github.com/yuripaoloni)
 
 Laks-Dcrypto -  [Github](https://github.com/Laks-Dcrypto)
-
