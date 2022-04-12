@@ -15,15 +15,15 @@ contract Tokens is ERC1155, AccessControl, Ownable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
-    constructor(address minter) ERC1155("ipfs://fakeurl") {
+    constructor() ERC1155("ipfs://fakeurl") {
         //TODO define tokens supply
         _mint(msg.sender, DOUBLOONS, 10**18, "");
         _mint(msg.sender, ASTEROIDS, 10**7, "");
         _mint(msg.sender, VE_ASTEROIDS, 10**7, "");
         _mint(msg.sender, STK_ASTEROIDS, 10**7, "");
 
-        _setupRole(MINTER_ROLE, minter);
-        _setupRole(BURNER_ROLE, minter);
+        _setupRole(MINTER_ROLE, msg.sender);
+        _setupRole(BURNER_ROLE, msg.sender);
     }
 
     function supportsInterface(bytes4 interfaceId)
