@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "hardhat/console.sol";
 
-contract Tokens is ERC1155, AccessControlEnumerable {
+contract Tokens is ERC1155, AccessControl {
     uint256 public constant DOUBLOONS = 0;
     uint256 public constant ASTEROIDS = 1;
     uint256 public constant VE_ASTEROIDS = 2;
@@ -31,7 +31,7 @@ contract Tokens is ERC1155, AccessControlEnumerable {
         public
         view
         virtual
-        override(ERC1155, AccessControlEnumerable)
+        override(ERC1155, AccessControl)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
