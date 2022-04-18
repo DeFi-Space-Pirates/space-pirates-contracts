@@ -3,27 +3,28 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract Tokens is ERC1155, AccessControl, Ownable {
+contract Tokens is ERC1155, AccessControl {
     uint256 public constant DOUBLOONS = 0;
     uint256 public constant ASTEROIDS = 1;
     uint256 public constant VE_ASTEROIDS = 2;
     uint256 public constant STK_ASTEROIDS = 3;
 
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+    bytes32 public constant DOUBLOONS_MINTER_ROLE =
+        keccak256("DOUBLOONS_MINTER_ROLE");
+    bytes32 public constant DOUBLOONS_BURNER_ROLE =
+        keccak256("DOUBLOONS_BURNER_ROLE");
+    bytes32 public constant ASTEROIDS_MINTER_ROLE =
+        keccak256("ASTEROIDS_MINTER_ROLE");
+    bytes32 public constant ASTEROIDS_BURNER_ROLE =
+        keccak256("ASTEROIDS_BURNER_ROLE");
 
-    constructor() ERC1155("ipfs://fakeurl") {
-        //TODO define tokens supply
-        _mint(msg.sender, DOUBLOONS, 10**18, "");
-        _mint(msg.sender, ASTEROIDS, 10**7, "");
-        _mint(msg.sender, VE_ASTEROIDS, 10**7, "");
-        _mint(msg.sender, STK_ASTEROIDS, 10**7, "");
+    constructor() ERC1155("") {
+        _mint(msg.sender, DOUBLOONS, 1000000 * (10**18), "");
+        _mint(msg.sender, ASTEROIDS, 100 * (10**18), "");
 
-        _setupRole(MINTER_ROLE, msg.sender);
-        _setupRole(BURNER_ROLE, msg.sender);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -36,40 +37,31 @@ contract Tokens is ERC1155, AccessControl, Ownable {
         return super.supportsInterface(interfaceId);
     }
 
-    function mint(
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) public {
-        require(hasRole(MINTER_ROLE, msg.sender), "Caller is not a minter");
-        _mint(to, id, amount, data);
-    }
-
-    function burn(
-        address from,
-        uint256 id,
-        uint256 amount
-    ) public {
-        require(hasRole(BURNER_ROLE, msg.sender), "Caller is not a burner");
-        _burn(from, id, amount);
-    }
-
-    function grantRole(bytes32 role, address account)
+    function mintDoubloons(address to, uint256 amount)
         public
-        virtual
-        override
-        onlyOwner
+        onlyRole(DOUBLOONS_MINTER_ROLE)
     {
-        _grantRole(role, account);
+        _mint(to, 0, amount, "");
     }
 
-    function revokeRole(bytes32 role, address account)
+    function burnDoubloons(address from, uint256 amount)
         public
-        virtual
-        override
-        onlyOwner
+        onlyRole(DOUBLOONS_BURNER_ROLE)
     {
-        _revokeRole(role, account);
+        _burn(from, 0, amount);
+    }
+
+    function mintAsteroids(address to, uint256 amount)
+        public
+        onlyRole(ASTEROIDS_MINTER_ROLE)
+    {
+        _mint(to, 1, amount, "");
+    }
+
+    function burnAsteroids(address from, uint256 amount)
+        public
+        onlyRole(ASTEROIDS_BURNER_ROLE)
+    {
+        _burn(from, 1, amount);
     }
 }
