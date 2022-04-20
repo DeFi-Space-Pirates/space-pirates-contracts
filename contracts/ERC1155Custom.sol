@@ -8,8 +8,15 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
-contract ERC1155Custom is Context, ERC165, IERC1155, IERC1155MetadataURI {
+contract ERC1155Custom is
+    Context,
+    ERC165,
+    Pausable,
+    IERC1155,
+    IERC1155MetadataURI
+{
     using Address for address;
 
     mapping(uint256 => uint256) private _totalSupply;
@@ -505,6 +512,8 @@ contract ERC1155Custom is Context, ERC165, IERC1155, IERC1155MetadataURI {
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual {
+        require(!paused(), "ERC1155Pausable: token transfer while paused");
+
         if (from == address(0)) {
             for (uint256 i = 0; i < ids.length; ++i) {
                 _totalSupply[ids[i]] += amounts[i];
