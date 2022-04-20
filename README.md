@@ -9,9 +9,13 @@
 </div>
 <br>
 
-# Project Roadmap (work in progress)
+## Project Introduction
+DeFi Space Pirates is a platform where user can earns 2 tokens (Doubloons and Asteroids) and interacts with a DeFi section & Nft Game section.
+
+## Project Roadmap (work in progress)
 
 <h6>Disclaimer : This project is born to give me (and anyone who wants to contribute to the project) the possibility to learn Solidity and Hardhat</h6>
+
 
 ## Functionalities
 
