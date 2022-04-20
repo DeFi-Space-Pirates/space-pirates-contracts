@@ -20,6 +20,8 @@ contract Tokens is ERC1155Custom, AccessControl {
     bytes32 public constant ASTEROIDS_BURNER_ROLE =
         keccak256("ASTEROIDS_BURNER_ROLE");
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
+    bytes32 public constant CAN_PAUSE_ROLE = keccak256("CAN_PAUSE_ROLE");
+    bytes32 public constant CAN_UNPAUSE_ROLE = keccak256("CAN_UNPAUSE_ROLE");
 
     constructor() {
         _mint(msg.sender, DOUBLOONS, 1000000 * (10**18), "");
@@ -43,6 +45,14 @@ contract Tokens is ERC1155Custom, AccessControl {
         onlyRole(URI_SETTER_ROLE)
     {
         _setURI(newuri, id);
+    }
+
+    function pause() public onlyRole(CAN_PAUSE_ROLE) {
+        _pause();
+    }
+
+    function unpause() public onlyRole(CAN_UNPAUSE_ROLE) {
+        _unpause();
     }
 
     function mintDoubloons(address to, uint256 amount)
