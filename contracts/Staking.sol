@@ -3,37 +3,31 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Tokens.sol";
 
 //? changing to block.number instead of block.timestamp should be better
 
-// TODO: set from the constructor the tokenIds of the stake and reward tokens
-
-contract Staking is ERC1155Holder {
+contract Staking is ERC1155Holder, Ownable {
     // parent ERC1155 contract address
-    IERC1155 public parentToken;
-
-    // 100 tokens per second
-    //TODO should modify reward rate into mapping in order to set the rate for each token
-    //uint256 public rewardRate = 100;
-
-    // mapping(uint256 => uint256) public lastUpdateTime;
-
-    // mapping(uint256 => uint256) public rewardPerTokenStored;
+    Tokens public parentToken;
 
     struct StakingToken {
-        bool exist;
+        bool exists;
         uint256 totalSupply;
         uint256 lastUpdateTime;
         uint256 rewardPerTokenStored;
     }
 
     struct RewardToken {
-        bool exist;
+        bool exists;
         uint256 rewardRate;
     }
 
+    // mapping of staking tokens
     mapping(uint256 => StakingToken) public stakingTokens;
 
+    // mapping of reward tokens
     mapping(uint256 => RewardToken) public rewardTokens;
 
     // store rewards when user interact with smart contract: address => tokenId => reward
@@ -43,42 +37,53 @@ contract Staking is ERC1155Holder {
     // address => tokenId => reward
     mapping(address => mapping(uint256 => uint256)) public rewards;
 
-    // // tokenId => totalStakedToken
-    // mapping(uint256 => uint256) private _totalSupply;
-
     // address => tokenId => userBalance
-    mapping(address => mapping(uint256 => uint256)) public _balances;
+    mapping(address => mapping(uint256 => uint256)) public balances;
 
     event Staked(address indexed user, uint256 amount, uint256 tokenId);
     event Withdrawn(address indexed user, uint256 amount, uint256 tokenId);
     event RewardPaid(address indexed user, uint256 reward);
 
     constructor(address tokens) {
-        parentToken = IERC1155(tokens);
+        parentToken = Tokens(tokens);
     }
 
-    function totalSupply(uint256 _stakingTokenId)
+    modifier updateReward(
+        address account,
+        uint256 _stakingTokenId,
+        uint256 _rewardTokenId
+    ) {
+        require(
+            stakingTokens[_stakingTokenId].exists,
+            "Input staking token not exists"
+        );
+        require(
+            rewardTokens[_rewardTokenId].exists,
+            "Input reward token not exists"
+        );
+
+        stakingTokens[_stakingTokenId].rewardPerTokenStored = rewardPerToken(
+            _stakingTokenId,
+            _rewardTokenId
+        );
+        stakingTokens[_stakingTokenId].lastUpdateTime = block.timestamp;
+        rewards[msg.sender][_stakingTokenId] = earned(
+            account,
+            _stakingTokenId,
+            _rewardTokenId
+        );
+        userRewardPerTokenPaid[account][_stakingTokenId] = stakingTokens[
+            _stakingTokenId
+        ].rewardPerTokenStored;
+        _;
+    }
+
+    function getRewardForDuration(uint256 _duration, uint256 _rewardTokenId)
         external
         view
         returns (uint256)
     {
-        return stakingTokens[_stakingTokenId].totalSupply;
-    }
-
-    function balanceOf(address account, uint256 _stakingTokenId)
-        external
-        view
-        returns (uint256)
-    {
-        return _balances[account][_stakingTokenId];
-    }
-
-    function getRewardForDuration(uint256 _duration, uint256 _stakingTokenId)
-        external
-        view
-        returns (uint256)
-    {
-        return rewardTokens[_stakingTokenId].rewardRate * _duration;
+        return rewardTokens[_rewardTokenId].rewardRate * _duration;
     }
 
     function rewardPerToken(uint256 _stakingTokenId, uint256 _rewardTokenId)
@@ -104,31 +109,26 @@ contract Staking is ERC1155Holder {
         uint256 _rewardTokenId
     ) public view returns (uint256) {
         return
-            ((_balances[account][_stakingTokenId] *
+            ((balances[account][_stakingTokenId] *
                 (rewardPerToken(_stakingTokenId, _rewardTokenId) -
                     userRewardPerTokenPaid[account][_stakingTokenId])) / 1e18) +
             rewards[account][_stakingTokenId];
     }
 
-    modifier updateReward(
-        address account,
-        uint256 _stakingTokenId,
-        uint256 _rewardTokenId
-    ) {
-        stakingTokens[_stakingTokenId].rewardPerTokenStored = rewardPerToken(
-            _stakingTokenId,
-            _rewardTokenId
-        );
-        stakingTokens[_stakingTokenId].lastUpdateTime = block.timestamp;
-        rewards[msg.sender][_stakingTokenId] = earned(
-            account,
-            _stakingTokenId,
-            _rewardTokenId
-        );
-        userRewardPerTokenPaid[account][_stakingTokenId] = stakingTokens[
-            _stakingTokenId
-        ].rewardPerTokenStored;
-        _;
+    function setStakingTokens(uint256 _stakingTokenId, bool _exists)
+        public
+        onlyOwner
+    {
+        stakingTokens[_stakingTokenId].exists = _exists;
+    }
+
+    function setRewardTokens(
+        uint256 _rewardTokenId,
+        bool _exists,
+        uint256 _rewardRate
+    ) public onlyOwner {
+        rewardTokens[_rewardTokenId].exists = _exists;
+        rewardTokens[_rewardTokenId].rewardRate = _rewardRate;
     }
 
     function stake(
@@ -138,7 +138,7 @@ contract Staking is ERC1155Holder {
     ) external updateReward(msg.sender, _stakingTokenId, _rewardTokenId) {
         require(_amount > 0, "Cannot stake 0");
         stakingTokens[_stakingTokenId].totalSupply += _amount;
-        _balances[msg.sender][_stakingTokenId] += _amount;
+        balances[msg.sender][_stakingTokenId] += _amount;
         parentToken.safeTransferFrom(
             msg.sender,
             address(this),
@@ -157,7 +157,7 @@ contract Staking is ERC1155Holder {
     ) external updateReward(msg.sender, _stakingTokenId, _rewardTokenId) {
         require(_amount > 0, "Cannot withdraw 0");
         stakingTokens[_stakingTokenId].totalSupply -= _amount;
-        _balances[msg.sender][_stakingTokenId] -= _amount;
+        balances[msg.sender][_stakingTokenId] -= _amount;
 
         parentToken.safeTransferFrom(
             address(this),
@@ -175,6 +175,7 @@ contract Staking is ERC1155Holder {
         updateReward(msg.sender, _stakingTokenId, _rewardTokenId)
     {
         uint256 reward = rewards[msg.sender][_stakingTokenId];
+        parentToken.mint(msg.sender, _rewardTokenId, reward, "");
         rewards[msg.sender][_stakingTokenId] = 0;
         parentToken.safeTransferFrom(
             address(this),
