@@ -1,0 +1,10 @@
+{
+  "solidity-va.hover": true,
+  "solidity-va.outline.enable": true,
+  "solidity-va.outline.decorations": true,
+  "solidity-va.deco.statevars": true,
+  "solidity-va.deco.arguments": true,
+  "solidity-va.outline.extras": true,
+  "solidity-va.parser.parseImports": true,
+  "solidity-va.codelens.enable": true
+}
