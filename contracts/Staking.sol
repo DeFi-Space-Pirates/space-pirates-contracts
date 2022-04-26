@@ -15,24 +15,24 @@ contract Staking is ERC1155Holder, Ownable {
     struct StakingPair {
         bool exists;
         uint256 rewardToken;
-        uint256 rewardRate;
+        uint256 rewardRate; // token minted per second
         uint256 depositFee;
         uint256 totalSupply;
-        uint256 lastUpdateTime;
-        uint256 rewardPerTokenStored;
+        uint256 lastUpdateTime; // last time stake, withdraw or getRewards were called
+        uint256 rewardPerTokenStored; // sum of reward rate divider by the total supply of token staked at each time
     }
 
     // mapping of staking pairs: staking token => struct
     mapping(uint256 => StakingPair) public stakingPairs;
 
-    // store rewards when user interact with smart contract: address => tokenId => reward
+    // rewards per token stored when user interacts with smart contract: address => tokenId => reward
     mapping(address => mapping(uint256 => uint256))
         public userRewardPerTokenPaid;
 
-    // address => tokenId => reward
+    // rewards of the user, updated when stake or withdraw. address => tokenId => reward
     mapping(address => mapping(uint256 => uint256)) public rewards;
 
-    // address => tokenId => userBalance
+    // number of token staked per user and tokenId. address => tokenId => userBalance
     mapping(address => mapping(uint256 => uint256)) public balances;
 
     event Staked(address indexed user, uint256 amount, uint256 tokenId);
@@ -40,7 +40,6 @@ contract Staking is ERC1155Holder, Ownable {
     event RewardPaid(address indexed user, uint256 reward);
     event StakingPairCreated(
         uint256 stakingTokenId,
-        bool exists,
         uint256 rewardRate,
         uint256 depositFee
     );
@@ -55,7 +54,8 @@ contract Staking is ERC1155Holder, Ownable {
         parentToken = Tokens(tokens);
     }
 
-    modifier updateReward(address account, uint256 _stakingTokenId) {
+    // recompute the rewards. It is executed on stake, withdraw, getRewards
+    modifier updateReward(uint256 _stakingTokenId) {
         require(
             stakingPairs[_stakingTokenId].exists,
             "Input staking token not exists"
@@ -65,21 +65,25 @@ contract Staking is ERC1155Holder, Ownable {
             _stakingTokenId
         );
         stakingPairs[_stakingTokenId].lastUpdateTime = block.timestamp;
-        rewards[msg.sender][_stakingTokenId] = earned(account, _stakingTokenId);
-        userRewardPerTokenPaid[account][_stakingTokenId] = stakingPairs[
+        rewards[msg.sender][_stakingTokenId] = earned(_stakingTokenId);
+        userRewardPerTokenPaid[msg.sender][_stakingTokenId] = stakingPairs[
             _stakingTokenId
         ].rewardPerTokenStored;
+
         _;
     }
 
-    function getRewardForDuration(uint256 _duration, uint256 _stakingTokenId)
-        external
-        view
-        returns (uint256)
-    {
-        return stakingPairs[_stakingTokenId].rewardRate * _duration;
+    modifier validPair(uint256 _depositFee, uint256 _stakingTokenId) {
+        require(_depositFee <= 10000, "Invalid deposit fee basis points");
+        require(
+            parentToken.exists(_stakingTokenId),
+            "Invalid staking token Id"
+        );
+
+        _;
     }
 
+    // rewards per token stored
     function rewardPerToken(uint256 _stakingTokenId)
         public
         view
@@ -88,36 +92,31 @@ contract Staking is ERC1155Holder, Ownable {
         if (stakingPairs[_stakingTokenId].totalSupply == 0) {
             return stakingPairs[_stakingTokenId].rewardPerTokenStored;
         }
+
         return
             stakingPairs[_stakingTokenId].rewardPerTokenStored +
-            (((block.timestamp - stakingPairs[_stakingTokenId].lastUpdateTime) *
-                stakingPairs[_stakingTokenId].rewardRate *
-                1e18) / stakingPairs[_stakingTokenId].totalSupply);
+            ((stakingPairs[_stakingTokenId].rewardRate *
+                (block.timestamp -
+                    stakingPairs[_stakingTokenId].lastUpdateTime) *
+                1e18) / stakingPairs[_stakingTokenId].totalSupply); //elevated 10^18 to avoid grounding errors
     }
 
     // how much tokens the user earned so far
-    function earned(address account, uint256 _stakingTokenId)
-        public
-        view
-        returns (uint256)
-    {
+    function earned(uint256 _stakingTokenId) public view returns (uint256) {
         return
-            ((balances[account][_stakingTokenId] *
+            ((balances[msg.sender][_stakingTokenId] *
                 (rewardPerToken(_stakingTokenId) -
-                    userRewardPerTokenPaid[account][_stakingTokenId])) / 1e18) +
-            rewards[account][_stakingTokenId];
+                    userRewardPerTokenPaid[msg.sender][_stakingTokenId])) /
+                1e18) + rewards[msg.sender][_stakingTokenId]; //divide by 1e18 since rewardPerToken multiply by 1e18
     }
 
     function createStakingPair(
         uint256 _stakingTokenId,
-        bool _exists,
         uint256 _rewardRate,
         uint256 _depositFee
-    ) public onlyOwner {
-        require(_depositFee <= 10000, "Invalid deposit fee basis points");
-
+    ) public onlyOwner validPair(_depositFee, _stakingTokenId) {
         stakingPairs[_stakingTokenId] = StakingPair(
-            _exists,
+            true,
             parentToken.DOUBLOONS(),
             _rewardRate,
             _depositFee,
@@ -126,12 +125,7 @@ contract Staking is ERC1155Holder, Ownable {
             0
         );
 
-        emit StakingPairCreated(
-            _stakingTokenId,
-            _exists,
-            _rewardRate,
-            _depositFee
-        );
+        emit StakingPairCreated(_stakingTokenId, _rewardRate, _depositFee);
     }
 
     function updateStakingPair(
@@ -139,9 +133,7 @@ contract Staking is ERC1155Holder, Ownable {
         bool _exists,
         uint256 _rewardRate,
         uint256 _depositFee
-    ) public onlyOwner {
-        require(_depositFee <= 10000, "Invalid deposit fee basis points");
-
+    ) public onlyOwner validPair(_depositFee, _stakingTokenId) {
         stakingPairs[_stakingTokenId].exists = _exists;
         stakingPairs[_stakingTokenId].rewardRate = _rewardRate;
         stakingPairs[_stakingTokenId].depositFee = _depositFee;
@@ -156,7 +148,7 @@ contract Staking is ERC1155Holder, Ownable {
 
     function stake(uint256 _stakingTokenId, uint256 _amount)
         external
-        updateReward(msg.sender, _stakingTokenId)
+        updateReward(_stakingTokenId)
     {
         require(_amount > 0, "Cannot stake 0");
 
@@ -191,7 +183,7 @@ contract Staking is ERC1155Holder, Ownable {
 
     function withdraw(uint256 _stakingTokenId, uint256 _amount)
         external
-        updateReward(msg.sender, _stakingTokenId)
+        updateReward(_stakingTokenId)
     {
         require(_amount > 0, "Cannot withdraw 0");
         stakingPairs[_stakingTokenId].totalSupply -= _amount;
@@ -210,7 +202,7 @@ contract Staking is ERC1155Holder, Ownable {
 
     function getReward(uint256 _stakingTokenId)
         external
-        updateReward(msg.sender, _stakingTokenId)
+        updateReward(_stakingTokenId)
     {
         uint256 reward = rewards[msg.sender][_stakingTokenId];
         parentToken.mintDoubloons(msg.sender, reward);
@@ -222,6 +214,7 @@ contract Staking is ERC1155Holder, Ownable {
             reward,
             ""
         );
+
         emit RewardPaid(msg.sender, reward);
     }
 }
