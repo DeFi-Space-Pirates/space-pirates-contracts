@@ -11,14 +11,8 @@ contract Tokens is ERC1155Custom, AccessControl {
     uint256 public constant VE_ASTEROIDS = 2;
     uint256 public constant STK_ASTEROIDS = 3;
 
-    bytes32 public constant DOUBLOONS_MINTER_ROLE =
-        keccak256("DOUBLOONS_MINTER_ROLE");
-    bytes32 public constant DOUBLOONS_BURNER_ROLE =
-        keccak256("DOUBLOONS_BURNER_ROLE");
-    bytes32 public constant ASTEROIDS_MINTER_ROLE =
-        keccak256("ASTEROIDS_MINTER_ROLE");
-    bytes32 public constant ASTEROIDS_BURNER_ROLE =
-        keccak256("ASTEROIDS_BURNER_ROLE");
+    // Minting role = keccak256(abi.encodePacked("MINT_ROLE_FOR_ID",id));
+    // Burning role = keccak256(abi.encodePacked("BURN_ROLE_FOR_ID",id));
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
     bytes32 public constant CAN_PAUSE_ROLE = keccak256("CAN_PAUSE_ROLE");
     bytes32 public constant CAN_UNPAUSE_ROLE = keccak256("CAN_UNPAUSE_ROLE");
@@ -55,31 +49,47 @@ contract Tokens is ERC1155Custom, AccessControl {
         _unpause();
     }
 
-    function mintDoubloons(address to, uint256 amount)
-        public
-        onlyRole(DOUBLOONS_MINTER_ROLE)
-    {
-        _mint(to, 0, amount, "");
+    function mint(
+        address to,
+        uint256 amount,
+        uint256 id
+    ) public onlyRole(keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id))) {
+        _mint(to, id, amount, "");
     }
 
-    function burnDoubloons(address from, uint256 amount)
-        public
-        onlyRole(DOUBLOONS_BURNER_ROLE)
-    {
-        _burn(from, 0, amount);
+    function burn(
+        address from,
+        uint256 amount,
+        uint256 id
+    ) public onlyRole(keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", id))) {
+        _burn(from, id, amount);
     }
 
-    function mintAsteroids(address to, uint256 amount)
-        public
-        onlyRole(ASTEROIDS_MINTER_ROLE)
-    {
-        _mint(to, 1, amount, "");
+    function grantMultiRole(
+        bytes32[] calldata roles,
+        address[] calldata accounts
+    ) public {
+        require(
+            roles.length == accounts.length,
+            "AccessControl: array of different length"
+        );
+        for (uint256 i; i < roles.length; ++i) {
+            _checkRole(getRoleAdmin(roles[i]), msg.sender);
+            _grantRole(roles[i], accounts[i]);
+        }
     }
 
-    function burnAsteroids(address from, uint256 amount)
-        public
-        onlyRole(ASTEROIDS_BURNER_ROLE)
-    {
-        _burn(from, 1, amount);
+    function revokeMultiRole(
+        bytes32[] calldata roles,
+        address[] calldata accounts
+    ) public {
+        require(
+            roles.length == accounts.length,
+            "AccessControl: array of different length"
+        );
+        for (uint256 i; i < roles.length; ++i) {
+            _checkRole(getRoleAdmin(roles[i]), msg.sender);
+            _revokeRole(roles[i], accounts[i]);
+        }
     }
 }
