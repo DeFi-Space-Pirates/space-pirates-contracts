@@ -14,7 +14,7 @@ contract Staking is ERC1155Holder, Ownable {
 
     struct StakingPair {
         bool exists;
-        uint256 rewardToken;
+        uint256 rewardTokenId;
         uint256 rewardRate; // token minted per second
         uint256 depositFee;
         uint256 totalSupply;
@@ -37,14 +37,21 @@ contract Staking is ERC1155Holder, Ownable {
 
     event Staked(address indexed user, uint256 amount, uint256 tokenId);
     event Withdrawn(address indexed user, uint256 amount, uint256 tokenId);
-    event RewardPaid(address indexed user, uint256 reward);
+    event RewardPaid(
+        address indexed user,
+        uint256 stakingTokenId,
+        uint256 rewardTokenId,
+        uint256 reward
+    );
     event StakingPairCreated(
         uint256 stakingTokenId,
+        uint256 rewardTokenId,
         uint256 rewardRate,
         uint256 depositFee
     );
     event StakingPairUpdated(
         uint256 stakingTokenId,
+        uint256 rewardTokenId,
         bool exists,
         uint256 rewardRate,
         uint256 depositFee
@@ -73,12 +80,17 @@ contract Staking is ERC1155Holder, Ownable {
         _;
     }
 
-    modifier validPair(uint256 _depositFee, uint256 _stakingTokenId) {
+    modifier validPair(
+        uint256 _depositFee,
+        uint256 _stakingTokenId,
+        uint256 _rewardTokenId
+    ) {
         require(_depositFee <= 10000, "Invalid deposit fee basis points");
         require(
             parentToken.exists(_stakingTokenId),
             "Invalid staking token Id"
         );
+        require(parentToken.exists(_rewardTokenId), "Invalid reward token Id");
 
         _;
     }
@@ -112,12 +124,18 @@ contract Staking is ERC1155Holder, Ownable {
 
     function createStakingPair(
         uint256 _stakingTokenId,
+        uint256 _rewardTokenId,
         uint256 _rewardRate,
         uint256 _depositFee
-    ) public onlyOwner validPair(_depositFee, _stakingTokenId) {
+    ) public onlyOwner validPair(_depositFee, _stakingTokenId, _rewardTokenId) {
+        require(
+            !stakingPairs[_stakingTokenId].exists,
+            "Staking pair already exists"
+        );
+
         stakingPairs[_stakingTokenId] = StakingPair(
             true,
-            parentToken.DOUBLOONS(),
+            _rewardTokenId,
             _rewardRate,
             _depositFee,
             0,
@@ -125,21 +143,34 @@ contract Staking is ERC1155Holder, Ownable {
             0
         );
 
-        emit StakingPairCreated(_stakingTokenId, _rewardRate, _depositFee);
+        emit StakingPairCreated(
+            _stakingTokenId,
+            _rewardTokenId,
+            _rewardRate,
+            _depositFee
+        );
     }
 
     function updateStakingPair(
         uint256 _stakingTokenId,
+        uint256 _rewardTokenId,
         bool _exists,
         uint256 _rewardRate,
         uint256 _depositFee
-    ) public onlyOwner validPair(_depositFee, _stakingTokenId) {
+    ) public onlyOwner validPair(_depositFee, _stakingTokenId, _rewardTokenId) {
+        require(
+            stakingPairs[_stakingTokenId].exists,
+            "Staking pair does not exists"
+        );
+
         stakingPairs[_stakingTokenId].exists = _exists;
+        stakingPairs[_stakingTokenId].rewardTokenId = _rewardTokenId;
         stakingPairs[_stakingTokenId].rewardRate = _rewardRate;
         stakingPairs[_stakingTokenId].depositFee = _depositFee;
 
         emit StakingPairUpdated(
             _stakingTokenId,
+            _rewardTokenId,
             _exists,
             _rewardRate,
             _depositFee
@@ -205,16 +236,25 @@ contract Staking is ERC1155Holder, Ownable {
         updateReward(_stakingTokenId)
     {
         uint256 reward = rewards[msg.sender][_stakingTokenId];
-        parentToken.mintDoubloons(msg.sender, reward);
+        parentToken.mint(
+            msg.sender,
+            reward,
+            stakingPairs[_stakingTokenId].rewardTokenId
+        );
         rewards[msg.sender][_stakingTokenId] = 0;
         parentToken.safeTransferFrom(
             address(this),
             msg.sender,
-            _stakingTokenId,
+            stakingPairs[_stakingTokenId].rewardTokenId,
             reward,
             ""
         );
 
-        emit RewardPaid(msg.sender, reward);
+        emit RewardPaid(
+            msg.sender,
+            _stakingTokenId,
+            stakingPairs[_stakingTokenId].rewardTokenId,
+            reward
+        );
     }
 }
