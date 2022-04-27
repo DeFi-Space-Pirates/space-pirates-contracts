@@ -1,0 +1,72 @@
+// SPDX-License-Identifier: unlicense
+pragma solidity ^0.8.0;
+
+contract HelperRoleContract {
+    function getMintRoleBytes(uint256 id) public pure returns (bytes32) {
+        return (keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id)));
+    }
+
+    function getBurnRoleBytes(uint256 id) public pure returns (bytes32) {
+        return (keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", id)));
+    }
+
+    function getMultiMintRoleBytes(uint256[] calldata ids)
+        public
+        pure
+        returns (bytes32[] memory)
+    {
+        bytes32[] memory roles = new bytes32[](ids.length);
+        for (uint256 i; i < ids.length; ++i) {
+            roles[i] = getMintRoleBytes(ids[i]);
+        }
+        return roles;
+    }
+
+    function getMultiBurnRoleBytes(uint256[] calldata ids)
+        public
+        pure
+        returns (bytes32[] memory)
+    {
+        bytes32[] memory roles = new bytes32[](ids.length);
+        for (uint256 i; i < ids.length; ++i) {
+            roles[i] = getBurnRoleBytes(ids[i]);
+        }
+        return roles;
+    }
+
+    // from and to id included
+    function getRangeMintRoleBytes(uint256 from, uint256 to)
+        public
+        pure
+        returns (bytes32[] memory)
+    {
+        require(
+            to >= from,
+            "HelperFunctions: to must be greather or equal that from"
+        );
+        uint256 length = to - from + 1;
+        bytes32[] memory roles = new bytes32[](length);
+        for (uint256 i; i < length; ++i) {
+            roles[i] = getMintRoleBytes(i + from);
+        }
+        return roles;
+    }
+
+    // from and to id included
+    function getRangeBurnRoleBytes(uint256 from, uint256 to)
+        public
+        pure
+        returns (bytes32[] memory)
+    {
+        require(
+            to >= from,
+            "HelperFunctions: to must be greather or equal that from"
+        );
+        uint256 length = to - from + 1;
+        bytes32[] memory roles = new bytes32[](length);
+        for (uint256 i; i < length; ++i) {
+            roles[i] = getBurnRoleBytes(i + from);
+        }
+        return roles;
+    }
+}
