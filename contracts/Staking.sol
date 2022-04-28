@@ -37,6 +37,7 @@ contract Staking is ERC1155Holder, Ownable {
 
     event Staked(address indexed user, uint256 amount, uint256 tokenId);
     event Withdrawn(address indexed user, uint256 amount, uint256 tokenId);
+
     event RewardPaid(
         address indexed user,
         uint256 stakingTokenId,
