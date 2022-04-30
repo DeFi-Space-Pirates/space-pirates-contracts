@@ -5,11 +5,12 @@ import "./ERC1155Custom.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "hardhat/console.sol";
 
-contract Tokens is ERC1155Custom, AccessControl {
-    uint256 public constant DOUBLOONS = 0;
-    uint256 public constant ASTEROIDS = 1;
-    uint256 public constant VE_ASTEROIDS = 2;
-    uint256 public constant STK_ASTEROIDS = 3;
+contract SpacePiratesTokens is ERC1155Custom, AccessControl {
+    uint256 public constant SPACE_ETH = 0; // Wrapped eth for the dex
+    uint256 public constant DOUBLOONS = 1;
+    uint256 public constant ASTEROIDS = 2;
+    uint256 public constant VE_ASTEROIDS = 3;
+    uint256 public constant STK_ASTEROIDS = 4;
 
     // Minting role = keccak256(abi.encodePacked("MINT_ROLE_FOR_ID",id));
     // Burning role = keccak256(abi.encodePacked("BURN_ROLE_FOR_ID",id));
@@ -54,6 +55,7 @@ contract Tokens is ERC1155Custom, AccessControl {
         uint256 amount,
         uint256 id
     ) public onlyRole(keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id))) {
+        require(id != 0, "cant't mind SpaceEth");
         _mint(to, id, amount, "");
     }
 
@@ -62,6 +64,7 @@ contract Tokens is ERC1155Custom, AccessControl {
         uint256 amount,
         uint256 id
     ) public onlyRole(keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", id))) {
+        require(id != 0, "cant't burn SpaceEth");
         _burn(from, id, amount);
     }
 
@@ -91,5 +94,19 @@ contract Tokens is ERC1155Custom, AccessControl {
             _checkRole(getRoleAdmin(roles[i]), msg.sender);
             _revokeRole(roles[i], accounts[i]);
         }
+    }
+
+    receive() external payable {
+        ethDeposit();
+    }
+
+    function ethDeposit() public payable {
+        _mint(msg.sender, 0, msg.value, "");
+    }
+
+    function ethWithdraw(uint256 amount) public payable {
+        _burn(msg.sender, 0, amount);
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "withdrawal failed");
     }
 }

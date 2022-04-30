@@ -1,18 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0 <0.9.0;
+pragma solidity ^0.8.0;
 
-contract LPToken {
-    string public name;
-    string private symbol;
+contract SpacePiratesLPToken {
+    string public constant name = "Space Pirates LP Token";
+    string private constant symbol = "SP-LP";
     uint8 public constant decimals = 18;
     uint256 public totalSupply;
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
-
-    constructor(string memory _name, string memory _symbol) {
-        name = _name;
-        symbol = _symbol;
-    }
 
     event Approval(
         address indexed owner,
