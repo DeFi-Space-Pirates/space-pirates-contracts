@@ -7,7 +7,6 @@ import "./SpacePiratesLPToken.sol";
 import "./ERC1155Batch.sol";
 import "../libraries/UQ112x112.sol";
 import "../libraries/Math.sol";
-import "../libraries/Array.sol";
 import "../interfaces/ISpacePiratesFactory.sol";
 import "../interfaces/ISpacePiratesCallee.sol";
 
