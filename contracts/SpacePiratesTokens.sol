@@ -104,7 +104,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         _mint(msg.sender, 0, msg.value, "");
     }
 
-    function ethWithdraw(uint256 amount) public payable {
+    function ethWithdraw(uint256 amount) public {
         _burn(msg.sender, 0, amount);
         (bool success, ) = msg.sender.call{value: amount}("");
         require(success, "withdrawal failed");

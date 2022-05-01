@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./SpacePiratesPair.sol";
 
 contract UniswapV2Factory is Ownable {
+    address public immutable tokenContract;
     address public feeTo;
 
     mapping(uint256 => mapping(uint256 => address)) public getPair;
@@ -16,6 +18,10 @@ contract UniswapV2Factory is Ownable {
         address pair,
         uint256
     );
+
+    constructor(address _tokenContract) {
+        tokenContract = _tokenContract;
+    }
 
     function allPairsLength() external view returns (uint256) {
         return allPairs.length;
@@ -39,7 +45,7 @@ contract UniswapV2Factory is Ownable {
         assembly {
             pair := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        SpacePiratesPair(pair).initialize(token0, token1);
+        SpacePiratesPair(pair).initialize(token0, token1, tokenContract);
         getPair[token0][token1] = pair;
         getPair[token1][token0] = pair; // populate mapping in the reverse direction
         allPairs.push(pair);

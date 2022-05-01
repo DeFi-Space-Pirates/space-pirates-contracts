@@ -4,7 +4,11 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 interface ISpacePiratesTokens is IERC1155 {
-    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+    function supportsInterface(bytes4 interfaceId)
+        external
+        view
+        override
+        returns (bool);
 
     function setURI(string memory newuri, uint256 id) external;
 
@@ -38,5 +42,5 @@ interface ISpacePiratesTokens is IERC1155 {
 
     function ethDeposit() external payable;
 
-    function ethWithdraw(uint256 amount) external payable;
+    function ethWithdraw(uint256 amount) external;
 }

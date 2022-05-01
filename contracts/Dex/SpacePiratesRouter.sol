@@ -2,14 +2,15 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import "./ERC1155Batch.sol";
 import "../interfaces/ISpacePiratesFactory.sol";
 import "../interfaces/ISpacePiratesPair.sol";
 import "../interfaces/ISpacePiratesTokens.sol";
 import "../libraries/SpacePiratesDexLibrary.sol";
 
-contract SpacePiratesRouter {
-    ISpacePiratesTokens public tokenContract;
-    uint256 public constant SPACE_ETH_ID = 0; // to be equal to 0
+contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
+    uint256 public constant SPACE_ETH_ID = 0; // to be equal to 0, Space Pirates wrapper eth
     address public immutable factory;
 
     modifier ensure(uint256 deadline) {
@@ -17,9 +18,9 @@ contract SpacePiratesRouter {
         _;
     }
 
-    constructor(address _factory, ISpacePiratesTokens _tokenContract) {
+    constructor(address _factory, address _tokenContract) {
         factory = _factory;
-        tokenContract = _tokenContract;
+        _batchInit(_tokenContract);
     }
 
     receive() external payable {
@@ -99,8 +100,16 @@ contract SpacePiratesRouter {
             amountBMin
         );
         address pair = SpacePiratesDexLibrary.pairFor(factory, tokenA, tokenB);
-        tokenContract.safeTransferFrom(msg.sender, pair, tokenA, amountA, "");
-        tokenContract.safeTransferFrom(msg.sender, pair, tokenB, amountB, "");
+
+        safeBatchTransferFromPair(
+            msg.sender,
+            pair,
+            tokenA,
+            tokenB,
+            amountA,
+            amountB
+        );
+
         liquidity = ISpacePiratesPair(pair).mint(to);
     }
 
@@ -135,15 +144,18 @@ contract SpacePiratesRouter {
             token,
             SPACE_ETH_ID
         );
-        tokenContract.safeTransferFrom(
+
+        IERC1155(tokenContract).safeTransferFrom(
             msg.sender,
             pair,
             token,
             amountToken,
             ""
         );
-        tokenContract.ethDeposit{value: amountETH}();
-        tokenContract.safeTransferFrom(
+        ISpacePiratesTokens(payable(tokenContract)).ethDeposit{
+            value: amountETH
+        }();
+        IERC1155(tokenContract).safeTransferFrom(
             address(this),
             pair,
             SPACE_ETH_ID,
@@ -214,14 +226,14 @@ contract SpacePiratesRouter {
             address(this),
             deadline
         );
-        tokenContract.safeTransferFrom(
+        IERC1155(tokenContract).safeTransferFrom(
             address(this),
             to,
             token,
             amountToken,
             ""
         );
-        tokenContract.ethDeposit{value: amountETH}();
+        ISpacePiratesTokens(payable(tokenContract)).ethWithdraw(amountETH);
 
         (bool success, ) = to.call{value: amountETH}("");
         require(success, "SpacePiratesRouter: ETH transfer failed");
@@ -265,7 +277,7 @@ contract SpacePiratesRouter {
             amounts[amounts.length - 1] >= amountOutMin,
             "SpacePiratesRouter: INSUFFICIENT_OUTPUT_AMOUNT"
         );
-        tokenContract.safeTransferFrom(
+        IERC1155(tokenContract).safeTransferFrom(
             msg.sender,
             SpacePiratesDexLibrary.pairFor(factory, path[0], path[1]),
             path[0],
@@ -287,7 +299,7 @@ contract SpacePiratesRouter {
             amounts[0] <= amountInMax,
             "SpacePiratesRouter: EXCESSIVE_INPUT_AMOUNT"
         );
-        tokenContract.safeTransferFrom(
+        IERC1155(tokenContract).safeTransferFrom(
             msg.sender,
             SpacePiratesDexLibrary.pairFor(factory, path[0], path[1]),
             path[0],
@@ -319,8 +331,10 @@ contract SpacePiratesRouter {
             amounts[amounts.length - 1] >= amountOutMin,
             "SpacePiratesRouter: INSUFFICIENT_OUTPUT_AMOUNT"
         );
-        tokenContract.ethDeposit{value: amounts[0]}();
-        tokenContract.safeTransferFrom(
+        ISpacePiratesTokens(payable(tokenContract)).ethDeposit{
+            value: amounts[0]
+        }();
+        IERC1155(tokenContract).safeTransferFrom(
             address(this),
             SpacePiratesDexLibrary.pairFor(factory, path[0], path[1]),
             SPACE_ETH_ID,
@@ -346,7 +360,7 @@ contract SpacePiratesRouter {
             amounts[0] <= amountInMax,
             "SpacePiratesRouter: EXCESSIVE_INPUT_AMOUNT"
         );
-        tokenContract.safeTransferFrom(
+        IERC1155(tokenContract).safeTransferFrom(
             msg.sender,
             SpacePiratesDexLibrary.pairFor(factory, path[0], path[1]),
             path[0],
@@ -354,7 +368,9 @@ contract SpacePiratesRouter {
             ""
         );
         _swap(amounts, path, address(this));
-        tokenContract.ethWithdraw(amounts[amounts.length - 1]);
+        ISpacePiratesTokens(payable(tokenContract)).ethWithdraw(
+            amounts[amounts.length - 1]
+        );
         (bool success, ) = to.call{value: amounts[amounts.length - 1]}(
             new bytes(0)
         );
@@ -377,7 +393,7 @@ contract SpacePiratesRouter {
             amounts[amounts.length - 1] >= amountOutMin,
             "SpacePiratesRouter: INSUFFICIENT_OUTPUT_AMOUNT"
         );
-        tokenContract.safeTransferFrom(
+        IERC1155(tokenContract).safeTransferFrom(
             msg.sender,
             SpacePiratesDexLibrary.pairFor(factory, path[0], path[1]),
             path[0],
@@ -385,7 +401,9 @@ contract SpacePiratesRouter {
             ""
         );
         _swap(amounts, path, address(this));
-        tokenContract.ethWithdraw(amounts[amounts.length - 1]);
+        ISpacePiratesTokens(payable(tokenContract)).ethWithdraw(
+            amounts[amounts.length - 1]
+        );
 
         (bool success, ) = to.call{value: amounts[amounts.length - 1]}(
             new bytes(0)
@@ -411,8 +429,10 @@ contract SpacePiratesRouter {
             amounts[0] <= msg.value,
             "SpacePiratesRouter: EXCESSIVE_INPUT_AMOUNT"
         );
-        tokenContract.ethDeposit{value: amounts[0]}();
-        tokenContract.safeTransferFrom(
+        ISpacePiratesTokens(payable(tokenContract)).ethDeposit{
+            value: amounts[0]
+        }();
+        IERC1155(tokenContract).safeTransferFrom(
             address(this),
             SpacePiratesDexLibrary.pairFor(factory, path[0], path[1]),
             SPACE_ETH_ID,

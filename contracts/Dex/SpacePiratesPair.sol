@@ -4,21 +4,21 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "./SpacePiratesLPToken.sol";
+import "./ERC1155Batch.sol";
 import "../libraries/UQ112x112.sol";
 import "../libraries/Math.sol";
 import "../libraries/Array.sol";
 import "../interfaces/ISpacePiratesFactory.sol";
 import "../interfaces/ISpacePiratesCallee.sol";
 
-contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
+contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Batch, ERC1155Holder {
     using UQ112x112 for uint224;
 
     uint256 public constant MINIMUM_LIQUIDITY = 10**3;
 
-    IERC1155 public tokenContract;
-    address public factory;
-    uint128 public token0; // uses single storage slot, accessible via getTokenIds
-    uint128 public token1; // uses single storage slot, accessible via getTokenIds
+    address public immutable factory;
+    uint128 private token0; // uses single storage slot, accessible via getTokenIds
+    uint128 private token1; // uses single storage slot, accessible via getTokenIds
 
     uint112 private reserve0; // uses single storage slot, accessible via getReserves
     uint112 private reserve1; // uses single storage slot, accessible via getReserves
@@ -30,7 +30,8 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
 
     uint256 private unlocked = 1;
     modifier lock() {
-        require(unlocked == 1, "SpacePiratesFactory: LOCKED");
+        require(unlocked == 1, "SpacePiratesPair: LOCKED");
+
         unlocked = 0;
         _;
         unlocked = 1;
@@ -53,11 +54,7 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
     function getTokenIds()
         public
         view
-        returns (
-            // da vedere se tenere o dove fare le conversioni
-            uint128 _token0,
-            uint128 _token1
-        )
+        returns (uint128 _token0, uint128 _token1)
     {
         _token0 = token0;
         _token1 = token1;
@@ -85,8 +82,13 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
     }
 
     // called once by the factory at time of deployment
-    function initialize(uint128 _token0, uint128 _token1) external {
-        require(msg.sender == factory, "SpacePiratesFactory: FORBIDDEN"); // sufficient check
+    function initialize(
+        uint128 _token0,
+        uint128 _token1,
+        address _tokenContract
+    ) external {
+        require(msg.sender == factory, "SpacePiratesPair: FORBIDDEN"); // sufficient check
+        _batchInit(_tokenContract);
         token0 = _token0;
         token1 = _token1;
     }
@@ -100,7 +102,7 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
     ) private {
         require(
             balance0 <= type(uint112).max && balance1 <= type(uint112).max,
-            "SpacePiratesFactory: OVERFLOW"
+            "SpacePiratesPair: OVERFLOW"
         );
         uint32 blockTimestamp = uint32(block.timestamp % 2**32);
         uint32 timeElapsed;
@@ -151,8 +153,12 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
     // this low-level function should be called from a contract which performs important safety checks
     function mint(address to) external lock returns (uint256 liquidity) {
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
-        uint256 balance0 = tokenContract.balanceOf(address(this), token0);
-        uint256 balance1 = tokenContract.balanceOf(address(this), token1);
+        (uint256 balance0, uint256 balance1) = balanceOfBatchPair(
+            address(this),
+            token0,
+            token1
+        );
+
         uint256 amount0 = balance0 - _reserve0;
         uint256 amount1 = balance1 - _reserve1;
 
@@ -169,7 +175,7 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
         }
         require(
             liquidity > 0,
-            "SpacePiratesFactory: INSUFFICIENT_LIQUIDITY_MINTED"
+            "SpacePiratesPair: INSUFFICIENT_LIQUIDITY_MINTED"
         );
         _mint(to, liquidity);
 
@@ -186,8 +192,11 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
     {
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
         (uint128 _token0, uint128 _token1) = getTokenIds(); // gas savings
-        uint256 balance0 = tokenContract.balanceOf(address(this), _token0);
-        uint256 balance1 = tokenContract.balanceOf(address(this), _token1);
+        (uint256 balance0, uint256 balance1) = balanceOfBatchPair(
+            address(this),
+            _token0,
+            _token1
+        );
         uint256 liquidity = balanceOf[address(this)];
 
         bool feeOn = _mintFee(_reserve0, _reserve1);
@@ -196,18 +205,24 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
         amount1 = (liquidity * balance1) / _totalSupply; // using balances ensures pro-rata distribution
         require(
             amount0 > 0 && amount1 > 0,
-            "SpacePiratesFactory: INSUFFICIENT_LIQUIDITY_BURNED"
+            "SpacePiratesPair: INSUFFICIENT_LIQUIDITY_BURNED"
         );
         _burn(address(this), liquidity);
-        tokenContract.safeBatchTransferFrom(
+
+        safeBatchTransferFromPair(
             address(this),
             to,
-            Array.getArray(_token0, _token1),
-            Array.getArray(amount0, amount1),
-            ""
+            _token0,
+            _token1,
+            amount0,
+            amount1
         );
-        balance0 = tokenContract.balanceOf(address(this), _token0);
-        balance1 = tokenContract.balanceOf(address(this), _token1);
+
+        (balance0, balance1) = balanceOfBatchPair(
+            address(this),
+            _token0,
+            _token1
+        );
 
         _update(balance0, balance1, _reserve0, _reserve1);
         if (feeOn) kLast = uint256(reserve0) * reserve1; // reserve0 and reserve1 are up-to-date
@@ -223,12 +238,12 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
     ) external lock {
         require(
             amount0Out > 0 || amount1Out > 0,
-            "SpacePiratesFactory: INSUFFICIENT_OUTPUT_AMOUNT"
+            "SpacePiratesPair: INSUFFICIENT_OUTPUT_AMOUNT"
         );
         (uint112 _reserve0, uint112 _reserve1, ) = getReserves(); // gas savings
         require(
             amount0Out < _reserve0 && amount1Out < _reserve1,
-            "SpacePiratesFactory: INSUFFICIENT_LIQUIDITY"
+            "SpacePiratesPair: INSUFFICIENT_LIQUIDITY"
         );
 
         uint256 balance0;
@@ -237,7 +252,7 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
             // scope for _token{0,1}, avoids stack too deep errors
             (uint128 _token0, uint128 _token1) = getTokenIds(); // gas savings
             if (amount0Out > 0)
-                tokenContract.safeTransferFrom(
+                IERC1155(tokenContract).safeTransferFrom(
                     address(this),
                     to,
                     _token0,
@@ -245,7 +260,7 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
                     ""
                 ); // optimistically transfer tokens
             if (amount1Out > 0)
-                tokenContract.safeTransferFrom(
+                IERC1155(tokenContract).safeTransferFrom(
                     address(this),
                     to,
                     _token1,
@@ -259,8 +274,11 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
                     amount1Out,
                     data
                 );
-            balance0 = tokenContract.balanceOf(address(this), _token0);
-            balance1 = tokenContract.balanceOf(address(this), _token1);
+            (balance0, balance1) = balanceOfBatchPair(
+                address(this),
+                _token0,
+                _token1
+            );
         }
         uint256 amount0In = balance0 > _reserve0 - amount0Out
             ? balance0 - (_reserve0 - amount0Out)
@@ -270,7 +288,7 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
             : 0;
         require(
             amount0In > 0 || amount1In > 0,
-            "SpacePiratesFactory: INSUFFICIENT_INPUT_AMOUNT"
+            "SpacePiratesPair: INSUFFICIENT_INPUT_AMOUNT"
         );
         {
             // scope for reserve{0,1}Adjusted, avoids stack too deep errors
@@ -279,7 +297,7 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
             require(
                 balance0Adjusted * balance1Adjusted >=
                     uint256(_reserve0) * _reserve1 * (1000**2),
-                "SpacePiratesFactory: K"
+                "SpacePiratesPair: K"
             );
         }
 
@@ -292,25 +310,29 @@ contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Holder {
         uint128 _token0 = token0; // gas savings
         uint128 _token1 = token1; // gas savings
 
-        tokenContract.safeBatchTransferFrom(
+        (uint256 balance0, uint256 balance1) = balanceOfBatchPair(
+            address(this),
+            _token0,
+            _token1
+        );
+
+        safeBatchTransferFromPair(
             address(this),
             to,
-            Array.getArray(_token0, _token1),
-            Array.getArray(
-                tokenContract.balanceOf(address(this), _token0) - reserve0,
-                tokenContract.balanceOf(address(this), _token1) - reserve1
-            ),
-            ""
+            _token0,
+            _token1,
+            balance0 - reserve0,
+            balance1 - reserve1
         );
     }
 
     // force reserves to match balances
     function sync() external lock {
-        _update(
-            tokenContract.balanceOf(address(this), token0),
-            tokenContract.balanceOf(address(this), token1),
-            reserve0,
-            reserve1
+        (uint256 balance0, uint256 balance1) = balanceOfBatchPair(
+            address(this),
+            token0,
+            token1
         );
+        _update(balance0, balance1, reserve0, reserve1);
     }
 }
