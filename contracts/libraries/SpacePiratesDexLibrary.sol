@@ -31,7 +31,7 @@ library SpacePiratesDexLibrary {
                             hex"ff",
                             factory,
                             keccak256(abi.encodePacked(token0, token1)),
-                            hex"aa279b0f0a4e770f3d46977961232ec0cd31a315dd3cc88f996c96201138739d" // init code hash
+                            hex"85a06a79c91ae0a0ee8036d7aefc66e537977f1cdd17d236b23ad187cdc93fc9" // init code hash
                         )
                     )
                 )
