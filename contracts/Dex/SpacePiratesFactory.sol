@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./SpacePiratesPair.sol";
 
-contract UniswapV2Factory is Ownable {
+contract SpacePiratesFactory is Ownable {
     address public immutable tokenContract;
     address public feeTo;
 
@@ -41,7 +41,9 @@ contract UniswapV2Factory is Ownable {
             "SpacePiratesFactory: PAIR_EXISTS"
         ); // single check is sufficient
         bytes memory bytecode = type(SpacePiratesPair).creationCode;
-        bytes32 salt = keccak256(abi.encodePacked(token0, token1));
+        bytes32 salt = keccak256(
+            abi.encodePacked(uint256(token0), uint256(token1))
+        );
         assembly {
             pair := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
