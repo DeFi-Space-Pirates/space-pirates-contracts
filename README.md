@@ -1,10 +1,8 @@
-<div align="center">
-   <h1 align="center">Defi Space Pirates</h3>
-</div>
+
 <br>
 <div align="center">
-   
-![Major Mono Display-modified](https://user-images.githubusercontent.com/38867931/166485541-b77ad625-3c7a-4c51-9572-c216c4a94074.png)
+
+![Defi-modified](https://user-images.githubusercontent.com/38867931/166487025-628f2839-6778-4f3f-94a3-64eecdb2c0ba.png)
 
 </div>
 <br>
