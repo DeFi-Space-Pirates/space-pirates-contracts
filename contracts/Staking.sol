@@ -6,8 +6,6 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Tokens.sol";
 
-//? changing to block.number instead of block.timestamp should be better
-
 contract Staking is ERC1155Holder, Ownable {
     // parent ERC1155 contract address
     Tokens public parentToken;

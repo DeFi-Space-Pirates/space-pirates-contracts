@@ -5,6 +5,11 @@ require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
 require("solidity-coverage");
 
+const chai = require("chai");
+const { solidity } = require("ethereum-waffle");
+
+chai.use(solidity);
+
 module.exports = {
   solidity: {
     version: "0.8.4",
