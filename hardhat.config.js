@@ -3,7 +3,6 @@ require("dotenv").config();
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
-require("solidity-coverage");
 
 const chai = require("chai");
 const { solidity } = require("ethereum-waffle");
