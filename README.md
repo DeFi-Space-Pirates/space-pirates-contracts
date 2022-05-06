@@ -1,21 +1,20 @@
-<div align="center">
-   <h1 align="center">Defi Space Pirates</h3>
-</div>
+
 <br>
 <div align="center">
-   
- ![Tokenomics](https://user-images.githubusercontent.com/38867931/161377333-7019db12-efd3-4ff9-a445-e1ac4a158f1f.png)
+
+![Defi-modified](https://user-images.githubusercontent.com/38867931/166487025-628f2839-6778-4f3f-94a3-64eecdb2c0ba.png)
 
 </div>
 <br>
 
 ## Project Introduction
-DeFi Space Pirates is a platform where user can earns 2 tokens (Doubloons and Asteroids) and interacts with a DeFi section & Nft Game section.
+DeFi Space Pirates is a **platform** where user can earns 2 tokens (Doubloons and Asteroids) and interacts with a **DeFi section & Nft Game section**.
 
 ## Project Roadmap (work in progress)
 
 <h6>Disclaimer : This project is born to give me (and anyone who wants to contribute to the project) the possibility to learn Solidity and Hardhat</h6>
 
+ ![Tokenomics](https://user-images.githubusercontent.com/38867931/161377333-7019db12-efd3-4ff9-a445-e1ac4a158f1f.png)
 
 ## Functionalities
 
@@ -79,8 +78,9 @@ The x version of the token can be staked receiving common tokens as rewards.
 - Breeding
 - Buy Gadgets 
 
-### Other functionalities (details will be added after the creation of the above functionalities)
-Defi:
+## Other functionalities (details will be added after the creation of the above functionalities)
+
+**Defi:**
 - **Quest**(n-game and out-of-game quests the rewards player with tokens, EIP712 + ECDSA) 
 - **Events**
 
@@ -95,7 +95,7 @@ Defi:
 
 **Other:**
 - Voting
- -SSI
+- Work in progress...
 
 ## Getting Started with Hardhat 
 
@@ -137,10 +137,12 @@ Don't forget to give the project a star! Thanks again! ❤️
 
 ## Team
 
-Matteo Leonesi - [Github](https://github.com/MatteoLeonesi) - matteo.leonesi@gmail.com
+**Matteo Leonesi** - [Github](https://github.com/MatteoLeonesi) 
 
-Emanuele Zini - [Github](https://github.com/Gr3it)
+**Emanuele Zini** - [Github](https://github.com/Gr3it)
 
-Yuri Paoloni - [Github](https://github.com/yuripaoloni)
+**Yuri Paoloni** - [Github](https://github.com/yuripaoloni)
 
-Laks-Dcrypto -  [Github](https://github.com/Laks-Dcrypto)
+**Laks-Dcrypto** -  [Github](https://github.com/Laks-Dcrypto)
+
+**Support The Team ❤️ :**  0x1C17264918162b0BA7dF7b607B4D9509B2D07159
