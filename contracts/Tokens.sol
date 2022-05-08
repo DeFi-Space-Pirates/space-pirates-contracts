@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "./ERC1155Custom.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "hardhat/console.sol";
 
 contract Tokens is ERC1155Custom, AccessControl {
     uint256 public constant DOUBLOONS = 0;
