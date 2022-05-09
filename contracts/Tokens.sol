@@ -61,6 +61,10 @@ contract Tokens is ERC1155Custom, AccessControl {
         uint256 amount,
         uint256 id
     ) public onlyRole(keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", id))) {
+        require(
+            from == _msgSender() || isApprovedForAll(from, _msgSender()),
+            "ERC1155: caller is not owner nor approved"
+        );
         _burn(from, id, amount);
     }
 

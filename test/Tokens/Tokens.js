@@ -97,6 +97,15 @@ describe("Tokens: Tokens", () => {
           await tokensContract.unpause();
           expect(await tokensContract.paused()).to.be.false;
         });
+        it("Should revert if has no role", async () => {
+          await expect(tokensContract.pause()).to.be.reverted;
+
+          const pauseRole = await tokensContract.CAN_PAUSE_ROLE();
+          await tokensContract.grantRole(pauseRole, ownerAddress);
+          await tokensContract.pause();
+
+          await expect(tokensContract.unpause()).to.be.reverted;
+        });
         it("Should revert transfer if paused", async () => {
           const pauseRole = await tokensContract.CAN_PAUSE_ROLE();
           await tokensContract.grantRole(pauseRole, ownerAddress);
@@ -113,6 +122,198 @@ describe("Tokens: Tokens", () => {
         });
       });
     });
-    describe("Roles:", () => {});
+    describe("Roles:", () => {
+      describe("grantMultiRole:", () => {
+        it("Should grant more roles at ones", async () => {
+          const numberOfRole = 5;
+          const roles = [];
+          const addresses = [];
+          for (i = 0; i < numberOfRole; i++) {
+            roles[i] = helperRoleContract.getMintRoleBytes(getRandomInteger());
+            addresses[i] = ownerAddress;
+          }
+          await tokensContract.grantMultiRole(roles, addresses);
+
+          for (i = 0; i < numberOfRole; i++) {
+            expect(await tokensContract.hasRole(roles[i], ownerAddress)).to.be
+              .true;
+          }
+        });
+        it("Should revert if array differ in length", async () => {
+          const numberOfRole = 5;
+          const roles = [];
+          const addresses = [];
+          for (i = 0; i < numberOfRole; i++) {
+            roles[i] = helperRoleContract.getMintRoleBytes(getRandomInteger());
+            addresses[i] = ownerAddress;
+          }
+          addresses[numberOfRole] = ownerAddress;
+          await expect(
+            tokensContract.grantMultiRole(roles, addresses)
+          ).to.be.revertedWith("AccessControl: array of different length");
+        });
+        it("Should revert if not roles admin", async () => {
+          const numberOfRole = 5;
+          const roles = [];
+          const addresses = [];
+          for (i = 0; i < numberOfRole; i++) {
+            roles[i] = helperRoleContract.getMintRoleBytes(getRandomInteger());
+            addresses[i] = ownerAddress;
+          }
+          await expect(
+            tokensContract.connect(accounts[1]).grantMultiRole(roles, addresses)
+          ).to.be.reverted;
+        });
+      });
+      describe("revokeMultiRole:", () => {
+        it("Should revoke more roles at ones", async () => {
+          const numberOfRole = 5;
+          const roles = [];
+          const addresses = [];
+          for (i = 0; i < numberOfRole; i++) {
+            roles[i] = helperRoleContract.getMintRoleBytes(getRandomInteger());
+            addresses[i] = ownerAddress;
+          }
+          await tokensContract.grantMultiRole(roles, addresses);
+          await tokensContract.revokeMultiRole(roles, addresses);
+          for (i = 0; i < numberOfRole; i++) {
+            expect(await tokensContract.hasRole(roles[i], ownerAddress)).to.be
+              .false;
+          }
+        });
+        it("Should revert if array differ in length", async () => {
+          const numberOfRole = 5;
+          const roles = [];
+          const addresses = [];
+          for (i = 0; i < numberOfRole; i++) {
+            roles[i] = helperRoleContract.getMintRoleBytes(getRandomInteger());
+            addresses[i] = ownerAddress;
+          }
+          await tokensContract.grantMultiRole(roles, addresses);
+          addresses[numberOfRole] = ownerAddress;
+          await expect(
+            tokensContract.revokeMultiRole(roles, addresses)
+          ).to.be.revertedWith("AccessControl: array of different length");
+        });
+        it("Should revert if not roles admin", async () => {
+          const numberOfRole = 5;
+          const roles = [];
+          const addresses = [];
+          for (i = 0; i < numberOfRole; i++) {
+            roles[i] = helperRoleContract.getMintRoleBytes(getRandomInteger());
+            addresses[i] = ownerAddress;
+          }
+          await tokensContract.grantMultiRole(roles, addresses);
+          await expect(
+            tokensContract
+              .connect(accounts[1])
+              .revokeMultiRole(roles, addresses)
+          ).to.be.reverted;
+        });
+      });
+    });
+    describe("Tokens:", () => {
+      describe("mint:", () => {
+        it("Should mint token if has token id mint role", async () => {
+          const id = getRandomInteger();
+          const amount = 100;
+          const initialBalance = await tokensContract.balanceOf(
+            ownerAddress,
+            id
+          );
+
+          const role = helperRoleContract.getMintRoleBytes(id);
+          await tokensContract.grantRole(role, ownerAddress);
+
+          await tokensContract.mint(ownerAddress, amount, id);
+          expect(await tokensContract.balanceOf(ownerAddress, id)).to.be.equal(
+            initialBalance + amount
+          );
+        });
+        it("Should revert if has not token id mint role", async () => {
+          const id = getRandomInteger();
+          const amount = 100;
+
+          await expect(tokensContract.mint(ownerAddress, amount, id)).to.be
+            .reverted;
+        });
+      });
+      describe("burn:", () => {
+        it("Should burn token if has token id mint role and it is owner", async () => {
+          const id = getRandomInteger();
+          const amount = 100;
+
+          const mintRole = helperRoleContract.getMintRoleBytes(id);
+          const burnRole = helperRoleContract.getBurnRoleBytes(id);
+          await tokensContract.grantRole(mintRole, ownerAddress);
+          await tokensContract.grantRole(burnRole, ownerAddress);
+          await tokensContract.mint(ownerAddress, amount * 10, id);
+
+          const initialBalance = await tokensContract.balanceOf(
+            ownerAddress,
+            id
+          );
+
+          await tokensContract.burn(ownerAddress, amount, id);
+
+          expect(await tokensContract.balanceOf(ownerAddress, id)).to.be.equal(
+            initialBalance - amount
+          );
+        });
+        it("Should burn token if has token id mint role and it is approved", async () => {
+          const id = getRandomInteger();
+          const amount = 100;
+
+          const mintRole = helperRoleContract.getMintRoleBytes(id);
+          const burnRole = helperRoleContract.getBurnRoleBytes(id);
+          await tokensContract.grantRole(mintRole, ownerAddress);
+          await tokensContract.grantRole(burnRole, accounts[1].getAddress());
+          await tokensContract.mint(ownerAddress, amount * 10, id);
+
+          const initialBalance = await tokensContract.balanceOf(
+            ownerAddress,
+            id
+          );
+
+          tokensContract.setApprovalForAll(accounts[1].getAddress(), true);
+          await tokensContract
+            .connect(accounts[1])
+            .burn(ownerAddress, amount, id);
+
+          expect(await tokensContract.balanceOf(ownerAddress, id)).to.be.equal(
+            initialBalance - amount
+          );
+        });
+        it("Should revert if has not token id burn role", async () => {
+          const id = getRandomInteger();
+          const amount = 100;
+
+          const role = helperRoleContract.getMintRoleBytes(id);
+          await tokensContract.grantRole(role, ownerAddress);
+          await tokensContract.mint(ownerAddress, amount, id);
+
+          await expect(tokensContract.burn(ownerAddress, amount, id)).to.be
+            .reverted;
+        });
+        it("Should revert if it is not owner nor approved", async () => {
+          const id = getRandomInteger();
+          const amount = 100;
+
+          const mintRole = helperRoleContract.getMintRoleBytes(id);
+          const burnRole = helperRoleContract.getBurnRoleBytes(id);
+          await tokensContract.grantRole(mintRole, ownerAddress);
+          await tokensContract.grantRole(burnRole, accounts[1].getAddress());
+          await tokensContract.mint(ownerAddress, amount * 10, id);
+
+          await expect(
+            tokensContract.connect(accounts[1]).burn(ownerAddress, amount, id)
+          ).to.be.revertedWith("ERC1155: caller is not owner nor approved");
+        });
+      });
+    });
   });
 });
+
+const getRandomInteger = () => {
+  return Math.floor(Math.random() * 100000);
+};
