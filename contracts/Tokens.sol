@@ -68,6 +68,23 @@ contract Tokens is ERC1155Custom, AccessControl {
         _burn(from, id, amount);
     }
 
+    modifier onlyRoles(string memory role, uint256[] memory ids) {
+        for (uint256 i; i < ids.length; ++i) {
+            require(
+                hasRole(keccak256(abi.encodePacked(role, ids[i])), msg.sender),
+                string(
+                    abi.encodePacked(
+                        "Tokens: account ",
+                        msg.sender,
+                        " is missing role ",
+                        role
+                    )
+                )
+            );
+        }
+        _;
+    }
+
     function grantMultiRole(
         bytes32[] calldata roles,
         address[] calldata accounts
@@ -94,5 +111,22 @@ contract Tokens is ERC1155Custom, AccessControl {
             _checkRole(getRoleAdmin(roles[i]), msg.sender);
             _revokeRole(roles[i], accounts[i]);
         }
+    }
+
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public onlyRoles("MINT_ROLE_FOR_ID", ids) {
+        _mintBatch(to, ids, amounts, data);
+    }
+
+    function burnBatch(
+        address from,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) public onlyRoles("BURN_ROLE_FOR_ID", ids) {
+        _burnBatch(from, ids, amounts);
     }
 }
