@@ -116,10 +116,9 @@ contract Tokens is ERC1155Custom, AccessControl {
     function mintBatch(
         address to,
         uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
+        uint256[] memory amounts
     ) public onlyRoles("MINT_ROLE_FOR_ID", ids) {
-        _mintBatch(to, ids, amounts, data);
+        _mintBatch(to, ids, amounts, "");
     }
 
     function burnBatch(
