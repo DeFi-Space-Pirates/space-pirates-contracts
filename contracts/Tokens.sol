@@ -95,4 +95,26 @@ contract Tokens is ERC1155Custom, AccessControl {
             _revokeRole(roles[i], accounts[i]);
         }
     }
+
+   function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) public {
+        for (uint256 i; i < ids.length; ++i) {
+            _checkRole(keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", ids[i])), msg.sender);
+        }
+        _mintBatch(to, ids, amounts, "");
+    }
+
+    function burnBatch(
+        address from,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) public {
+        for (uint256 i; i < ids.length; ++i) {
+            _checkRole(keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", ids[i])), msg.sender);
+        }
+        _burnBatch(from, ids, amounts);
+    }
 }
