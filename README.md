@@ -14,7 +14,8 @@ DeFi Space Pirates is a **platform** where user can earns 2 tokens (Doubloons an
 
 <h6>Disclaimer : This project is born to give me (and anyone who wants to contribute to the project) the possibility to learn Solidity and Hardhat</h6>
 
- ![Tokenomics](https://user-images.githubusercontent.com/38867931/161377333-7019db12-efd3-4ff9-a445-e1ac4a158f1f.png)
+ ![Space_Pirates_Multiverse](https://user-images.githubusercontent.com/79539455/168427909-10ffca5b-da41-4d8b-92e4-230e1f8afa02.png)
+
 
 ## Functionalities
 
