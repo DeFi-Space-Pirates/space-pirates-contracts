@@ -351,6 +351,23 @@ describe("Tokens: Tokens", () => {
           await expect(tokensContract.mintBatch(ownerAddress, ids, amounts)).to
             .be.reverted;
         });
+        it("Should revert if ids and amounts arrays length are not equal", async () => {
+          const ids = [
+            getRandomInteger(),
+            getRandomInteger(),
+            getRandomInteger(),
+          ];
+          const addresses = [ownerAddress, ownerAddress, ownerAddress];
+          const amounts = [100, 101, 102];
+
+          const roles = await helperRoleContract.getMultiMintRoleBytes(ids);
+
+          await tokensContract.grantMultiRole(roles, addresses);
+
+          await expect(
+            tokensContract.mintBatch(ownerAddress, [ids[0]], amounts)
+          ).to.be.revertedWith("ERC1155: ids and amounts length mismatch");
+        });
       });
       describe("burnBatch:", async () => {
         it("Should burn batch of tokens if has token ids mint roles and it is owner", async () => {
@@ -473,6 +490,23 @@ describe("Tokens: Tokens", () => {
               .connect(accounts[1])
               .burnBatch(ownerAddress, ids, amounts)
           ).to.be.reverted;
+        });
+        it("Should revert if ids and amounts arrays length are not equal", async () => {
+          const ids = [
+            getRandomInteger(),
+            getRandomInteger(),
+            getRandomInteger(),
+          ];
+          const addresses = [ownerAddress, ownerAddress, ownerAddress];
+          const amounts = [100, 101, 102];
+
+          const roles = await helperRoleContract.getMultiBurnRoleBytes(ids);
+
+          await tokensContract.grantMultiRole(roles, addresses);
+
+          await expect(
+            tokensContract.burnBatch(ownerAddress, [ids[0]], amounts)
+          ).to.be.revertedWith("ERC1155: ids and amounts length mismatch");
         });
       });
     });
