@@ -17,7 +17,7 @@ let asteroids;
 describe("Staking: basic features", () => {
   before(async () => {
     const Tokens = await ethers.getContractFactory("Tokens");
-    const Staking = await ethers.getContractFactory("Staking");
+    const Staking = await ethers.getContractFactory("SpacePiratesStaking");
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
     );
@@ -27,6 +27,8 @@ describe("Staking: basic features", () => {
     tokens = await Tokens.deploy();
     staking = await Staking.deploy(tokens.address);
     helperContract = await HelperRoleContract.deploy();
+
+    await staking.setFeeAddress(owner.address);
 
     // get tokencIDs
     doubloons = await tokens.DOUBLOONS();
@@ -40,10 +42,10 @@ describe("Staking: basic features", () => {
   });
 
   it("should create a new staking pair", async () => {
-    await staking.createStakingPair(doubloons, doubloons, 10, 100);
+    await staking.createStakingPool(doubloons, doubloons, 10, 100);
 
     const [exists, rewardTokenId, rewardRate, depositFee] =
-      await staking.stakingPairs(doubloons);
+      await staking.stakingPools(doubloons);
 
     expect(exists).to.equal(true);
     expect(rewardTokenId).to.equal(doubloons);
@@ -75,7 +77,7 @@ describe("Staking: basic features", () => {
     );
 
     // totalSupply of staked doubloons should be equal to 1000 - depositFee value
-    expect((await staking.stakingPairs(doubloons))[4]).to.equal(
+    expect((await staking.stakingPools(doubloons))[5]).to.equal(
       1000 - (1000 * depositFee) / 10000
     );
 
@@ -87,15 +89,15 @@ describe("Staking: basic features", () => {
 
   it("should withdraw a staked token", async () => {
     let userBalance = await tokens.balanceOf(addr1.address, doubloons);
-    let prevSupply = (await staking.stakingPairs(doubloons))[4];
+    let prevSupply = (await staking.stakingPools(doubloons))[5];
 
-    await staking.connect(addr1).withdraw(doubloons, 300);
+    await staking.connect(addr1).unstake(doubloons, 300);
 
     // addr1 balance should be bigger after the withdraw
     expect(await tokens.balanceOf(addr1.address, doubloons)).to.gt(userBalance);
 
     // totalSupply should be smaller
-    expect((await staking.stakingPairs(doubloons))[4]).to.lt(prevSupply);
+    expect((await staking.stakingPools(doubloons))[5]).to.lt(prevSupply);
   });
 
   it("should harvest rewards", async () => {
@@ -109,10 +111,10 @@ describe("Staking: basic features", () => {
 
   it("should update an existing staking pair", async () => {
     // change stakingTokenId to asteroids
-    await staking.updateStakingPair(doubloons, asteroids, true, 10, 100);
+    await staking.updateStakingPool(doubloons, asteroids, 10, 100);
 
     let [exists, rewardTokenId, rewardRate, depositFee] =
-      await staking.stakingPairs(doubloons);
+      await staking.stakingPools(doubloons);
 
     expect(exists).to.equal(true);
     expect(rewardTokenId).to.equal(asteroids);

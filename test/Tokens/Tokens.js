@@ -30,12 +30,15 @@ describe("Tokens: Tokens", () => {
           const id = 0;
           const URI = "ipfs://wrappedEth/";
           const role = await tokensContract.URI_SETTER_ROLE();
+
           await tokensContract.grantRole(role, ownerAddress);
           await tokensContract.setURI(URI, id);
+
           expect(await tokensContract.uri(id)).to.be.equal(URI);
         });
         it("Should revert if the URI is absent", async () => {
           const id = 5;
+
           await expect(tokensContract.uri(id)).to.be.revertedWith(
             "ERC1155: missing URI"
           );

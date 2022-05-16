@@ -6,143 +6,100 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Tokens.sol";
 
-contract Staking is ERC1155Holder, Ownable {
+contract SpacePiratesStaking is ERC1155Holder, Ownable {
     // parent ERC1155 contract address
     Tokens public parentToken;
+    address public feeAddress;
 
-    struct StakingPair {
+    struct StakingPool {
         bool exists;
-        uint256 rewardTokenId;
-        uint256 rewardRate; // token minted per second
-        uint256 depositFee;
+        uint104 rewardTokenId;
+        uint64 rewardRate; // token minted per second
+        uint16 depositFee;
+        uint64 lastUpdateTime; // last block number stake, withdraw or getRewards were called
         uint256 totalSupply;
-        uint256 lastUpdateTime; // last time stake, withdraw or getRewards were called
-        uint256 rewardPerTokenStored; // sum of reward rate divider by the total supply of token staked at each time
+        uint256 accRewardPerShare; // sum of reward rate divider by the total supply of token staked at each time
     }
 
-    // mapping of staking pairs: staking token => struct
-    mapping(uint256 => StakingPair) public stakingPairs;
+    struct UserInfo {
+        uint256 rewardDebt;
+        uint256 rewards;
+        uint256 balances;
+    }
 
-    // rewards per token stored when user interacts with smart contract: address => tokenId => reward
-    mapping(address => mapping(uint256 => uint256))
-        public userRewardPerTokenPaid;
+    // mapping of staking pools: staking token => struct
+    mapping(uint256 => StakingPool) public stakingPools;
 
-    // rewards of the user, updated when stake or withdraw. address => tokenId => reward
-    mapping(address => mapping(uint256 => uint256)) public rewards;
+    // mapping of usersInfo: tokenId => address => userInfo
+    mapping(uint256 => mapping(address => UserInfo)) public usersInfo;
 
-    // number of token staked per user and tokenId. address => tokenId => userBalance
-    mapping(address => mapping(uint256 => uint256)) public balances;
+    //  pool info, keep track of created pool indexes
+    uint256[] public poolIds;
 
-    event Staked(address indexed user, uint256 amount, uint256 tokenId);
-    event Withdrawn(address indexed user, uint256 amount, uint256 tokenId);
+    event Staked(address indexed user, uint256 indexed tokenId, uint256 amount);
+    event Unstake(
+        address indexed user,
+        uint256 indexed tokenId,
+        uint256 amount
+    );
 
     event RewardPaid(
         address indexed user,
-        uint256 stakingTokenId,
-        uint256 rewardTokenId,
+        uint256 indexed stakingTokenId,
+        uint256 indexed rewardTokenId,
         uint256 reward
     );
-    event StakingPairCreated(
-        uint256 stakingTokenId,
-        uint256 rewardTokenId,
-        uint256 rewardRate,
-        uint256 depositFee
+    event StakingPoolCreated(
+        uint256 indexed stakingTokenId,
+        uint104 rewardTokenId,
+        uint64 rewardRate,
+        uint16 depositFee
     );
-    event StakingPairUpdated(
-        uint256 stakingTokenId,
-        uint256 rewardTokenId,
-        bool exists,
-        uint256 rewardRate,
-        uint256 depositFee
+    event StakingPoolUpdated(
+        uint256 indexed stakingTokenId,
+        uint104 rewardTokenId,
+        uint64 rewardRate,
+        uint16 depositFee
     );
+
+    event SetFeeAddress(address indexed user, address indexed newAddress);
 
     constructor(address tokens) {
         parentToken = Tokens(tokens);
     }
 
-    // recompute the rewards. It is executed on stake, withdraw, getRewards
-    modifier updateReward(uint256 _stakingTokenId) {
-        require(
-            stakingPairs[_stakingTokenId].exists,
-            "Input staking token not exists"
-        );
-
-        stakingPairs[_stakingTokenId].rewardPerTokenStored = rewardPerToken(
-            _stakingTokenId
-        );
-        stakingPairs[_stakingTokenId].lastUpdateTime = block.timestamp;
-        rewards[msg.sender][_stakingTokenId] = earned(_stakingTokenId);
-        userRewardPerTokenPaid[msg.sender][_stakingTokenId] = stakingPairs[
-            _stakingTokenId
-        ].rewardPerTokenStored;
-
-        _;
+    function poolAmount() external view returns (uint256) {
+        return poolIds.length;
     }
 
-    modifier validPair(
-        uint256 _depositFee,
+    function createStakingPool(
         uint256 _stakingTokenId,
-        uint256 _rewardTokenId
-    ) {
-        require(_depositFee <= 10000, "Invalid deposit fee basis points");
+        uint104 _rewardTokenId,
+        uint64 _rewardRate,
+        uint16 _depositFee
+    ) public onlyOwner {
         require(
-            parentToken.exists(_stakingTokenId),
-            "Invalid staking token Id"
+            _depositFee <= 10000,
+            "SpacePiratesStaking: invalid deposit fee"
         );
-        require(parentToken.exists(_rewardTokenId), "Invalid reward token Id");
-
-        _;
-    }
-
-    // rewards per token stored
-    function rewardPerToken(uint256 _stakingTokenId)
-        public
-        view
-        returns (uint256)
-    {
-        if (stakingPairs[_stakingTokenId].totalSupply == 0) {
-            return stakingPairs[_stakingTokenId].rewardPerTokenStored;
-        }
-
-        return
-            stakingPairs[_stakingTokenId].rewardPerTokenStored +
-            ((stakingPairs[_stakingTokenId].rewardRate *
-                (block.timestamp -
-                    stakingPairs[_stakingTokenId].lastUpdateTime) *
-                1e18) / stakingPairs[_stakingTokenId].totalSupply); //elevated 10^18 to avoid grounding errors
-    }
-
-    // how much tokens the user earned so far
-    function earned(uint256 _stakingTokenId) public view returns (uint256) {
-        return
-            ((balances[msg.sender][_stakingTokenId] *
-                (rewardPerToken(_stakingTokenId) -
-                    userRewardPerTokenPaid[msg.sender][_stakingTokenId])) /
-                1e18) + rewards[msg.sender][_stakingTokenId]; //divide by 1e18 since rewardPerToken multiply by 1e18
-    }
-
-    function createStakingPair(
-        uint256 _stakingTokenId,
-        uint256 _rewardTokenId,
-        uint256 _rewardRate,
-        uint256 _depositFee
-    ) public onlyOwner validPair(_depositFee, _stakingTokenId, _rewardTokenId) {
         require(
-            !stakingPairs[_stakingTokenId].exists,
-            "Staking pair already exists"
+            !stakingPools[_stakingTokenId].exists,
+            "SpacePiratesStaking: staking pool already exists"
         );
 
-        stakingPairs[_stakingTokenId] = StakingPair(
+        stakingPools[_stakingTokenId] = StakingPool(
             true,
             _rewardTokenId,
             _rewardRate,
             _depositFee,
-            0,
+            uint64(block.timestamp),
             0,
             0
         );
 
-        emit StakingPairCreated(
+        poolIds.push(_stakingTokenId);
+
+        emit StakingPoolCreated(
             _stakingTokenId,
             _rewardTokenId,
             _rewardRate,
@@ -150,37 +107,93 @@ contract Staking is ERC1155Holder, Ownable {
         );
     }
 
-    function updateStakingPair(
+    function updateStakingPool(
         uint256 _stakingTokenId,
-        uint256 _rewardTokenId,
-        bool _exists,
-        uint256 _rewardRate,
-        uint256 _depositFee
-    ) public onlyOwner validPair(_depositFee, _stakingTokenId, _rewardTokenId) {
+        uint104 _rewardTokenId,
+        uint64 _rewardRate,
+        uint16 _depositFee
+    ) public onlyOwner {
         require(
-            stakingPairs[_stakingTokenId].exists,
-            "Staking pair does not exists"
+            _depositFee <= 10000,
+            "SpacePiratesStaking: invalid deposit fee"
+        );
+        require(
+            stakingPools[_stakingTokenId].exists,
+            "SpacePiratesStaking: staking pool does not exists"
         );
 
-        stakingPairs[_stakingTokenId].exists = _exists;
-        stakingPairs[_stakingTokenId].rewardTokenId = _rewardTokenId;
-        stakingPairs[_stakingTokenId].rewardRate = _rewardRate;
-        stakingPairs[_stakingTokenId].depositFee = _depositFee;
+        stakingPools[_stakingTokenId].rewardTokenId = _rewardTokenId;
+        stakingPools[_stakingTokenId].rewardRate = _rewardRate;
+        stakingPools[_stakingTokenId].depositFee = _depositFee;
 
-        emit StakingPairUpdated(
+        emit StakingPoolUpdated(
             _stakingTokenId,
             _rewardTokenId,
-            _exists,
             _rewardRate,
             _depositFee
         );
+    }
+
+    function pendingRewards(uint256 _stakingTokenId, address _user)
+        external
+        view
+        returns (uint256)
+    {
+        StakingPool storage pool = stakingPools[_stakingTokenId];
+        UserInfo storage user = usersInfo[_stakingTokenId][_user];
+        uint256 accRewardPerShare = pool.accRewardPerShare;
+        if (block.timestamp > pool.lastUpdateTime && pool.totalSupply != 0) {
+            accRewardPerShare += ((pool.rewardRate *
+                (block.timestamp - pool.lastUpdateTime) *
+                1e18) / pool.totalSupply);
+        }
+        return (((user.balances * (accRewardPerShare - user.rewardDebt)) /
+            1e18) + user.rewards);
+    }
+
+    // Update reward variables of the given pool to be up-to-date. It is executed on stake, unstake
+    modifier updatePool(uint256 _stakingTokenId) {
+        require(
+            stakingPools[_stakingTokenId].exists,
+            "SpacePiratesStaking: not existsing token"
+        );
+        StakingPool storage pool = stakingPools[_stakingTokenId];
+        uint64 timestamp = uint64(block.timestamp);
+        if (timestamp <= pool.lastUpdateTime) {} else if (
+            pool.totalSupply == 0 || pool.rewardRate == 0
+        ) {
+            pool.lastUpdateTime = timestamp;
+        } else {
+            pool.accRewardPerShare +=
+                (pool.rewardRate * (timestamp - pool.lastUpdateTime) * 1e18) /
+                pool.totalSupply;
+            pool.lastUpdateTime = timestamp;
+        }
+
+        _;
+    }
+
+    // Update user rewards. It is executed on stake, unstake, getRewards
+    modifier updateUserRewards(uint256 _stakingTokenId) {
+        uint256 accRewardPerShare = stakingPools[_stakingTokenId]
+            .accRewardPerShare;
+        UserInfo storage user = usersInfo[_stakingTokenId][msg.sender];
+        user.rewards +=
+            (user.balances * (accRewardPerShare - user.rewardDebt)) /
+            1e18;
+        user.rewardDebt = accRewardPerShare;
+
+        _;
     }
 
     function stake(uint256 _stakingTokenId, uint256 _amount)
         external
-        updateReward(_stakingTokenId)
+        updatePool(_stakingTokenId)
+        updateUserRewards(_stakingTokenId)
     {
-        require(_amount > 0, "Cannot stake 0");
+        require(_amount > 0, "SpacePiratesStaking: cannot stake 0");
+        StakingPool storage pool = stakingPools[_stakingTokenId];
+        UserInfo storage user = usersInfo[_stakingTokenId][msg.sender];
 
         parentToken.safeTransferFrom(
             msg.sender,
@@ -190,34 +203,36 @@ contract Staking is ERC1155Holder, Ownable {
             ""
         );
 
-        if (stakingPairs[_stakingTokenId].depositFee > 0) {
-            uint256 depositFee = (_amount *
-                stakingPairs[_stakingTokenId].depositFee) / 10000;
+        if (pool.depositFee > 0 && feeAddress != address(0)) {
+            uint256 depositFee = (_amount * pool.depositFee) / 10000;
 
             parentToken.safeTransferFrom(
                 address(this),
-                owner(),
+                feeAddress,
                 _stakingTokenId,
                 depositFee,
                 ""
             );
-            stakingPairs[_stakingTokenId].totalSupply += _amount - depositFee;
-            balances[msg.sender][_stakingTokenId] += _amount - depositFee;
+            pool.totalSupply += _amount - depositFee;
+            user.balances += _amount - depositFee;
         } else {
-            stakingPairs[_stakingTokenId].totalSupply += _amount;
-            balances[msg.sender][_stakingTokenId] += _amount;
+            pool.totalSupply += _amount;
+            user.balances += _amount;
         }
 
         emit Staked(msg.sender, _amount, _stakingTokenId);
     }
 
-    function withdraw(uint256 _stakingTokenId, uint256 _amount)
+    function unstake(uint256 _stakingTokenId, uint256 _amount)
         external
-        updateReward(_stakingTokenId)
+        updatePool(_stakingTokenId)
+        updateUserRewards(_stakingTokenId)
     {
-        require(_amount > 0, "Cannot withdraw 0");
-        stakingPairs[_stakingTokenId].totalSupply -= _amount;
-        balances[msg.sender][_stakingTokenId] -= _amount;
+        require(_amount > 0, "SpacePiratesStaking: cannot withdraw 0");
+        StakingPool storage pool = stakingPools[_stakingTokenId];
+        UserInfo storage user = usersInfo[_stakingTokenId][msg.sender];
+        pool.totalSupply -= _amount;
+        user.balances -= _amount;
 
         parentToken.safeTransferFrom(
             address(this),
@@ -227,33 +242,24 @@ contract Staking is ERC1155Holder, Ownable {
             ""
         );
 
-        emit Withdrawn(msg.sender, _amount, _stakingTokenId);
+        emit Unstake(msg.sender, _amount, _stakingTokenId);
     }
 
     function getReward(uint256 _stakingTokenId)
         external
-        updateReward(_stakingTokenId)
+        updateUserRewards(_stakingTokenId)
     {
-        uint256 reward = rewards[msg.sender][_stakingTokenId];
-        parentToken.mint(
-            msg.sender,
-            reward,
-            stakingPairs[_stakingTokenId].rewardTokenId
-        );
-        rewards[msg.sender][_stakingTokenId] = 0;
-        parentToken.safeTransferFrom(
-            address(this),
-            msg.sender,
-            stakingPairs[_stakingTokenId].rewardTokenId,
-            reward,
-            ""
-        );
+        UserInfo storage user = usersInfo[_stakingTokenId][msg.sender];
+        uint256 rewardTokenId = stakingPools[_stakingTokenId].rewardTokenId;
+        uint256 rewards = user.rewards;
+        user.rewards = 0;
+        parentToken.mint(msg.sender, rewards, rewardTokenId);
 
-        emit RewardPaid(
-            msg.sender,
-            _stakingTokenId,
-            stakingPairs[_stakingTokenId].rewardTokenId,
-            reward
-        );
+        emit RewardPaid(msg.sender, _stakingTokenId, rewardTokenId, rewards);
+    }
+
+    function setFeeAddress(address _feeAddress) public onlyOwner {
+        feeAddress = _feeAddress;
+        emit SetFeeAddress(msg.sender, _feeAddress);
     }
 }
