@@ -247,6 +247,7 @@ contract SpacePiratesStaking is ERC1155Holder, Ownable {
 
     function getReward(uint256 _stakingTokenId)
         external
+        updatePool(_stakingTokenId)
         updateUserRewards(_stakingTokenId)
     {
         UserInfo storage user = usersInfo[_stakingTokenId][msg.sender];
