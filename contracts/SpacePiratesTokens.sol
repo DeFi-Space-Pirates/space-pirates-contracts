@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: unlicense
 pragma solidity ^0.8.0;
 
-import "./ERC1155Custom.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "hardhat/console.sol";
+import "./ERC1155Custom.sol";
 
 contract SpacePiratesTokens is ERC1155Custom, AccessControl {
     uint256 public constant SPACE_ETH = 0; // Wrapped eth for the dex
@@ -65,7 +64,39 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         uint256 id
     ) public onlyRole(keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", id))) {
         require(id != 0, "cant't burn SpaceEth");
+        require(
+            from == _msgSender() || isApprovedForAll(from, _msgSender()),
+            "ERC1155: caller is not owner nor approved"
+        );
         _burn(from, id, amount);
+    }
+
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) public {
+        for (uint256 i; i < ids.length; ++i) {
+            _checkRole(
+                keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", ids[i])),
+                msg.sender
+            );
+        }
+        _mintBatch(to, ids, amounts, "");
+    }
+
+    function burnBatch(
+        address from,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) public {
+        for (uint256 i; i < ids.length; ++i) {
+            _checkRole(
+                keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", ids[i])),
+                msg.sender
+            );
+        }
+        _burnBatch(from, ids, amounts);
     }
 
     function grantMultiRole(
