@@ -1,18 +1,33 @@
-// When running the script with `npx hardhat run <script>` you'll find the Hardhat
-// Runtime Environment's members available in the global scope.
-const hre = require("hardhat");
+const { ethers } = require("hardhat");
 
 async function main() {
-    const Items = await hre.ethers.getContractFactory("Items");
-    console.log('Deploying contracts...');
-    const ItemsContract = await Items.deploy();
-    await ItemsContract.deployed();
-    console.log("Universal Vending Machine deployed to:", ItemsContract.address);
+  const SpacePiratesTokens = await ethers.getContractFactory(
+    "SpacePiratesTokens"
+  );
+  const SpacePiratesStaking = await ethers.getContractFactory(
+    "SpacePiratesStaking"
+  );
+
+  console.log("\nDeploying contracts...");
+
+  const spacePiratesTokens = await SpacePiratesTokens.deploy();
+  console.log(
+    "\nSpace Pirates Tokens deployed to:",
+    spacePiratesTokens.address
+  );
+
+  const spacePiratesStaking = await SpacePiratesStaking.deploy(
+    spacePiratesTokens.address
+  );
+  console.log(
+    "\nSpace Pirates Staking deployed to:",
+    spacePiratesStaking.address
+  );
 }
 
 main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
