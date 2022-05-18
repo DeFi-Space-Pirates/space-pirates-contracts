@@ -4,11 +4,11 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Tokens.sol";
+import "./SpacePiratesTokens.sol";
 
 contract SpacePiratesStaking is ERC1155Holder, Ownable {
     // parent ERC1155 contract address
-    Tokens public parentToken;
+    SpacePiratesTokens public parentToken;
 
     address public feeAddress;
 
@@ -69,7 +69,7 @@ contract SpacePiratesStaking is ERC1155Holder, Ownable {
     event SetFeeAddress(address indexed user, address indexed newAddress);
 
     constructor(address tokens) {
-        parentToken = Tokens(tokens);
+        parentToken = SpacePiratesTokens(tokens);
     }
 
     function poolAmount() external view returns (uint256) {

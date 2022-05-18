@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: unlicense
 pragma solidity ^0.8.0;
 
-import "./ERC1155Custom.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./ERC1155Custom.sol";
 
-contract Tokens is ERC1155Custom, AccessControl {
+contract SpacePiratesTokens is ERC1155Custom, AccessControl {
     uint256 public constant DOUBLOONS = 0;
     uint256 public constant ASTEROIDS = 1;
     uint256 public constant VE_ASTEROIDS = 2;
@@ -96,13 +96,16 @@ contract Tokens is ERC1155Custom, AccessControl {
         }
     }
 
-   function mintBatch(
+    function mintBatch(
         address to,
         uint256[] memory ids,
         uint256[] memory amounts
     ) public {
         for (uint256 i; i < ids.length; ++i) {
-            _checkRole(keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", ids[i])), msg.sender);
+            _checkRole(
+                keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", ids[i])),
+                msg.sender
+            );
         }
         _mintBatch(to, ids, amounts, "");
     }
@@ -113,7 +116,10 @@ contract Tokens is ERC1155Custom, AccessControl {
         uint256[] memory amounts
     ) public {
         for (uint256 i; i < ids.length; ++i) {
-            _checkRole(keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", ids[i])), msg.sender);
+            _checkRole(
+                keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", ids[i])),
+                msg.sender
+            );
         }
         _burnBatch(from, ids, amounts);
     }

@@ -6,7 +6,7 @@ let ownerAddress;
 let tokensContract;
 let helperRoleContract;
 
-describe("Tokens: Tokens", () => {
+describe("SpacePiratesTokens: Tokens", () => {
   before(async () => {
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
@@ -16,12 +16,14 @@ describe("Tokens: Tokens", () => {
     ownerAddress = accounts[0].getAddress();
   });
   it("Contract deploy", async () => {
-    const TokenContract = await ethers.getContractFactory("Tokens");
+    const TokenContract = await ethers.getContractFactory("SpacePiratesTokens");
     const tokensContract = await TokenContract.deploy();
   });
   describe("Methods:", () => {
     beforeEach(async () => {
-      const TokenContract = await ethers.getContractFactory("Tokens");
+      const TokenContract = await ethers.getContractFactory(
+        "SpacePiratesTokens"
+      );
       tokensContract = await TokenContract.deploy();
     });
     describe("Metadata:", () => {

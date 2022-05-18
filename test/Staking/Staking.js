@@ -14,9 +14,9 @@ let addrs;
 let doubloons;
 let asteroids;
 
-describe("Staking: basic features", () => {
+describe("SpacePiratesStaking: basic features", () => {
   before(async () => {
-    const Tokens = await ethers.getContractFactory("Tokens");
+    const Tokens = await ethers.getContractFactory("SpacePiratesTokens");
     const Staking = await ethers.getContractFactory("SpacePiratesStaking");
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
