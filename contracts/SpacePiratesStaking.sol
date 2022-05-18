@@ -9,6 +9,7 @@ import "./Tokens.sol";
 contract SpacePiratesStaking is ERC1155Holder, Ownable {
     // parent ERC1155 contract address
     Tokens public parentToken;
+
     address public feeAddress;
 
     struct StakingPool {
@@ -16,9 +17,9 @@ contract SpacePiratesStaking is ERC1155Holder, Ownable {
         uint104 rewardTokenId;
         uint64 rewardRate; // token minted per second
         uint16 depositFee;
-        uint64 lastUpdateTime; // last block number stake, withdraw or getRewards were called
+        uint64 lastUpdateTime; // last block timestamp stake, withdraw or getRewards were called
         uint256 totalSupply;
-        uint256 accRewardPerShare; // sum of reward rate divider by the total supply of token staked at each time
+        uint256 accRewardPerShare; // sum of reward rate divided by the total supply of token staked at each time
     }
 
     struct UserInfo {
@@ -27,16 +28,17 @@ contract SpacePiratesStaking is ERC1155Holder, Ownable {
         uint256 balances;
     }
 
-    // mapping of staking pools: staking token => struct
+    // mapping of staking pools: staking tokenId => struct
     mapping(uint256 => StakingPool) public stakingPools;
 
-    // mapping of usersInfo: tokenId => address => userInfo
+    // mapping of usersInfo: staking tokenId => address => userInfo
     mapping(uint256 => mapping(address => UserInfo)) public usersInfo;
 
-    //  pool info, keep track of created pool indexes
+    // pool info, keep track of created pool indexes
     uint256[] public poolIds;
 
     event Staked(address indexed user, uint256 indexed tokenId, uint256 amount);
+
     event Unstake(
         address indexed user,
         uint256 indexed tokenId,
@@ -49,12 +51,14 @@ contract SpacePiratesStaking is ERC1155Holder, Ownable {
         uint256 indexed rewardTokenId,
         uint256 reward
     );
+
     event StakingPoolCreated(
         uint256 indexed stakingTokenId,
         uint104 rewardTokenId,
         uint64 rewardRate,
         uint16 depositFee
     );
+
     event StakingPoolUpdated(
         uint256 indexed stakingTokenId,
         uint104 rewardTokenId,
@@ -151,23 +155,27 @@ contract SpacePiratesStaking is ERC1155Holder, Ownable {
             1e18) + user.rewards);
     }
 
-    // Update reward variables of the given pool to be up-to-date. It is executed on stake, unstake
+    // Update reward variables of the given pool to be up-to-date. It is executed on stake, unstake, getRewards
     modifier updatePool(uint256 _stakingTokenId) {
         require(
             stakingPools[_stakingTokenId].exists,
-            "SpacePiratesStaking: not existsing token"
+            "SpacePiratesStaking: not existing token"
         );
+
         StakingPool storage pool = stakingPools[_stakingTokenId];
         uint64 timestamp = uint64(block.timestamp);
-        if (timestamp <= pool.lastUpdateTime) {} else if (
-            pool.totalSupply == 0 || pool.rewardRate == 0
-        ) {
-            pool.lastUpdateTime = timestamp;
-        } else {
-            pool.accRewardPerShare +=
-                (pool.rewardRate * (timestamp - pool.lastUpdateTime) * 1e18) /
-                pool.totalSupply;
-            pool.lastUpdateTime = timestamp;
+
+        if (timestamp > pool.lastUpdateTime) {
+            if (pool.totalSupply == 0 || pool.rewardRate == 0) {
+                pool.lastUpdateTime = timestamp;
+            } else {
+                pool.accRewardPerShare +=
+                    (pool.rewardRate *
+                        (timestamp - pool.lastUpdateTime) *
+                        1e18) /
+                    pool.totalSupply;
+                pool.lastUpdateTime = timestamp;
+            }
         }
 
         _;
