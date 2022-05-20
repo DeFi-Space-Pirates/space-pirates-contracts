@@ -1,14 +1,15 @@
 <br>
 <div align="center">
 
-![Defi-modified](https://user-images.githubusercontent.com/38867931/166487025-628f2839-6778-4f3f-94a3-64eecdb2c0ba.png)
+![you!-modified](https://user-images.githubusercontent.com/38867931/169622526-55e4dcbb-35c3-42c5-aa44-10a603157080.png)
 
 </div>
 <br>
 
 ## Project Introduction
+**DeFi Space Pirates is a platform built around the idea of an imaginary space world where DeFi pirates can interact by earning 2 tokens (Doubloons and Asteroids). The ecosystem consists of a DeFi and an Nft Game section.**
 
-DeFi Space Pirates is a **platform** where user can earns 2 tokens (Doubloons and Asteroids) and interacts with a **DeFi section & Nft Game section**.
+
 
 ## Project Roadmap (work in progress)
 
