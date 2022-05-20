@@ -1,0 +1,14 @@
+{
+  "mint": {
+    "doubloons": "0x9a04e0fe6fc58d8074e1248913ba8264db0172239ac5ac3abda2b5e4a8a27af9",
+    "asteroids": "0x42022b3e22a3f63ab4a0e302cf7ce1d6e831030f7c855971ca06f03e4fb64a13",
+    "veAsteroids": "0x7d1bc46768adf5d9a616f5861464c69b52a127c2e9556c30849d4bf0b7fa4ab6",
+    "stkAsteroids": "0x703597dfc54126721ca0fd2ce66d6492d582277d4d03e6d28d2a6eb83ac0ce27"
+  },
+  "burn": {
+    "doubloons": "0x79c4f19595d0f36d8c94f6d809decda230ff568defdd4e85ca989d8c603c2efb",
+    "asteroids": "0x04e7dbb09964207f3e636c44a6382d7c4039da67c4e3871c9f6449223932c3ef",
+    "veAsteroids": "0x51c76052d392ddec02e013aedf9e0a13cbd1ecb9beb01fefb2c6d2daca83a094",
+    "stkAsteroids": "0x5625c8b30c2fd31c25c3fb1b4416d04597f98b8dfd78e8e245afa237d5590749"
+  }
+}
