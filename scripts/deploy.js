@@ -1,5 +1,6 @@
 const { ethers } = require("hardhat");
-const data = require("./data.json");
+const roles = require("./roles.json");
+const ids = require("./ids.json");
 
 async function main() {
   /* Contracts loading */
@@ -23,18 +24,18 @@ async function main() {
   /* Contracts setup*/
   console.log("\nContracts setup...");
   console.log("  staking contract setup");
-  await tokensContract.grantRole(data.mint.doubloons, stakingContract.address);
+  await tokensContract.grantRole(roles.mint.doubloons, stakingContract.address);
   console.log("    granted doubloons mint role");
   await stakingContract.createStakingPool(
-    data.ids.doubloons,
-    data.ids.doubloons,
+    ids.doubloons,
+    ids.doubloons,
     ethers.BigNumber.from("2000000000000000000"),
     0
   );
   console.log("    created doubloons staking pool");
   await stakingContract.createStakingPool(
-    data.ids.stkAsteroids,
-    data.ids.doubloons,
+    ids.stkAsteroids,
+    ids.doubloons,
     ethers.BigNumber.from("2000000000000000000"),
     0
   );
@@ -43,12 +44,12 @@ async function main() {
   console.log("  asteroids split contract setup");
   await tokensContract.grantMultiRole(
     [
-      data.mint.asteroids,
-      data.mint.veAsteroids,
-      data.mint.stkAsteroids,
-      data.burn.asteroids,
-      data.burn.veAsteroids,
-      data.burn.stkAsteroids,
+      roles.mint.asteroids,
+      roles.mint.veAsteroids,
+      roles.mint.stkAsteroids,
+      roles.burn.asteroids,
+      roles.burn.veAsteroids,
+      roles.burn.stkAsteroids,
     ],
     [
       splitContract.address,

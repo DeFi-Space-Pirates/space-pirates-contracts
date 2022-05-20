@@ -10,11 +10,5 @@
     "asteroids": "0x04e7dbb09964207f3e636c44a6382d7c4039da67c4e3871c9f6449223932c3ef",
     "veAsteroids": "0x51c76052d392ddec02e013aedf9e0a13cbd1ecb9beb01fefb2c6d2daca83a094",
     "stkAsteroids": "0x5625c8b30c2fd31c25c3fb1b4416d04597f98b8dfd78e8e245afa237d5590749"
-  },
-  "ids": {
-    "doubloons": 1,
-    "asteroids": 2,
-    "veAsteroids": 3,
-    "stkAsteroids": 4
   }
 }
