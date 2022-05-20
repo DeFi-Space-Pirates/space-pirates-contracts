@@ -5,10 +5,10 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./ERC1155Custom.sol";
 
 contract SpacePiratesTokens is ERC1155Custom, AccessControl {
-    uint256 public constant DOUBLOONS = 0;
-    uint256 public constant ASTEROIDS = 1;
-    uint256 public constant VE_ASTEROIDS = 2;
-    uint256 public constant STK_ASTEROIDS = 3;
+    uint256 public constant DOUBLOONS = 1;
+    uint256 public constant ASTEROIDS = 2;
+    uint256 public constant VE_ASTEROIDS = 3;
+    uint256 public constant STK_ASTEROIDS = 4;
 
     // Minting role = keccak256(abi.encodePacked("MINT_ROLE_FOR_ID",id));
     // Burning role = keccak256(abi.encodePacked("BURN_ROLE_FOR_ID",id));
