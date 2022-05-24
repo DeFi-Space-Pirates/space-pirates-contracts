@@ -1,7 +1,5 @@
 # Project Roadmap (work in progress)
 
-<h6>Disclaimer : This project is born to give me (and anyone who wants to contribute to the project) the possibility to learn Solidity and Hardhat</h6>
-
 ![Space_Pirates_Multiverse](https://user-images.githubusercontent.com/79539455/168427909-10ffca5b-da41-4d8b-92e4-230e1f8afa02.png)
 
 ## Functionalities

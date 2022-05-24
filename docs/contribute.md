@@ -1,17 +1,4 @@
-# Contributing
-
-## Getting Started with Hardhat
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat node
-npx hardhat test
-npx hardhat help
-```
-
-## Contribution guidelines
+# Contribution guidelines
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -22,15 +9,17 @@ Contributions are what make the open source community such an amazing place to l
 
 3. Install packages with `yarn install` or `npm install`
 
-4. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+4. Create a `.env` file with the same format of [.env.example](./../.env.example) and add the required keys.
 
-5. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+5. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 
-6. Push to the Branch (`git push origin feature/AmazingFeature`)
+6. Commit your Changes (`git commit -m 'feat: AmazingFeature'`)
 
-7. Open a Pull Request
+7. Push to the Branch (`git push origin feature/AmazingFeature`)
 
-[Conventional Commits name](https://www.conventionalcommits.org/en/v1.0.0/)
+8. Open a Pull Request
+
+This repository uses the [Conventional Commits format](https://www.conventionalcommits.org/en/v1.0.0/):
 
 - **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
 - **ci**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
@@ -42,4 +31,4 @@ Contributions are what make the open source community such an amazing place to l
 - **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 - **test**: Adding missing tests or correcting existing tests
 
-[Solidity Style Guide](https://docs.soliditylang.org/en/v0.8.11/style-guide.html)
+Current development status can be consulted in the [Github Project section](https://github.com/DeFi-Space-Pirates/DeFi-Space-Pirates/projects)
