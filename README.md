@@ -162,3 +162,10 @@ Contributions are what make the open source community such an amazing place to l
 **Laks-Dcrypto** - [Github](https://github.com/Laks-Dcrypto)
 
 **Support The Team ❤️ :** 0x1C17264918162b0BA7dF7b607B4D9509B2D07159
+
+## Contact 
+
+**Discord Channel:**  https://discord.gg/jfGUh6w6
+
+**Twitter** : https://twitter.com/df_spacepirates 
+
