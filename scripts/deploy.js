@@ -11,15 +11,22 @@ async function main() {
   const SplitContract = await ethers.getContractFactory(
     "AsteroidsSplitContract"
   );
+  const FaucetContract = await ethers.getContractFactory("SpacePiratesFaucet");
 
   /* Contracts deploy */
   console.log("\nDeploying contracts...");
+
   const tokensContract = await TokensContract.deploy();
   console.log("Space Pirates Tokens deployed to:", tokensContract.address);
+
   const stakingContract = await StakingContract.deploy(tokensContract.address);
   console.log("Space Pirates Staking deployed to:", stakingContract.address);
+
   const splitContract = await SplitContract.deploy(tokensContract.address);
   console.log("Asteroids Split Contract deployed to:", splitContract.address);
+
+  const faucetContract = await FaucetContract.deploy(tokensContract.address);
+  console.log("Faucet Contract deployed to:", faucetContract.address);
 
   /* Contracts setup*/
   console.log("\nContracts setup...");
@@ -61,6 +68,13 @@ async function main() {
     ]
   );
   console.log("    granted mint & burn role to the split contract");
+
+  console.log("  faucet contract setup");
+  await tokensContract.grantMultiRole(
+    [roles.mint.asteroids, roles.mint.doubloons],
+    [faucetContract.address, faucetContract.address]
+  );
+  console.log("    granted mint role to the faucet contract");
 }
 
 main()
