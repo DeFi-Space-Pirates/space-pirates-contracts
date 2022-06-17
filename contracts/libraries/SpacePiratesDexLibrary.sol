@@ -28,7 +28,7 @@ library SpacePiratesDexLibrary {
                 uint256(
                     keccak256(
                         abi.encodePacked(
-                            hex"ff",
+                            hex"ff", // 41 for TVM
                             factory,
                             keccak256(abi.encodePacked(token0, token1)),
                             hex"85a06a79c91ae0a0ee8036d7aefc66e537977f1cdd17d236b23ad187cdc93fc9" // init code hash
