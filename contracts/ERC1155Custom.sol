@@ -30,6 +30,9 @@ contract ERC1155Custom is
     // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
     mapping(uint256 => string) private _tokenURIs;
 
+    // Mapping from token ID to transferable
+    mapping(uint256 => bool) private _transferBlock;
+
     /**
      * @dev See {IERC165-supportsInterface}.
      */
@@ -58,6 +61,13 @@ contract ERC1155Custom is
      */
     function exists(uint256 id) public view virtual returns (bool) {
         return totalSupply(id) > 0;
+    }
+
+    /**
+     * @dev Indicates whether a token can be transfered
+     */
+    function canBeTransferred(uint256 id) public view virtual returns (bool) {
+        return !_transferBlock[id];
     }
 
     /**
@@ -314,6 +324,13 @@ contract ERC1155Custom is
     }
 
     /**
+     * @dev Set whether a token can be transfered
+     */
+    function _setTrasferBlock(uint256 id, bool blocked) internal virtual {
+        _transferBlock[id] = blocked;
+    }
+
+    /**
      * @dev Creates `amount` tokens of token type `id`, and assigns them to `to`.
      *
      * Emits a {TransferSingle} event.
@@ -513,6 +530,15 @@ contract ERC1155Custom is
         bytes memory data
     ) internal virtual {
         require(!paused(), "ERC1155Pausable: token transfer while paused");
+
+        if (from != address(0) && to != address(0)) {
+            for (uint256 i = 0; i < ids.length; ++i) {
+                require(
+                    !_transferBlock[ids[i]],
+                    "ERC1155: token not transferable"
+                );
+            }
+        }
 
         if (from == address(0)) {
             for (uint256 i = 0; i < ids.length; ++i) {

@@ -514,6 +514,66 @@ describe("SpacePiratesTokens: Tokens", () => {
           ).to.be.revertedWith("ERC1155: ids and amounts length mismatch");
         });
       });
+      describe("TransferBlock:", async () => {
+        it("Should block the token transfer", async () => {
+          const id = getRandomInteger();
+          const amount = 100;
+          const mintRole = helperRoleContract.getMintRoleBytes(id);
+          await tokensContract.grantRole(mintRole, ownerAddress);
+
+          await tokensContract.mint(ownerAddress, amount * 10, id);
+
+          expect(await tokensContract.canBeTransferred(id)).to.be.true;
+          await expect(tokensContract.lockTokenTransfer(id)).to.be.reverted;
+
+          const role = tokensContract.TRANSFERABLE_SETTER_ROLE();
+          await tokensContract.grantRole(role, ownerAddress);
+
+          await tokensContract.lockTokenTransfer(id);
+          expect(await tokensContract.canBeTransferred(id)).to.be.false;
+
+          await tokensContract.unLockTokenTransfer(id);
+          expect(await tokensContract.canBeTransferred(id)).to.be.true;
+        });
+        it("Should transfer the token if not blocked", async () => {
+          const id = getRandomInteger();
+          const amount = 100;
+
+          const role = helperRoleContract.getMintRoleBytes(id);
+          await tokensContract.grantRole(role, ownerAddress);
+
+          await tokensContract.mint(ownerAddress, amount * 10, id);
+          await tokensContract.safeTransferFrom(
+            ownerAddress,
+            accounts[1].getAddress(),
+            id,
+            amount,
+            "0x00"
+          );
+        });
+        it("Should revert on transfer if the token is blocked", async () => {
+          const id = getRandomInteger();
+          const amount = 100;
+
+          const mintRole = helperRoleContract.getMintRoleBytes(id);
+          await tokensContract.grantRole(mintRole, ownerAddress);
+
+          const role = tokensContract.TRANSFERABLE_SETTER_ROLE();
+          await tokensContract.grantRole(role, ownerAddress);
+          await tokensContract.lockTokenTransfer(id);
+
+          await tokensContract.mint(ownerAddress, amount * 10, id);
+          await expect(
+            tokensContract.safeTransferFrom(
+              ownerAddress,
+              accounts[1].getAddress(),
+              id,
+              amount,
+              "0x00"
+            )
+          ).to.be.revertedWith("ERC1155: token not transferable");
+        });
+      });
     });
   });
 });
