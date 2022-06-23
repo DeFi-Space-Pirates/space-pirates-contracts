@@ -1,9 +1,10 @@
 const { ethers } = require("hardhat");
-const roles = require("./roles.json");
-const ids = require("./ids.json");
+
 const stakingContractSetup = require("./setupScripts/stakingContract");
 const splitContractSetup = require("./setupScripts/splitContract");
 const faucetContractSetup = require("./setupScripts/faucetContract");
+const factoryContractSetup = require("./setupScripts/factoryContract");
+const masterChefContractSetup = require("./setupScripts/masterChefContract");
 
 async function main() {
   /* CONTRACT PARAMETERS */
@@ -75,6 +76,12 @@ async function main() {
   await stakingContractSetup(tokensContract, stakingContract);
   await splitContractSetup(tokensContract, splitContract);
   await faucetContractSetup(tokensContract, faucetContract);
+  await factoryContractSetup(factoryContract);
+  await masterChefContractSetup(
+    tokensContract,
+    masterChefContract,
+    factoryContract
+  );
 }
 
 main()
