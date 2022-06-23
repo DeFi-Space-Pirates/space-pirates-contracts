@@ -1,69 +1,80 @@
 const { ethers } = require("hardhat");
+const roles = require("./roles.json");
+const ids = require("./ids.json");
+const stakingContractSetup = require("./setupScripts/stakingContract");
+const splitContractSetup = require("./setupScripts/splitContract");
+const faucetContractSetup = require("./setupScripts/faucetContract");
 
 async function main() {
+  /* CONTRACT PARAMETERS */
   const addresses = await ethers.getSigners();
-  const owner = await addresses[0].getAddress();
+  const devAddress = await addresses[0].getAddress();
+  const feeAddress = "0x0000000000000000000000000000000000000000";
+  const doubloonsPerBlock = 100;
+  const startBlock = 0;
 
-  const SpacePiratesTokens = await ethers.getContractFactory(
-    "SpacePiratesTokens"
-  );
-  const SpacePiratesStaking = await ethers.getContractFactory(
+  /* CONTRACTS CREATION */
+  const TokensContract = await ethers.getContractFactory("SpacePiratesTokens");
+
+  const StakingContract = await ethers.getContractFactory(
     "SpacePiratesStaking"
   );
-  const SpacePiratesFactory = await ethers.getContractFactory(
+
+  const SplitContract = await ethers.getContractFactory(
+    "AsteroidsSplitContract"
+  );
+
+  const FaucetContract = await ethers.getContractFactory("SpacePiratesFaucet");
+
+  const FactoryContract = await ethers.getContractFactory(
     "SpacePiratesFactory"
   );
-  const SpacePiratesRouter = await ethers.getContractFactory(
-    "SpacePiratesRouter"
-  );
-  const SpacePiratesMasterChef = await ethers.getContractFactory(
+
+  const RouterContract = await ethers.getContractFactory("SpacePiratesRouter");
+
+  const MasterChefContract = await ethers.getContractFactory(
     "SpacePiratesMasterChef"
   );
 
-  console.log("\nDeploying contracts...");
+  /* CONTRACTS DEPLOY */
+  console.log("\nDeploying contracts...\n");
 
-  const spacePiratesTokens = await SpacePiratesTokens.deploy();
-  console.log(
-    "\nSpace Pirates Tokens deployed to:",
-    spacePiratesTokens.address
-  );
+  const tokensContract = await TokensContract.deploy();
+  console.log("Space Pirates Tokens deployed to:", tokensContract.address);
 
-  const spacePiratesStaking = await SpacePiratesStaking.deploy(
-    spacePiratesTokens.address
-  );
-  console.log(
-    "\nSpace Pirates Staking deployed to:",
-    spacePiratesStaking.address
-  );
+  const stakingContract = await StakingContract.deploy(tokensContract.address);
+  console.log("Space Pirates Staking deployed to:", stakingContract.address);
 
-  const spacePiratesFactory = await SpacePiratesFactory.deploy(
-    spacePiratesTokens.address
-  );
-  console.log(
-    "\nSpace Pirates Factory deployed to:",
-    spacePiratesFactory.address
-  );
+  const splitContract = await SplitContract.deploy(tokensContract.address);
+  console.log("Asteroids Split Contract deployed to:", splitContract.address);
 
-  const spacePiratesRouter = await SpacePiratesRouter.deploy(
-    spacePiratesFactory.address,
-    spacePiratesTokens.address
-  );
-  console.log(
-    "\nSpace Pirates Router deployed to:",
-    spacePiratesRouter.address
-  );
+  const faucetContract = await FaucetContract.deploy(tokensContract.address);
+  console.log("Faucet Contract deployed to:", faucetContract.address);
 
-  const spacePiratesMasterChef = await SpacePiratesMasterChef.deploy(
-    spacePiratesTokens.address,
-    owner,
-    "0x0000000000000000000000000000000000000000",
-    100,
-    0
+  const factoryContract = await FactoryContract.deploy(tokensContract.address);
+  console.log("Factory Contract deployed to:", factoryContract.address);
+
+  const routerContract = await RouterContract.deploy(
+    factoryContract.address,
+    tokensContract.address
   );
-  console.log(
-    "\nSpace Pirates MasterChef deployed to:",
-    spacePiratesMasterChef.address
+  console.log("Router Contract deployed to:", routerContract.address);
+
+  const masterChefContract = await MasterChefContract.deploy(
+    tokensContract.address,
+    devAddress,
+    feeAddress,
+    doubloonsPerBlock,
+    startBlock
   );
+  console.log("MasterChef Contract deployed to:", masterChefContract.address);
+
+  /* CONTRACTS SETUP */
+  console.log("\nContracts setup...\n");
+
+  await stakingContractSetup(tokensContract, stakingContract);
+  await splitContractSetup(tokensContract, splitContract);
+  await faucetContractSetup(tokensContract, faucetContract);
 }
 
 main()
