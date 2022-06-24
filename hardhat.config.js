@@ -3,6 +3,7 @@ require("dotenv").config();
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
+require("hardhat-interface-generator");
 
 module.exports = {
   solidity: {
