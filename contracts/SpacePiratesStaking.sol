@@ -69,7 +69,7 @@ contract SpacePiratesStaking is ERC1155Holder, Ownable {
     event SetFeeAddress(address indexed user, address indexed newAddress);
 
     constructor(address tokens) {
-        parentToken = SpacePiratesTokens(payable(tokens));
+        parentToken = SpacePiratesTokens(tokens);
     }
 
     function poolAmount() external view returns (uint256) {

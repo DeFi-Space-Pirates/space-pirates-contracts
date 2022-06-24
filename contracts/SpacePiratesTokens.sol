@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./ERC1155Custom.sol";
 
 contract SpacePiratesTokens is ERC1155Custom, AccessControl {
-    uint256 public constant SPACE_ETH = 0; // Wrapped eth for the dex
     uint256 public constant DOUBLOONS = 1;
     uint256 public constant ASTEROIDS = 2;
     uint256 public constant VE_ASTEROIDS = 3;
@@ -54,7 +53,6 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         uint256 amount,
         uint256 id
     ) public onlyRole(keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id))) {
-        require(id != 0, "cant't mind SpaceEth");
         _mint(to, id, amount, "");
     }
 
@@ -63,7 +61,6 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         uint256 amount,
         uint256 id
     ) public onlyRole(keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", id))) {
-        require(id != 0, "cant't burn SpaceEth");
         require(
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
             "ERC1155: caller is not owner nor approved"
@@ -125,19 +122,5 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             _checkRole(getRoleAdmin(roles[i]), msg.sender);
             _revokeRole(roles[i], accounts[i]);
         }
-    }
-
-    receive() external payable {
-        ethDeposit();
-    }
-
-    function ethDeposit() public payable {
-        _mint(msg.sender, 0, msg.value, "");
-    }
-
-    function ethWithdraw(uint256 amount) public {
-        _burn(msg.sender, 0, amount);
-        (bool success, ) = msg.sender.call{value: amount}("");
-        require(success, "withdrawal failed");
     }
 }
