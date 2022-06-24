@@ -6,11 +6,13 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "./ERC1155Batch.sol";
 import "../interfaces/ISpacePiratesFactory.sol";
 import "../interfaces/ISpacePiratesPair.sol";
-import "../interfaces/ISpacePiratesTokens.sol";
+import "../interfaces/ISpacePiratesWrapper.sol";
 import "../libraries/SpacePiratesDexLibrary.sol";
 
 contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
-    uint256 public constant SPACE_ETH_ID = 0; // to be equal to 0, Space Pirates wrapper eth
+    uint256 public constant SPACE_ETH_ID = 100;
+
+    ISpacePiratesWrapper public immutable wrapper;
     address public immutable factory;
 
     modifier ensure(uint256 deadline) {
@@ -18,13 +20,18 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
         _;
     }
 
-    constructor(address _factory, address _tokenContract) {
+    constructor(
+        address _factory,
+        address _tokenContract,
+        ISpacePiratesWrapper _wrapper
+    ) {
         factory = _factory;
+        wrapper = _wrapper;
         _batchInit(_tokenContract);
     }
 
     receive() external payable {
-        assert(msg.sender == address(tokenContract)); // only accept ETH via fallback from the WETH contract
+        assert(msg.sender == address(wrapper)); // only accept ETH via fallback from the wrapper contract
     }
 
     // **** ADD LIQUIDITY ****
@@ -152,16 +159,7 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
             amountToken,
             ""
         );
-        ISpacePiratesTokens(payable(tokenContract)).ethDeposit{
-            value: amountETH
-        }();
-        IERC1155(tokenContract).safeTransferFrom(
-            address(this),
-            pair,
-            SPACE_ETH_ID,
-            amountETH,
-            ""
-        );
+        wrapper.ethDepositTo{value: amountETH}(pair);
         liquidity = ISpacePiratesPair(pair).mint(to);
         // refund dust eth, if any
         if (msg.value > amountETH) {
@@ -170,6 +168,51 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
             );
             require(success, "SpacePiratesRouter: ETH transfer failed");
         }
+    }
+
+    function addLiquidityERC20(
+        address erc20Contract,
+        uint256 token,
+        uint256 amountTokenDesired,
+        uint256 amountERC20Desired,
+        uint256 amountTokenMin,
+        uint256 amountERC20Min,
+        address to,
+        uint256 deadline
+    )
+        external
+        virtual
+        ensure(deadline)
+        returns (
+            uint256 amountToken,
+            uint256 amountERC20,
+            uint256 liquidityAndId //variable reuse preventing stack too deep compile error
+        )
+    {
+        liquidityAndId = wrapper.erc20ToId(erc20Contract); //variable reuse preventing stack too deep compile error
+        (amountToken, amountERC20) = _addLiquidity(
+            token,
+            liquidityAndId,
+            amountTokenDesired,
+            amountERC20Desired,
+            amountTokenMin,
+            amountERC20Min
+        );
+        address pair = SpacePiratesDexLibrary.pairFor(
+            factory,
+            token,
+            liquidityAndId
+        );
+
+        IERC1155(tokenContract).safeTransferFrom(
+            msg.sender,
+            pair,
+            token,
+            amountToken,
+            ""
+        );
+        wrapper.erc20DepositTo(erc20Contract, amountERC20, pair);
+        liquidityAndId = ISpacePiratesPair(pair).mint(to); //variable reuse preventing stack too deep compile error
     }
 
     // **** REMOVE LIQUIDITY ****
@@ -233,10 +276,41 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
             amountToken,
             ""
         );
-        ISpacePiratesTokens(payable(tokenContract)).ethWithdraw(amountETH);
+        wrapper.ethWithdrawTo(amountETH, to);
+    }
 
-        (bool success, ) = to.call{value: amountETH}("");
-        require(success, "SpacePiratesRouter: ETH transfer failed");
+    function removeLiquidityERC20(
+        address erc20Contract,
+        uint256 token,
+        uint256 liquidity,
+        uint256 amountTokenMin,
+        uint256 amountERC20Min,
+        address to,
+        uint256 deadline
+    )
+        public
+        virtual
+        ensure(deadline)
+        returns (uint256 amountToken, uint256 amountERC20)
+    {
+        uint256 erc20Id = wrapper.erc20ToId(erc20Contract);
+        (amountToken, amountERC20) = removeLiquidity(
+            token,
+            erc20Id,
+            liquidity,
+            amountTokenMin,
+            amountERC20Min,
+            address(this),
+            deadline
+        );
+        IERC1155(tokenContract).safeTransferFrom(
+            address(this),
+            to,
+            token,
+            amountToken,
+            ""
+        );
+        wrapper.erc20WithdrawTo(erc20Contract, amountERC20, msg.sender);
     }
 
     // **** SWAP ****
@@ -331,16 +405,10 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
             amounts[amounts.length - 1] >= amountOutMin,
             "SpacePiratesRouter: INSUFFICIENT_OUTPUT_AMOUNT"
         );
-        ISpacePiratesTokens(payable(tokenContract)).ethDeposit{
-            value: amounts[0]
-        }();
-        IERC1155(tokenContract).safeTransferFrom(
-            address(this),
-            SpacePiratesDexLibrary.pairFor(factory, path[0], path[1]),
-            SPACE_ETH_ID,
-            amounts[0],
-            ""
+        wrapper.ethDepositTo{value: amounts[0]}(
+            SpacePiratesDexLibrary.pairFor(factory, path[0], path[1])
         );
+
         _swap(amounts, path, to);
     }
 
@@ -368,13 +436,8 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
             ""
         );
         _swap(amounts, path, address(this));
-        ISpacePiratesTokens(payable(tokenContract)).ethWithdraw(
-            amounts[amounts.length - 1]
-        );
-        (bool success, ) = to.call{value: amounts[amounts.length - 1]}(
-            new bytes(0)
-        );
-        require(success, "SpacePiratesRouter: ETH transfer failed");
+
+        wrapper.ethWithdrawTo(amounts[amounts.length - 1], to);
     }
 
     function swapExactTokensForETH(
@@ -401,14 +464,8 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
             ""
         );
         _swap(amounts, path, address(this));
-        ISpacePiratesTokens(payable(tokenContract)).ethWithdraw(
-            amounts[amounts.length - 1]
-        );
 
-        (bool success, ) = to.call{value: amounts[amounts.length - 1]}(
-            new bytes(0)
-        );
-        require(success, "SpacePiratesRouter: ETH transfer failed");
+        wrapper.ethWithdrawTo(amounts[amounts.length - 1], to);
     }
 
     function swapETHForExactTokens(
@@ -429,15 +486,128 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
             amounts[0] <= msg.value,
             "SpacePiratesRouter: EXCESSIVE_INPUT_AMOUNT"
         );
-        ISpacePiratesTokens(payable(tokenContract)).ethDeposit{
-            value: amounts[0]
-        }();
+        wrapper.ethDepositTo{value: amounts[0]}(
+            SpacePiratesDexLibrary.pairFor(factory, path[0], path[1])
+        );
+        _swap(amounts, path, to);
+        // refund dust eth, if any
+        if (msg.value > amounts[0]) {
+            (bool success, ) = msg.sender.call{value: msg.value - amounts[0]}(
+                new bytes(0)
+            );
+            require(success, "SpacePiratesRouter: ETH transfer failed");
+        }
+    }
+
+    function swapExactERC20ForTokens(
+        address erc20Contract,
+        uint256 amountIn,
+        uint256 amountOutMin,
+        uint256[] calldata path,
+        address to,
+        uint256 deadline
+    ) external virtual ensure(deadline) returns (uint256[] memory amounts) {
+        uint256 erc20Id = wrapper.erc20ToId(erc20Contract);
+        require(path[0] == erc20Id, "SpacePiratesRouter: INVALID_PATH");
+        amounts = SpacePiratesDexLibrary.getAmountsOut(factory, amountIn, path);
+        require(
+            amounts[amounts.length - 1] >= amountOutMin,
+            "SpacePiratesRouter: INSUFFICIENT_OUTPUT_AMOUNT"
+        );
+        wrapper.erc20DepositTo(
+            erc20Contract,
+            amounts[0],
+            SpacePiratesDexLibrary.pairFor(factory, path[0], path[1])
+        );
+
+        _swap(amounts, path, to);
+    }
+
+    function swapTokensForExactERC20(
+        address erc20Contract,
+        uint256 amountOut,
+        uint256 amountInMax,
+        uint256[] calldata path,
+        address to,
+        uint256 deadline
+    ) external virtual ensure(deadline) returns (uint256[] memory amounts) {
+        uint256 erc20Id = wrapper.erc20ToId(erc20Contract);
+        require(
+            path[path.length - 1] == erc20Id,
+            "SpacePiratesRouter: INVALID_PATH"
+        );
+        amounts = SpacePiratesDexLibrary.getAmountsIn(factory, amountOut, path);
+        require(
+            amounts[0] <= amountInMax,
+            "SpacePiratesRouter: EXCESSIVE_INPUT_AMOUNT"
+        );
         IERC1155(tokenContract).safeTransferFrom(
-            address(this),
+            msg.sender,
             SpacePiratesDexLibrary.pairFor(factory, path[0], path[1]),
-            SPACE_ETH_ID,
+            path[0],
             amounts[0],
             ""
+        );
+        _swap(amounts, path, address(this));
+
+        wrapper.erc20WithdrawTo(erc20Contract, amounts[amounts.length - 1], to);
+    }
+
+    function swapExactTokensForERC20(
+        address erc20Contract,
+        uint256 amountIn,
+        uint256 amountOutMin,
+        uint256[] calldata path,
+        address to,
+        uint256 deadline
+    ) external virtual ensure(deadline) returns (uint256[] memory amounts) {
+        uint256 erc20Id = wrapper.erc20ToId(erc20Contract);
+        require(
+            path[path.length - 1] == erc20Id,
+            "SpacePiratesRouter: INVALID_PATH"
+        );
+        amounts = SpacePiratesDexLibrary.getAmountsOut(factory, amountIn, path);
+        require(
+            amounts[amounts.length - 1] >= amountOutMin,
+            "SpacePiratesRouter: INSUFFICIENT_OUTPUT_AMOUNT"
+        );
+        IERC1155(tokenContract).safeTransferFrom(
+            msg.sender,
+            SpacePiratesDexLibrary.pairFor(factory, path[0], path[1]),
+            path[0],
+            amounts[0],
+            ""
+        );
+        _swap(amounts, path, address(this));
+
+        wrapper.erc20WithdrawTo(erc20Contract, amounts[amounts.length - 1], to);
+    }
+
+    function swapERC20ForExactTokens(
+        address erc20Contract,
+        uint256 amountIn,
+        uint256 amountOut,
+        uint256[] calldata path,
+        address to,
+        uint256 deadline
+    )
+        external
+        payable
+        virtual
+        ensure(deadline)
+        returns (uint256[] memory amounts)
+    {
+        uint256 erc20Id = wrapper.erc20ToId(erc20Contract);
+        require(path[0] == erc20Id, "SpacePiratesRouter: INVALID_PATH");
+        amounts = SpacePiratesDexLibrary.getAmountsIn(factory, amountOut, path);
+        require(
+            amounts[0] <= amountIn,
+            "SpacePiratesRouter: EXCESSIVE_INPUT_AMOUNT"
+        );
+        wrapper.erc20DepositTo(
+            erc20Contract,
+            amounts[0],
+            SpacePiratesDexLibrary.pairFor(factory, path[0], path[1])
         );
         _swap(amounts, path, to);
         // refund dust eth, if any
