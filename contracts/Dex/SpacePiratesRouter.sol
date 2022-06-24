@@ -590,13 +590,7 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
         uint256[] calldata path,
         address to,
         uint256 deadline
-    )
-        external
-        payable
-        virtual
-        ensure(deadline)
-        returns (uint256[] memory amounts)
-    {
+    ) external virtual ensure(deadline) returns (uint256[] memory amounts) {
         uint256 erc20Id = wrapper.erc20ToId(erc20Contract);
         require(path[0] == erc20Id, "SpacePiratesRouter: INVALID_PATH");
         amounts = SpacePiratesDexLibrary.getAmountsIn(factory, amountOut, path);
@@ -610,13 +604,6 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
             SpacePiratesDexLibrary.pairFor(factory, path[0], path[1])
         );
         _swap(amounts, path, to);
-        // refund dust eth, if any
-        if (msg.value > amounts[0]) {
-            (bool success, ) = msg.sender.call{value: msg.value - amounts[0]}(
-                new bytes(0)
-            );
-            require(success, "SpacePiratesRouter: ETH transfer failed");
-        }
     }
 
     // **** LIBRARY FUNCTIONS ****
