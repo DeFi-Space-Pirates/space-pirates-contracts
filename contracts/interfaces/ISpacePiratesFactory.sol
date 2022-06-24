@@ -2,27 +2,20 @@
 pragma solidity ^0.8.0;
 
 interface ISpacePiratesFactory {
-    event PairCreated(
-        uint256 indexed token0,
-        uint256 indexed token1,
-        address pair,
-        uint256
-    );
+    event PairCreated(uint256 indexed token0, uint256 indexed token1, address pair, uint256);
 
-    function feeTo() external view returns (address);
-
-    function getPair(uint256 tokenA, uint256 tokenB)
-        external
-        view
-        returns (address pair);
-
-    function allPairs(uint256) external view returns (address pair);
-
+    function tokenContract() external view returns (address);
+    
+    function getPair(uint256, uint256) external view returns (address);
+    function allPairs(uint256) external view returns (address);
     function allPairsLength() external view returns (uint256);
 
-    function createPair(uint256 tokenA, uint256 tokenB)
-        external
-        returns (address pair);
+    function createPair(uint128 tokenA, uint128 tokenB) external returns (address pair);
+    
+    function feeTo() external view returns (address);
+    function setFeeTo(address _feeTo) external;
 
-    function setFeeTo(address) external;
+    function owner() external view returns (address);
+    function transferOwnership(address newOwner) external;
+    function renounceOwnership() external;
 }
