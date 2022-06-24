@@ -1,20 +1,44 @@
 const { ethers } = require("hardhat");
-const roles = require("./roles.json");
-const ids = require("./ids.json");
+
+const stakingContractSetup = require("./setupScripts/stakingContract");
+const splitContractSetup = require("./setupScripts/splitContract");
+const faucetContractSetup = require("./setupScripts/faucetContract");
+const factoryContractSetup = require("./setupScripts/factoryContract");
+const masterChefContractSetup = require("./setupScripts/masterChefContract");
 
 async function main() {
-  /* Contracts loading */
+  /* CONTRACT PARAMETERS */
+  const addresses = await ethers.getSigners();
+  const devAddress = await addresses[0].getAddress();
+  const feeAddress = "0x0000000000000000000000000000000000000000";
+  const doubloonsPerBlock = 100;
+  const startBlock = 0;
+
+  /* CONTRACTS CREATION */
   const TokensContract = await ethers.getContractFactory("SpacePiratesTokens");
+
   const StakingContract = await ethers.getContractFactory(
     "SpacePiratesStaking"
   );
+
   const SplitContract = await ethers.getContractFactory(
     "AsteroidsSplitContract"
   );
+
   const FaucetContract = await ethers.getContractFactory("SpacePiratesFaucet");
 
-  /* Contracts deploy */
-  console.log("\nDeploying contracts...");
+  const FactoryContract = await ethers.getContractFactory(
+    "SpacePiratesFactory"
+  );
+
+  const RouterContract = await ethers.getContractFactory("SpacePiratesRouter");
+
+  const MasterChefContract = await ethers.getContractFactory(
+    "SpacePiratesMasterChef"
+  );
+
+  /* CONTRACTS DEPLOY */
+  console.log("\nDeploying contracts...\n");
 
   const tokensContract = await TokensContract.deploy();
   console.log("Space Pirates Tokens deployed to:", tokensContract.address);
@@ -28,53 +52,36 @@ async function main() {
   const faucetContract = await FaucetContract.deploy(tokensContract.address);
   console.log("Faucet Contract deployed to:", faucetContract.address);
 
-  /* Contracts setup*/
-  console.log("\nContracts setup...");
-  console.log("  staking contract setup");
-  await tokensContract.grantRole(roles.mint.doubloons, stakingContract.address);
-  console.log("    granted doubloons mint role");
-  await stakingContract.createStakingPool(
-    ids.doubloons,
-    ids.doubloons,
-    ethers.BigNumber.from("2000000000000000000"),
-    0
-  );
-  console.log("    created doubloons staking pool");
-  await stakingContract.createStakingPool(
-    ids.stkAsteroids,
-    ids.doubloons,
-    ethers.BigNumber.from("2000000000000000000"),
-    0
-  );
-  console.log("    created stk-asteroids staking pool");
+  const factoryContract = await FactoryContract.deploy(tokensContract.address);
+  console.log("Factory Contract deployed to:", factoryContract.address);
 
-  console.log("  asteroids split contract setup");
-  await tokensContract.grantMultiRole(
-    [
-      roles.mint.asteroids,
-      roles.mint.veAsteroids,
-      roles.mint.stkAsteroids,
-      roles.burn.asteroids,
-      roles.burn.veAsteroids,
-      roles.burn.stkAsteroids,
-    ],
-    [
-      splitContract.address,
-      splitContract.address,
-      splitContract.address,
-      splitContract.address,
-      splitContract.address,
-      splitContract.address,
-    ]
+  const routerContract = await RouterContract.deploy(
+    factoryContract.address,
+    tokensContract.address
   );
-  console.log("    granted mint & burn role to the split contract");
+  console.log("Router Contract deployed to:", routerContract.address);
 
-  console.log("  faucet contract setup");
-  await tokensContract.grantMultiRole(
-    [roles.mint.asteroids, roles.mint.doubloons],
-    [faucetContract.address, faucetContract.address]
+  const masterChefContract = await MasterChefContract.deploy(
+    tokensContract.address,
+    devAddress,
+    feeAddress,
+    doubloonsPerBlock,
+    startBlock
   );
-  console.log("    granted mint role to the faucet contract");
+  console.log("MasterChef Contract deployed to:", masterChefContract.address);
+
+  /* CONTRACTS SETUP */
+  console.log("\nContracts setup...\n");
+
+  await stakingContractSetup(tokensContract, stakingContract);
+  await splitContractSetup(tokensContract, splitContract);
+  await faucetContractSetup(tokensContract, faucetContract);
+  await factoryContractSetup(factoryContract);
+  await masterChefContractSetup(
+    tokensContract,
+    masterChefContract,
+    factoryContract
+  );
 }
 
 main()

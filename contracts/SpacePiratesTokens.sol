@@ -84,34 +84,6 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         _burn(from, id, amount);
     }
 
-    function grantMultiRole(
-        bytes32[] calldata roles,
-        address[] calldata accounts
-    ) public {
-        require(
-            roles.length == accounts.length,
-            "AccessControl: array of different length"
-        );
-        for (uint256 i; i < roles.length; ++i) {
-            _checkRole(getRoleAdmin(roles[i]), msg.sender);
-            _grantRole(roles[i], accounts[i]);
-        }
-    }
-
-    function revokeMultiRole(
-        bytes32[] calldata roles,
-        address[] calldata accounts
-    ) public {
-        require(
-            roles.length == accounts.length,
-            "AccessControl: array of different length"
-        );
-        for (uint256 i; i < roles.length; ++i) {
-            _checkRole(getRoleAdmin(roles[i]), msg.sender);
-            _revokeRole(roles[i], accounts[i]);
-        }
-    }
-
     function mintBatch(
         address to,
         uint256[] memory ids,
@@ -138,5 +110,33 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             );
         }
         _burnBatch(from, ids, amounts);
+    }
+
+    function grantMultiRole(
+        bytes32[] calldata roles,
+        address[] calldata accounts
+    ) public {
+        require(
+            roles.length == accounts.length,
+            "AccessControl: array of different length"
+        );
+        for (uint256 i; i < roles.length; ++i) {
+            _checkRole(getRoleAdmin(roles[i]), msg.sender);
+            _grantRole(roles[i], accounts[i]);
+        }
+    }
+
+    function revokeMultiRole(
+        bytes32[] calldata roles,
+        address[] calldata accounts
+    ) public {
+        require(
+            roles.length == accounts.length,
+            "AccessControl: array of different length"
+        );
+        for (uint256 i; i < roles.length; ++i) {
+            _checkRole(getRoleAdmin(roles[i]), msg.sender);
+            _revokeRole(roles[i], accounts[i]);
+        }
     }
 }
