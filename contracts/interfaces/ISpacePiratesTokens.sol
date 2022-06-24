@@ -28,6 +28,18 @@ interface ISpacePiratesTokens is IERC1155 {
         uint256 id
     ) external;
 
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) external;
+
+    function burnBatch(
+        address from,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) external;
+
     function grantMultiRole(
         bytes32[] calldata roles,
         address[] calldata accounts
@@ -37,10 +49,4 @@ interface ISpacePiratesTokens is IERC1155 {
         bytes32[] calldata roles,
         address[] calldata accounts
     ) external;
-
-    receive() external payable;
-
-    function ethDeposit() external payable;
-
-    function ethWithdraw(uint256 amount) external;
 }
