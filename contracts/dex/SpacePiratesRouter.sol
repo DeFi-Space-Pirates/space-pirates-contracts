@@ -320,7 +320,7 @@ contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
         uint256[] memory path,
         address _to
     ) internal virtual {
-        for (uint256 i; i < path.length - 1; i++) {
+        for (uint256 i = 0; i < path.length - 1; i++) {
             (uint256 input, uint256 output) = (path[i], path[i + 1]);
             (uint256 token0, ) = SpacePiratesDexLibrary.sortTokens(
                 input,

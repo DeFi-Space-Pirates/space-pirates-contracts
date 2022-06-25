@@ -89,7 +89,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         uint256[] memory ids,
         uint256[] memory amounts
     ) public {
-        for (uint256 i; i < ids.length; ++i) {
+        for (uint256 i = 0; i < ids.length; ++i) {
             _checkRole(
                 keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", ids[i])),
                 msg.sender
@@ -103,7 +103,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         uint256[] memory ids,
         uint256[] memory amounts
     ) public {
-        for (uint256 i; i < ids.length; ++i) {
+        for (uint256 i = 0; i < ids.length; ++i) {
             _checkRole(
                 keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", ids[i])),
                 msg.sender
@@ -120,7 +120,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             roles.length == accounts.length,
             "AccessControl: array of different length"
         );
-        for (uint256 i; i < roles.length; ++i) {
+        for (uint256 i = 0; i < roles.length; ++i) {
             _checkRole(getRoleAdmin(roles[i]), msg.sender);
             _grantRole(roles[i], accounts[i]);
         }
@@ -134,7 +134,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             roles.length == accounts.length,
             "AccessControl: array of different length"
         );
-        for (uint256 i; i < roles.length; ++i) {
+        for (uint256 i = 0; i < roles.length; ++i) {
             _checkRole(getRoleAdmin(roles[i]), msg.sender);
             _revokeRole(roles[i], accounts[i]);
         }

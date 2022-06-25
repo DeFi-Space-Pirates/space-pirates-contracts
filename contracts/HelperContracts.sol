@@ -18,7 +18,7 @@ contract HelperRoleContract {
         returns (bytes32[] memory)
     {
         bytes32[] memory roles = new bytes32[](ids.length);
-        for (uint256 i; i < ids.length; ++i) {
+        for (uint256 i = 0; i < ids.length; ++i) {
             roles[i] = getMintRoleBytes(ids[i]);
         }
         return roles;
@@ -30,7 +30,7 @@ contract HelperRoleContract {
         returns (bytes32[] memory)
     {
         bytes32[] memory roles = new bytes32[](ids.length);
-        for (uint256 i; i < ids.length; ++i) {
+        for (uint256 i = 0; i < ids.length; ++i) {
             roles[i] = getBurnRoleBytes(ids[i]);
         }
         return roles;
@@ -48,7 +48,7 @@ contract HelperRoleContract {
         );
         uint256 length = to - from + 1;
         bytes32[] memory roles = new bytes32[](length);
-        for (uint256 i; i < length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             roles[i] = getMintRoleBytes(i + from);
         }
         return roles;
@@ -66,7 +66,7 @@ contract HelperRoleContract {
         );
         uint256 length = to - from + 1;
         bytes32[] memory roles = new bytes32[](length);
-        for (uint256 i; i < length; ++i) {
+        for (uint256 i = 0; i < length; ++i) {
             roles[i] = getBurnRoleBytes(i + from);
         }
         return roles;
