@@ -71,7 +71,10 @@ contract HelperRoleContract {
         }
         return roles;
     }
+}
 
+contract HelperDexContract {
+    // get the pair creation code hash
     function getPairInitCodeHash() public pure returns (bytes32) {
         bytes memory bytecode = type(SpacePiratesPair).creationCode;
         return keccak256(bytecode);
