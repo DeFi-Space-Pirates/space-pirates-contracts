@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
@@ -18,6 +19,7 @@ contract ERC1155Custom is
     IERC1155MetadataURI
 {
     using Address for address;
+    using Strings for uint256;
 
     mapping(uint256 => uint256) private _totalSupply;
 
@@ -27,11 +29,18 @@ contract ERC1155Custom is
     // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-    // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
-    mapping(uint256 => string) private _tokenURIs;
-
     // Mapping from token ID to transferable
     mapping(uint256 => bool) private _transferBlock;
+
+    // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
+    string private _uri;
+
+    /**
+     * @dev See {_setURI}.
+     */
+    constructor(string memory uri_) {
+        _setURI(uri_);
+    }
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -80,17 +89,16 @@ contract ERC1155Custom is
      * Clients calling this function must replace the `\{id\}` substring with the
      * actual token type ID.
      */
-    function uri(uint256 tokenId)
+    function uri(uint256 id)
         public
         view
         virtual
         override
         returns (string memory)
     {
-        string memory tokenURI = _tokenURIs[tokenId];
-        require(bytes(tokenURI).length > 0, "ERC1155: missing URI");
+        require(exists(id), "ERC1155: URI query for nonexistent token");
 
-        return tokenURI;
+        return string(abi.encodePacked(_uri, id.toString()));
     }
 
     /**
@@ -319,8 +327,8 @@ contract ERC1155Custom is
      * Because these URIs cannot be meaningfully represented by the {URI} event,
      * this function emits no events.
      */
-    function _setURI(string memory newuri, uint256 id) internal virtual {
-        _tokenURIs[id] = newuri;
+    function _setURI(string memory newuri) internal virtual {
+        _uri = newuri;
     }
 
     /**

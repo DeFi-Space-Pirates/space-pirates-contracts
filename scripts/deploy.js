@@ -40,7 +40,7 @@ async function main() {
   /* CONTRACTS DEPLOY */
   console.log("\nDeploying contracts...\n");
 
-  const tokensContract = await TokensContract.deploy();
+  const tokensContract = await TokensContract.deploy("testuri.com/token/");
   console.log("Space Pirates Tokens deployed to:", tokensContract.address);
 
   const stakingContract = await StakingContract.deploy(tokensContract.address);
@@ -57,7 +57,8 @@ async function main() {
 
   const routerContract = await RouterContract.deploy(
     factoryContract.address,
-    tokensContract.address
+    tokensContract.address,
+    "0x0000000000000000000000000000000000000000" //placeholder util wrapper contract creation
   );
   console.log("Router Contract deployed to:", routerContract.address);
 

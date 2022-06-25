@@ -40,5 +40,5 @@ interface ISpacePiratesTokens is IERC1155 {
     function unLockTokenTransfer(uint256 id) external;
     
     function uri(uint256 tokenId) external view returns(string memory);
-    function setURI(string memory newuri, uint256 id) external;
+    function setURI(string memory newuri) external;
 }

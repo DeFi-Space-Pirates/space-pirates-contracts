@@ -18,7 +18,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
     bytes32 public constant TRANSFERABLE_SETTER_ROLE =
         keccak256("TRANSFERABLE_SETTER_ROLE");
 
-    constructor() {
+    constructor(string memory uri) ERC1155Custom(uri) {
         _mint(msg.sender, DOUBLOONS, 1000000 * (10**18), "");
         _mint(msg.sender, ASTEROIDS, 100 * (10**18), "");
 
@@ -35,11 +35,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         return super.supportsInterface(interfaceId);
     }
 
-    function setURI(string memory newuri, uint256 id)
-        public
-        onlyRole(URI_SETTER_ROLE)
-    {
-        _setURI(newuri, id);
+    function setURI(string memory newuri) public onlyRole(URI_SETTER_ROLE) {
+        _setURI(newuri);
     }
 
     function lockTokenTransfer(uint256 id)
