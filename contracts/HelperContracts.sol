@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: unlicense
 pragma solidity ^0.8.0;
 
+import "./dex/SpacePiratesPair.sol";
+
 contract HelperRoleContract {
     function getMintRoleBytes(uint256 id) public pure returns (bytes32) {
         return (keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id)));
@@ -68,5 +70,13 @@ contract HelperRoleContract {
             roles[i] = getBurnRoleBytes(i + from);
         }
         return roles;
+    }
+}
+
+contract HelperDexContract {
+    // get the pair creation code hash
+    function getPairInitCodeHash() public pure returns (bytes32) {
+        bytes memory bytecode = type(SpacePiratesPair).creationCode;
+        return keccak256(bytecode);
     }
 }

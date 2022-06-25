@@ -10,7 +10,8 @@
     "ethereum-waffle": "^4.0.0",
     "ethers": "^5.6.6",
     "hardhat": "^2.9.5",
-    "hardhat-gas-reporter": "^1.0.8"
+    "hardhat-gas-reporter": "^1.0.8",
+    "hardhat-interface-generator": "^0.0.6"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.6.0"
