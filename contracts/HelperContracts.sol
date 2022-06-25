@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: unlicense
 pragma solidity ^0.8.0;
 
-import "./Dex/SpacePiratesPair.sol";
+import "./dex/SpacePiratesPair.sol";
 
 contract HelperRoleContract {
     function getMintRoleBytes(uint256 id) public pure returns (bytes32) {
