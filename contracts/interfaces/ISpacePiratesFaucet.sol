@@ -2,6 +2,10 @@
 pragma solidity ^0.8.0;
 
 interface ISpacePiratesFaucet {
+    event MintLimitUpdate(uint256 mintLimit);
+    event DoubloonsMint(address indexed to, uint256 value);
+    event AsteroidsMint(address indexed to, uint256 value);
+
     function ASTEROIDS() external view returns (uint256);
     function DOUBLOONS() external view returns (uint256);
 
