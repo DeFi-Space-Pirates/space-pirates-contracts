@@ -23,10 +23,10 @@ interface ISpacePiratesWrapper {
     function ethWithdraw(uint256 _amount) external;
     function ethWithdrawTo(uint256 _amount, address _to) external;
 
-    function addERC20(address _erc20Contract) external view returns(uint256 id);
+    function addERC20(address _erc20Contract) external returns(uint256 id);
 
     function feeBasePoint() external view returns(uint256 fee);
-    function feeAddress() external view returns (address);
-    function setFeeBasePoint(uint256) external view;
+    function feeAddress() external view returns (address _addr);
+    function setFeeBasePoint(uint256 _feeBasePoint) external;
     function setFeeAddress(address _feeAddress) external;
 }
