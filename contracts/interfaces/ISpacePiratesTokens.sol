@@ -4,6 +4,25 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 interface ISpacePiratesTokens is IERC1155 {
+    event Mint(address indexed sender, uint256 id, uint256 amount, address indexed to);
+    event Burn(address indexed sender, uint256 id, uint256 amount);
+    event MintBatch(address indexed sender, uint256[] ids, uint256[] amounts, address indexed to);
+    event BurnBatch(address indexed sender, uint256[] ids, uint256[] amounts);
+
+    event GrantRole(bytes32 indexed role, address account);
+    event RevokeRole(bytes32 indexed role, address account);
+    event GrantMultiRole(bytes32[] indexed roles, address[] accounts);
+    event RevokeMultiRole(bytes32[] indexed roles, address[] accounts);
+    event RenounceRole(bytes32 indexed role, address account);
+
+    event Pause();
+    event Unpause();
+
+    event LockTokenTransfer();
+    event UnLockTokenTransfer();
+    
+    event UriUpdate(string newUri);
+
     function DOUBLOONS() external view returns(uint256);
     function ASTEROIDS() external view returns(uint256);
     function STK_ASTEROIDS() external view returns(uint256);
@@ -40,5 +59,5 @@ interface ISpacePiratesTokens is IERC1155 {
     function unLockTokenTransfer(uint256 id) external;
     
     function uri(uint256 tokenId) external view returns(string memory);
-    function setURI(string memory newuri, uint256 id) external;
+    function setURI(string memory newuri) external;
 }

@@ -18,12 +18,17 @@ contract SpacePiratesFaucet is Ownable {
     mapping(address => uint256) public mintedDoubloons;
     mapping(address => uint256) public mintedAsteroids;
 
+    event MintLimitUpdate(uint256 mintLimit);
+    event DoubloonsMint(address indexed to, uint256 value);
+    event AsteroidsMint(address indexed to, uint256 value);
+
     constructor(SpacePiratesTokens _tokenContract) {
         tokenContract = _tokenContract;
     }
 
     function setMintLimit(uint256 _mintLimit) public onlyOwner {
         mintLimit = _mintLimit;
+        emit MintLimitUpdate(mintLimit);
     }
 
     function mintDoubloons(uint256 _amount) public {
@@ -36,10 +41,11 @@ contract SpacePiratesFaucet is Ownable {
             mintLimit
             ? mintLimit - mintedDoubloons[msg.sender]
             : _amount;
-        
+
         mintedDoubloons[msg.sender] += mintableAmount;
 
         tokenContract.mint(msg.sender, mintableAmount, DOUBLOONS);
+        emit DoubloonsMint(msg.sender, mintableAmount);
     }
 
     function mintAsteroids(uint256 _amount) public {
@@ -55,5 +61,6 @@ contract SpacePiratesFaucet is Ownable {
         mintedAsteroids[msg.sender] += mintableAmount;
 
         tokenContract.mint(msg.sender, mintableAmount, ASTEROIDS);
+        emit AsteroidsMint(msg.sender, mintableAmount);
     }
 }
