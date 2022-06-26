@@ -5,6 +5,14 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./ERC1155Custom.sol";
 
 contract SpacePiratesTokens is ERC1155Custom, AccessControl {
+    /**
+     * Tokens' Ids distribution
+     *      1 -     99 Projects tokens
+     *    100 -    199 Wrapped tokens
+     *  1 000 -  9 999 Consumable
+     * 10 000 - 19 999 Titles
+     * 20 000 - 99 999 Decorations
+     */
     uint256 public constant DOUBLOONS = 1;
     uint256 public constant ASTEROIDS = 2;
     uint256 public constant VE_ASTEROIDS = 3;
