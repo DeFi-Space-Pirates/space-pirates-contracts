@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title Space Pirates Wrapper Interface
+ * @author @Gr3it
+ */
+
 interface ISpacePiratesWrapper {
     receive() external payable;
 
+    function tokenContract() external view returns (address);
     function erc20ToId(address _erc20Contract) external view returns(uint256 id);
     function lastId() external view returns(uint256 id);
     

@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 import "./SpacePiratesTokens.sol";
 
-pragma solidity ^0.8.0;
+/**
+ * @title Asteroids Split Contract
+ * @author @Gr3it, @yuripaoloni (reviewer), @MatteoLeonesi (reviewer)
+ * @notice Split Asteroids tokens in their underlying tokens and vice versa
+ */
 
 contract AsteroidsSplitContract {
     uint256 public constant ASTEROIDS = 2;

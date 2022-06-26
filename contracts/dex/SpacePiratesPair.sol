@@ -10,6 +10,13 @@ import "../libraries/Math.sol";
 import "../interfaces/ISpacePiratesFactory.sol";
 import "../interfaces/ISpacePiratesCallee.sol";
 
+/**
+ * @title Space Pirates Pair Contract
+ * @author @Gr3it, @yuripaoloni (reviewer), @MatteoLeonesi (reviewer)
+ * @notice Let swap token if added liquidity
+ */
+
+
 contract SpacePiratesPair is SpacePiratesLPToken, ERC1155Batch, ERC1155Holder {
     using UQ112x112 for uint224;
 

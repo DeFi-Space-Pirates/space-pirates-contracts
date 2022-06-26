@@ -4,6 +4,12 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./ERC1155Custom.sol";
 
+/**
+ * @title Space Pirates Tokens Contract
+ * @author @Gr3it, @yuripaoloni, @MatteoLeonesi
+ * @notice Store all the tokens data and give to other contract permission to implements logic on top of the tokens
+ */
+
 contract SpacePiratesTokens is ERC1155Custom, AccessControl {
     /**
      * Tokens' Ids distribution

@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title Helper Role Contract Interface
+ * @author @Gr3it
+ */
+
 interface IHelperRoleContract {
     function getBurnRoleBytes(uint256 id) external pure returns (bytes32);
     function getMintRoleBytes(uint256 id) external pure returns (bytes32);

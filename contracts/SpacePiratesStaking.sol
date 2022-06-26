@@ -6,6 +6,12 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./SpacePiratesTokens.sol";
 
+/**
+ * @title Space Pirates Staking Contract
+ * @author @yuripaoloni, @MatteoLeonesi, @Gr3it (reviewer)
+ * @notice Create staking pool of the tokens added
+ */
+
 contract SpacePiratesStaking is ERC1155Holder, Ownable {
     // parent ERC1155 contract address
     SpacePiratesTokens public parentToken;
