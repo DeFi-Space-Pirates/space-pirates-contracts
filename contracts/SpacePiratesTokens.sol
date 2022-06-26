@@ -5,6 +5,14 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./ERC1155Custom.sol";
 
 contract SpacePiratesTokens is ERC1155Custom, AccessControl {
+    /**
+     * Tokens' Ids distribution
+     *      1 -     99 Projects tokens
+     *    100 -    199 Wrapped tokens
+     *  1 000 -  9 999 Consumable
+     * 10 000 - 19 999 Titles
+     * 20 000 - 99 999 Decorations
+     */
     uint256 public constant DOUBLOONS = 1;
     uint256 public constant ASTEROIDS = 2;
     uint256 public constant VE_ASTEROIDS = 3;
@@ -18,7 +26,32 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
     bytes32 public constant TRANSFERABLE_SETTER_ROLE =
         keccak256("TRANSFERABLE_SETTER_ROLE");
 
-    constructor() {
+    event Mint(
+        address indexed sender,
+        uint256 id,
+        uint256 amount,
+        address indexed to
+    );
+    event Burn(address indexed sender, uint256 id, uint256 amount);
+    event MintBatch(
+        address indexed sender,
+        uint256[] ids,
+        uint256[] amounts,
+        address indexed to
+    );
+    event BurnBatch(address indexed sender, uint256[] ids, uint256[] amounts);
+    event GrantRole(bytes32 indexed role, address account);
+    event RevokeRole(bytes32 indexed role, address account);
+    event GrantMultiRole(bytes32[] indexed roles, address[] accounts);
+    event RevokeMultiRole(bytes32[] indexed roles, address[] accounts);
+    event RenounceRole(bytes32 indexed role, address account);
+    event Pause();
+    event Unpause();
+    event LockTokenTransfer();
+    event UnLockTokenTransfer();
+    event UriUpdate(string newUri);
+
+    constructor(string memory uri) ERC1155Custom(uri) {
         _mint(msg.sender, DOUBLOONS, 1000000 * (10**18), "");
         _mint(msg.sender, ASTEROIDS, 100 * (10**18), "");
 
@@ -35,11 +68,9 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         return super.supportsInterface(interfaceId);
     }
 
-    function setURI(string memory newuri, uint256 id)
-        public
-        onlyRole(URI_SETTER_ROLE)
-    {
-        _setURI(newuri, id);
+    function setURI(string memory newUri) public onlyRole(URI_SETTER_ROLE) {
+        _setURI(newUri);
+        emit UriUpdate(newUri);
     }
 
     function lockTokenTransfer(uint256 id)
@@ -47,6 +78,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         onlyRole(TRANSFERABLE_SETTER_ROLE)
     {
         _setTrasferBlock(id, true);
+        emit LockTokenTransfer();
     }
 
     function unLockTokenTransfer(uint256 id)
@@ -54,14 +86,17 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         onlyRole(TRANSFERABLE_SETTER_ROLE)
     {
         _setTrasferBlock(id, false);
+        emit UnLockTokenTransfer();
     }
 
     function pause() public onlyRole(CAN_PAUSE_ROLE) {
         _pause();
+        emit Pause();
     }
 
     function unpause() public onlyRole(CAN_UNPAUSE_ROLE) {
         _unpause();
+        emit Unpause();
     }
 
     function mint(
@@ -70,6 +105,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         uint256 id
     ) public onlyRole(keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id))) {
         _mint(to, id, amount, "");
+        emit Mint(msg.sender, id, amount, to);
     }
 
     function burn(
@@ -82,6 +118,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             "ERC1155: caller is not owner nor approved"
         );
         _burn(from, id, amount);
+        emit Burn(from, id, amount);
     }
 
     function mintBatch(
@@ -89,13 +126,14 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         uint256[] memory ids,
         uint256[] memory amounts
     ) public {
-        for (uint256 i; i < ids.length; ++i) {
+        for (uint256 i = 0; i < ids.length; ++i) {
             _checkRole(
                 keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", ids[i])),
                 msg.sender
             );
         }
         _mintBatch(to, ids, amounts, "");
+        emit MintBatch(msg.sender, ids, amounts, to);
     }
 
     function burnBatch(
@@ -103,13 +141,32 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         uint256[] memory ids,
         uint256[] memory amounts
     ) public {
-        for (uint256 i; i < ids.length; ++i) {
+        for (uint256 i = 0; i < ids.length; ++i) {
             _checkRole(
                 keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", ids[i])),
                 msg.sender
             );
         }
         _burnBatch(from, ids, amounts);
+        emit BurnBatch(from, ids, amounts);
+    }
+
+    function grantRole(bytes32 role, address account)
+        public
+        override
+        onlyRole(getRoleAdmin(role))
+    {
+        _grantRole(role, account);
+        emit GrantRole(role, account);
+    }
+
+    function revokeRole(bytes32 role, address account)
+        public
+        override
+        onlyRole(getRoleAdmin(role))
+    {
+        _revokeRole(role, account);
+        emit RevokeRole(role, account);
     }
 
     function grantMultiRole(
@@ -120,10 +177,11 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             roles.length == accounts.length,
             "AccessControl: array of different length"
         );
-        for (uint256 i; i < roles.length; ++i) {
+        for (uint256 i = 0; i < roles.length; ++i) {
             _checkRole(getRoleAdmin(roles[i]), msg.sender);
             _grantRole(roles[i], accounts[i]);
         }
+        emit GrantMultiRole(roles, accounts);
     }
 
     function revokeMultiRole(
@@ -134,9 +192,10 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             roles.length == accounts.length,
             "AccessControl: array of different length"
         );
-        for (uint256 i; i < roles.length; ++i) {
+        for (uint256 i = 0; i < roles.length; ++i) {
             _checkRole(getRoleAdmin(roles[i]), msg.sender);
             _revokeRole(roles[i], accounts[i]);
         }
+        emit RevokeMultiRole(roles, accounts);
     }
 }
