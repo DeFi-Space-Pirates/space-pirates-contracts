@@ -10,7 +10,7 @@ let wrapperContract;
 let erc20Contract;
 let spaceETH;
 
-describe.only("SpacePiratesWrapper", () => {
+describe("SpacePiratesWrapper", () => {
   before(async () => {
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
