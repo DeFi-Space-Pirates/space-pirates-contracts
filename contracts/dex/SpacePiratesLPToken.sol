@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title Space Pirates LPToken Contract
+ * @author @Gr3it, @yuripaoloni (reviewer), @MatteoLeonesi (reviewer)
+ * @notice Pair LPToken login
+ */
+
 contract SpacePiratesLPToken {
     string public constant name = "Space Pirates LP Token";
     string public constant symbol = "SP-LP";

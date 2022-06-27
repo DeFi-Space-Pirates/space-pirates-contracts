@@ -5,6 +5,12 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./SpacePiratesPair.sol";
 
+/**
+ * @title Space Pirates Factory Contract
+ * @author @Gr3it, @yuripaoloni (reviewer), @MatteoLeonesi (reviewer)
+ * @notice Creates Tokens Swap Pairs
+ */
+
 contract SpacePiratesFactory is Ownable {
     address public immutable tokenContract;
     address public feeTo;

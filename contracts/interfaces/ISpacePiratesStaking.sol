@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: unlicense
 pragma solidity ^0.8.0;
 
+/**
+ * @title Space Pirates Staking Interface
+ * @author @Gr3it
+ */
+
 interface ISpacePiratesStaking {
     event Staked(address indexed user, uint256 indexed tokenId, uint256 amount);
     event Unstake(address indexed user, uint256 indexed tokenId, uint256 amount);

@@ -3,6 +3,11 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
+/**
+ * @title Space Pirates Tokens Interface
+ * @author @Gr3it
+ */
+
 interface ISpacePiratesTokens is IERC1155 {
     event Mint(address indexed sender, uint256 id, uint256 amount, address indexed to);
     event Burn(address indexed sender, uint256 id, uint256 amount);

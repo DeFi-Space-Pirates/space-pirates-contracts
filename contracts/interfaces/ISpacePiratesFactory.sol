@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title Space Pirates Factory Interface
+ * @author @Gr3it
+ */
+
 interface ISpacePiratesFactory {
     event PairCreated(uint256 indexed token0, uint256 indexed token1, address pair, uint256);
 

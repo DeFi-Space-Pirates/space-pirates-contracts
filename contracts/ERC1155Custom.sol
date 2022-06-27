@@ -11,6 +11,12 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
+/**
+ * @title Space Pirates Faucet Contract
+ * @author @Gr3it
+ * @notice Custom implementation with Supply, Pausable, Burnable, Token Transfer Lock
+ */
+
 contract ERC1155Custom is
     Context,
     ERC165,

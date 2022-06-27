@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title Space Pirates Pair Interface
+ * @author @Gr3it
+ */
+
 import "./ISpacePiratesLPToken.sol";
 
 interface ISpacePiratesPair is ISpacePiratesLPToken {

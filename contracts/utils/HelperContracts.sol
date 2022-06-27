@@ -3,6 +3,12 @@ pragma solidity ^0.8.0;
 
 import "../dex/SpacePiratesPair.sol";
 
+/**
+ * @title Helper Contract
+ * @author @Gr3it
+ * @notice Give access to usefull functions
+ */
+
 contract HelperRoleContract {
     function getMintRoleBytes(uint256 id) public pure returns (bytes32) {
         return (keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id)));

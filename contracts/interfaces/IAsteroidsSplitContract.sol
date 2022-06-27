@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title Asteroids Split Contract Interface
+ * @author @Gr3it
+ */
+
 interface IAsteroidsSplitContract {
     event SplitAsteroids(address indexed sender, uint256 amount);
     event MergeAsteroids(address indexed sender, uint256 amount);
