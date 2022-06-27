@@ -5,6 +5,7 @@ const splitContractSetup = require("./setupScripts/splitContract");
 const faucetContractSetup = require("./setupScripts/faucetContract");
 const factoryContractSetup = require("./setupScripts/factoryContract");
 const masterChefContractSetup = require("./setupScripts/masterChefContract");
+const wrapperContractSetup = require("./setupScripts/wrapperContract");
 
 async function main() {
   /* CONTRACT PARAMETERS */
@@ -26,6 +27,10 @@ async function main() {
   );
 
   const FaucetContract = await ethers.getContractFactory("SpacePiratesFaucet");
+
+  const WrapperContract = await ethers.getContractFactory(
+    "SpacePiratesWrapper"
+  );
 
   const FactoryContract = await ethers.getContractFactory(
     "SpacePiratesFactory"
@@ -52,13 +57,16 @@ async function main() {
   const faucetContract = await FaucetContract.deploy(tokensContract.address);
   console.log("Faucet Contract deployed to:", faucetContract.address);
 
+  const wrapperContract = await WrapperContract.deploy(tokensContract.address);
+  console.log("Faucet Contract deployed to:", wrapperContract.address);
+
   const factoryContract = await FactoryContract.deploy(tokensContract.address);
   console.log("Factory Contract deployed to:", factoryContract.address);
 
   const routerContract = await RouterContract.deploy(
     factoryContract.address,
     tokensContract.address,
-    "0x0000000000000000000000000000000000000000" //placeholder util wrapper contract creation
+    wrapperContract.address
   );
   console.log("Router Contract deployed to:", routerContract.address);
 
@@ -83,6 +91,7 @@ async function main() {
     masterChefContract,
     factoryContract
   );
+  await wrapperContractSetup(tokensContract, wrapperContract);
 }
 
 main()
