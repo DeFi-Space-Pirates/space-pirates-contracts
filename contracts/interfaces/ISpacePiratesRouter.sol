@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title Space Pirates Router Interface
+ * @author @Gr3it
+ */
+
 interface ISpacePiratesRouter {
     function SPACE_ETH_ID() external view returns (uint256);
     

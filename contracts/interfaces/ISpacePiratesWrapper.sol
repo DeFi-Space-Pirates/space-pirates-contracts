@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/**
+ * @title Space Pirates Wrapper Interface
+ * @author @Gr3it
+ */
+
 interface ISpacePiratesWrapper {
     event ERC20Added(address indexed _erc20contract, uint256 id);
     event ERC20Deposited(
@@ -33,6 +38,8 @@ interface ISpacePiratesWrapper {
     event SetFeeAddress(address feeAddress);
 
     receive() external payable;
+
+    function tokenContract() external view returns (address);
 
     function erc20ToId(address _erc20Contract)
         external
@@ -69,7 +76,7 @@ interface ISpacePiratesWrapper {
 
     function feeBasePoint() external view returns (uint256 fee);
 
-    function feeAddress() external view returns (address);
+    function feeAddress() external view returns (address _addr);
 
     function setFeeBasePoint(uint256 _feeBasePoint) external;
 

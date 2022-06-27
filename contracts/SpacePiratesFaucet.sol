@@ -4,9 +4,12 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./SpacePiratesTokens.sol";
 
-/// @title Faucet contract
-/// @author @yuripaoloni, @MatteoLeonesi, @Gr3it (reviewer)
-/// @notice Mint up to 10k doubloons and asteroids to users in testnet
+/**
+ * @title Space Pirates Faucet Contract
+ * @author @yuripaoloni, @MatteoLeonesi, @Gr3it (reviewer)
+ * @notice Mint up to 10k doubloons and asteroids to users in testnet
+ */
+
 contract SpacePiratesFaucet is Ownable {
     SpacePiratesTokens public immutable tokenContract;
 

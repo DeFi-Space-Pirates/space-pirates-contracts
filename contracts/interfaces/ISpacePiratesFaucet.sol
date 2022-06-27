@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: unlicense
 pragma solidity ^0.8.0;
 
+/**
+ * @title Space Pirates Faucet Interface
+ * @author @Gr3it
+ */
+
 interface ISpacePiratesFaucet {
     event MintLimitUpdate(uint256 mintLimit);
     event DoubloonsMint(address indexed to, uint256 value);

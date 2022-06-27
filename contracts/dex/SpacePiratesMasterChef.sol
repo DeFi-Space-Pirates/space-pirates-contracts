@@ -7,6 +7,12 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "../SpacePiratesTokens.sol";
 
+/**
+ * @title Space Pirates MasterChef Contract
+ * @author @Gr3it, @yuripaoloni (reviewer), @MatteoLeonesi (reviewer)
+ * @notice Create Staking pools for LPTokens
+ */
+
 // MasterChef is the master of the doubloons. He can make doubloons and he is a fair guy.
 //
 // Note that it's ownable and the owner wields tremendous power. The ownership

@@ -9,6 +9,12 @@ import "../interfaces/ISpacePiratesPair.sol";
 import "../interfaces/ISpacePiratesWrapper.sol";
 import "../libraries/SpacePiratesDexLibrary.sol";
 
+/**
+ * @title Space Pirates Router Contract
+ * @author @Gr3it, @yuripaoloni (reviewer), @MatteoLeonesi (reviewer)
+ * @notice Let users interfact safely with the dex
+ */
+
 contract SpacePiratesRouter is ERC1155Batch, ERC1155Holder {
     uint256 public constant SPACE_ETH_ID = 100;
 

@@ -3,6 +3,12 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
+/**
+ * @title ERC1155 Batch Contract
+ * @author @Gr3it, @yuripaoloni (reviewer), @MatteoLeonesi (reviewer)
+ * @notice Prevent Stack Too Deep Errors
+ */
+
 contract ERC1155Batch {
     address public tokenContract;
 
