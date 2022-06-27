@@ -69,31 +69,24 @@ contract SpacePiratesWrapper is Ownable {
             "SpacePiratesWrapper: token already exists"
         );
 
-        erc20ToId[_erc20Contract] = ++lastId;
+        id = ++lastId;
+
+        erc20ToId[_erc20Contract] = id;
         supportedTokens.push(_erc20Contract);
 
-        id = erc20ToId[_erc20Contract];
-
-        emit ERC20Added(_erc20Contract, lastId);
+        emit ERC20Added(_erc20Contract, id);
     }
 
     function erc20Deposit(address _addr, uint256 _amount) external {
-        require(
-            erc20ToId[_addr] != 0,
-            "SpacePiratesWrapper: token does not exists"
-        );
+        uint256 id = erc20ToId[_addr];
+
+        require(id != 0, "SpacePiratesWrapper: token does not exists");
 
         IERC20(_addr).safeTransferFrom(msg.sender, address(this), _amount);
 
-        tokenContract.mint(msg.sender, _amount, erc20ToId[_addr]);
+        tokenContract.mint(msg.sender, _amount, id);
 
-        emit ERC20Deposited(
-            msg.sender,
-            msg.sender,
-            _addr,
-            erc20ToId[_addr],
-            _amount
-        );
+        emit ERC20Deposited(msg.sender, msg.sender, _addr, id, _amount);
     }
 
     function erc20DepositTo(
@@ -101,23 +94,21 @@ contract SpacePiratesWrapper is Ownable {
         uint256 _amount,
         address _to
     ) external {
-        require(
-            erc20ToId[_addr] != 0,
-            "SpacePiratesWrapper: token does not exists"
-        );
+        uint256 id = erc20ToId[_addr];
+
+        require(id != 0, "SpacePiratesWrapper: token does not exists");
 
         IERC20(_addr).safeTransferFrom(msg.sender, address(this), _amount);
 
-        tokenContract.mint(_to, _amount, erc20ToId[_addr]);
+        tokenContract.mint(_to, _amount, id);
 
-        emit ERC20Deposited(msg.sender, _to, _addr, erc20ToId[_addr], _amount);
+        emit ERC20Deposited(msg.sender, _to, _addr, id, _amount);
     }
 
     function erc20Withdraw(address _addr, uint256 _amount) external {
-        require(
-            erc20ToId[_addr] != 0,
-            "SpacePiratesWrapper: token does not exists"
-        );
+        uint256 id = erc20ToId[_addr];
+
+        require(id != 0, "SpacePiratesWrapper: token does not exists");
 
         if (feeBasePoint > 0) {
             uint256 depositFee = (_amount * feeBasePoint) / 10000;
@@ -127,15 +118,9 @@ contract SpacePiratesWrapper is Ownable {
             IERC20(_addr).safeTransfer(msg.sender, _amount);
         }
 
-        tokenContract.burn(msg.sender, _amount, erc20ToId[_addr]);
+        tokenContract.burn(msg.sender, _amount, id);
 
-        emit ERC20Withdrawn(
-            msg.sender,
-            msg.sender,
-            _addr,
-            erc20ToId[_addr],
-            _amount
-        );
+        emit ERC20Withdrawn(msg.sender, msg.sender, _addr, id, _amount);
     }
 
     function erc20WithdrawTo(
@@ -143,10 +128,9 @@ contract SpacePiratesWrapper is Ownable {
         uint256 _amount,
         address _to
     ) external {
-        require(
-            erc20ToId[_addr] != 0,
-            "SpacePiratesWrapper: token does not exists"
-        );
+        uint256 id = erc20ToId[_addr];
+
+        require(id != 0, "SpacePiratesWrapper: token does not exists");
 
         if (feeBasePoint > 0) {
             uint256 depositFee = (_amount * feeBasePoint) / 10000;
@@ -156,9 +140,9 @@ contract SpacePiratesWrapper is Ownable {
             IERC20(_addr).safeTransfer(_to, _amount);
         }
 
-        tokenContract.burn(msg.sender, _amount, erc20ToId[_addr]);
+        tokenContract.burn(msg.sender, _amount, id);
 
-        emit ERC20Withdrawn(msg.sender, _to, _addr, erc20ToId[_addr], _amount);
+        emit ERC20Withdrawn(msg.sender, _to, _addr, id, _amount);
     }
 
     receive() external payable {
