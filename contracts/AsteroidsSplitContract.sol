@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./SpacePiratesTokens.sol";
+import "./libraries/Helpers.sol";
 
 /**
  * @title Asteroids Split Contract
@@ -27,8 +28,8 @@ contract AsteroidsSplitContract {
         tokenContract.burn(msg.sender, amount, ASTEROIDS);
         tokenContract.mintBatch(
             msg.sender,
-            getArrayPair(VE_ASTEROIDS, STK_ASTEROIDS),
-            getArrayPair(amount, amount)
+            Helpers.getArrayPair(VE_ASTEROIDS, STK_ASTEROIDS),
+            Helpers.getArrayPair(amount, amount)
         );
 
         emit SplitAsteroids(msg.sender, amount);
@@ -37,22 +38,11 @@ contract AsteroidsSplitContract {
     function mergeAsteroids(uint256 amount) public {
         tokenContract.burnBatch(
             msg.sender,
-            getArrayPair(VE_ASTEROIDS, STK_ASTEROIDS),
-            getArrayPair(amount, amount)
+            Helpers.getArrayPair(VE_ASTEROIDS, STK_ASTEROIDS),
+            Helpers.getArrayPair(amount, amount)
         );
         tokenContract.mint(msg.sender, amount, ASTEROIDS);
 
         emit MergeAsteroids(msg.sender, amount);
-    }
-
-    function getArrayPair(uint256 x, uint256 y)
-        internal
-        pure
-        returns (uint256[] memory)
-    {
-        uint256[] memory array = new uint256[](2);
-        array[0] = x;
-        array[1] = y;
-        return array;
     }
 }
