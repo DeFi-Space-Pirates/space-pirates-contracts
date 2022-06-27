@@ -17,48 +17,48 @@ describe("SpacePiratesTokens: Tokens", () => {
   });
   it("Contract deploy", async () => {
     const TokenContract = await ethers.getContractFactory("SpacePiratesTokens");
-    const tokensContract = await TokenContract.deploy();
+    const tokensContract = await TokenContract.deploy("testuri.com/token/");
   });
   describe("Methods:", () => {
     beforeEach(async () => {
       const TokenContract = await ethers.getContractFactory(
         "SpacePiratesTokens"
       );
-      tokensContract = await TokenContract.deploy();
+      tokensContract = await TokenContract.deploy("testuri.com/token/");
     });
     describe("Metadata:", () => {
       describe("uri:", () => {
         it("Should return the URI if exist", async () => {
-          const id = 0;
+          const id = 1;
           const URI = "ipfs://wrappedEth/";
           const role = await tokensContract.URI_SETTER_ROLE();
 
           await tokensContract.grantRole(role, ownerAddress);
-          await tokensContract.setURI(URI, id);
+          await tokensContract.setURI(URI);
 
-          expect(await tokensContract.uri(id)).to.be.equal(URI);
+          expect(await tokensContract.uri(id)).to.be.equal(URI + id);
         });
         it("Should revert if the URI is absent", async () => {
           const id = 5;
 
           await expect(tokensContract.uri(id)).to.be.revertedWith(
-            "ERC1155: missing URI"
+            "ERC1155: URI query for nonexistent token"
           );
         });
       });
       describe("setURI:", () => {
         it("Should set the URI", async () => {
-          const id = 0;
+          const id = 1;
           const URI = "ipfs://wrappedEth/";
           const role = await tokensContract.URI_SETTER_ROLE();
           await tokensContract.grantRole(role, ownerAddress);
-          await tokensContract.setURI(URI, id);
-          expect(await tokensContract.uri(id)).to.be.equal(URI);
+          await tokensContract.setURI(URI);
+          expect(await tokensContract.uri(id)).to.be.equal(URI + id);
         });
         it("Should revert if don't has role", async () => {
-          const id = 0;
+          const id = 1;
           const URI = "ipfs://wrappedEth/";
-          await expect(tokensContract.setURI(URI, id)).to.be.reverted;
+          await expect(tokensContract.setURI(URI)).to.be.reverted;
         });
       });
     });

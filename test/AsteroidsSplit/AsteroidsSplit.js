@@ -11,7 +11,7 @@ let veAsteroids;
 let stkAsteroids;
 const swapAmount = 100;
 
-describe("SpacePiratesTokens: Tokens", () => {
+describe("AsteroidsSplitContract", () => {
   before(async () => {
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
