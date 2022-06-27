@@ -24,7 +24,7 @@ describe("SpacePiratesFactory", () => {
 
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    spacePiratesTokens = await SpacePiratesTokens.deploy();
+    spacePiratesTokens = await SpacePiratesTokens.deploy("");
     spacePiratesFactory = await SpacePiratesFactory.deploy(
       spacePiratesTokens.address
     );

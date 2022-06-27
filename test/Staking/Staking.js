@@ -24,7 +24,7 @@ describe("SpacePiratesStaking: basic features", () => {
 
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    tokens = await Tokens.deploy();
+    tokens = await Tokens.deploy("");
     staking = await Staking.deploy(tokens.address);
     helperContract = await HelperRoleContract.deploy();
 

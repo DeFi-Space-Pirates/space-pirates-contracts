@@ -16,7 +16,7 @@ describe("SpacePiratesFaucet", () => {
     );
     helperRoleContract = await HelperRoleContract.deploy();
     const TokenContract = await ethers.getContractFactory("SpacePiratesTokens");
-    tokensContract = await TokenContract.deploy();
+    tokensContract = await TokenContract.deploy("");
     accounts = await ethers.getSigners();
     ownerAddress = accounts[0].getAddress();
     asteroids = await tokensContract.ASTEROIDS();
