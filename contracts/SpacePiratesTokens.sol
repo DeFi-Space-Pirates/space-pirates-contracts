@@ -258,107 +258,13 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
 
     function _checkMintBatchRole(uint256[] calldata ids) internal view {
         for (uint256 i = 0; i < ids.length; ++i) {
-            uint256 id = ids[i];
-            if (
-                hasRole(
-                    keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id)),
-                    msg.sender
-                )
-            ) continue;
-            if (
-                id <= 199 && id >= 100 && hasRole(WRAPPED_MINT_ROLE, msg.sender)
-            ) {
-                while (++i < ids.length && ids[i] >= 100 && ids[i] <= 199) {}
-                i--;
-                continue;
-            }
-            if (
-                id <= 9_999 &&
-                id >= 1_000 &&
-                hasRole(ITEMS_MINT_ROLE, msg.sender)
-            ) {
-                while (
-                    ++i < ids.length && ids[i] >= 1_000 && ids[i] <= 9_999
-                ) {}
-                --i;
-                continue;
-            }
-            if (
-                id <= 19_999 &&
-                id >= 10_000 &&
-                hasRole(TITLES_MINT_ROLE, msg.sender)
-            ) {
-                while (
-                    ++i < ids.length && ids[i] >= 10_000 && ids[i] <= 19_999
-                ) {}
-                --i;
-                continue;
-            }
-            if (
-                id <= 99_999 &&
-                id >= 20_000 &&
-                hasRole(DECORATIONS_MINT_ROLE, msg.sender)
-            ) {
-                while (
-                    ++i < ids.length && ids[i] >= 20_000 && ids[i] <= 99_999
-                ) {}
-                --i;
-                continue;
-            }
-            revert("AccessControl: missing burn role");
+            _checkMintRole(ids[i]);
         }
     }
 
     function _checkBurnBatchRole(uint256[] calldata ids) internal view {
         for (uint256 i = 0; i < ids.length; ++i) {
-            uint256 id = ids[i];
-            if (
-                hasRole(
-                    keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", id)),
-                    msg.sender
-                )
-            ) continue;
-            if (
-                id <= 199 && id >= 100 && hasRole(WRAPPED_BURN_ROLE, msg.sender)
-            ) {
-                while (++i < ids.length && ids[i] >= 100 && ids[i] <= 199) {}
-                i--;
-                continue;
-            }
-            if (
-                id <= 9_999 &&
-                id >= 1_000 &&
-                hasRole(ITEMS_BURN_ROLE, msg.sender)
-            ) {
-                while (
-                    ++i < ids.length && ids[i] >= 1_000 && ids[i] <= 9_999
-                ) {}
-                --i;
-                continue;
-            }
-            if (
-                id <= 19_999 &&
-                id >= 10_000 &&
-                hasRole(TITLES_BURN_ROLE, msg.sender)
-            ) {
-                while (
-                    ++i < ids.length && ids[i] >= 10_000 && ids[i] <= 19_999
-                ) {}
-                --i;
-                continue;
-            }
-            if (
-                id <= 99_999 &&
-                id >= 20_000 &&
-                hasRole(DECORATIONS_BURN_ROLE, msg.sender)
-            ) {
-                while (
-                    ++i < ids.length && ids[i] >= 20_000 && ids[i] <= 99_999
-                ) {}
-                --i;
-                continue;
-            }
-            revert("AccessControl: missing burn role");
+            _checkBurnRole(ids[i]);
         }
     }
 }
