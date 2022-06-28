@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
  * @author @HenricoW
  * @notice Collection of utility functions
  */
-library Helpers {
+library Array {
     /**
      * @notice Convert pair of uint256 inputs to an array
      */

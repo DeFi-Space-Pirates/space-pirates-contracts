@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "../libraries/Helpers.sol";
+import "../libraries/Array.sol";
 
 /**
  * @title ERC1155 Batch Contract
@@ -29,8 +29,8 @@ contract ERC1155Batch {
         IERC1155(tokenContract).safeBatchTransferFrom(
             from,
             to,
-            Helpers.getArrayPair(id0, id1),
-            Helpers.getArrayPair(amount0, amount1),
+            Array.getArrayPair(id0, id1),
+            Array.getArrayPair(amount0, amount1),
             ""
         );
     }
@@ -44,8 +44,8 @@ contract ERC1155Batch {
         uint256[] memory batchBalances = new uint256[](2);
 
         batchBalances = IERC1155(tokenContract).balanceOfBatch(
-            Helpers.getArrayPair(account, account),
-            Helpers.getArrayPair(id0, id1)
+            Array.getArrayPair(account, account),
+            Array.getArrayPair(id0, id1)
         );
 
         balance0 = batchBalances[0];
