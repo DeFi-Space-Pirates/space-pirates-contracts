@@ -215,18 +215,18 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
                 msg.sender
             )
         ) return;
-        if (id >= 100 && id <= 199 && hasRole(WRAPPED_MINT_ROLE, msg.sender))
+        if (id <= 199 && id >= 100 && hasRole(WRAPPED_MINT_ROLE, msg.sender))
             return;
-        if (id >= 1_000 && id <= 9_999 && hasRole(ITEMS_MINT_ROLE, msg.sender))
+        if (id <= 9_999 && id >= 1_000 && hasRole(ITEMS_MINT_ROLE, msg.sender))
             return;
         if (
-            id >= 10_000 &&
             id <= 19_999 &&
+            id >= 10_000 &&
             hasRole(TITLES_MINT_ROLE, msg.sender)
         ) return;
         if (
-            id >= 20_000 &&
             id <= 99_999 &&
+            id >= 20_000 &&
             hasRole(DECORATIONS_MINT_ROLE, msg.sender)
         ) return;
         revert("AccessControl: missing mint role");
@@ -239,18 +239,18 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
                 msg.sender
             )
         ) return;
-        if (id >= 100 && id <= 199 && hasRole(WRAPPED_BURN_ROLE, msg.sender))
+        if (id <= 199 && id >= 100 && hasRole(WRAPPED_BURN_ROLE, msg.sender))
             return;
-        if (id >= 1_000 && id <= 9_999 && hasRole(ITEMS_BURN_ROLE, msg.sender))
+        if (id <= 9_999 && id >= 1_000 && hasRole(ITEMS_BURN_ROLE, msg.sender))
             return;
         if (
-            id >= 10_000 &&
             id <= 19_999 &&
+            id >= 10_000 &&
             hasRole(TITLES_BURN_ROLE, msg.sender)
         ) return;
         if (
-            id >= 20_000 &&
             id <= 99_999 &&
+            id >= 20_000 &&
             hasRole(DECORATIONS_BURN_ROLE, msg.sender)
         ) return;
         revert("AccessControl: missing burn role");
@@ -266,15 +266,15 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
                 )
             ) continue;
             if (
-                id >= 100 && id <= 199 && hasRole(WRAPPED_MINT_ROLE, msg.sender)
+                id <= 199 && id >= 100 && hasRole(WRAPPED_MINT_ROLE, msg.sender)
             ) {
                 while (++i < ids.length && ids[i] >= 100 && ids[i] <= 199) {}
                 i--;
                 continue;
             }
             if (
-                id >= 1_000 &&
                 id <= 9_999 &&
+                id >= 1_000 &&
                 hasRole(ITEMS_MINT_ROLE, msg.sender)
             ) {
                 while (
@@ -284,8 +284,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
                 continue;
             }
             if (
-                id >= 10_000 &&
                 id <= 19_999 &&
+                id >= 10_000 &&
                 hasRole(TITLES_MINT_ROLE, msg.sender)
             ) {
                 while (
@@ -295,8 +295,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
                 continue;
             }
             if (
-                id >= 20_000 &&
                 id <= 99_999 &&
+                id >= 20_000 &&
                 hasRole(DECORATIONS_MINT_ROLE, msg.sender)
             ) {
                 while (
@@ -319,15 +319,15 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
                 )
             ) continue;
             if (
-                id >= 100 && id <= 199 && hasRole(WRAPPED_BURN_ROLE, msg.sender)
+                id <= 199 && id >= 100 && hasRole(WRAPPED_BURN_ROLE, msg.sender)
             ) {
                 while (++i < ids.length && ids[i] >= 100 && ids[i] <= 199) {}
                 i--;
                 continue;
             }
             if (
-                id >= 1_000 &&
                 id <= 9_999 &&
+                id >= 1_000 &&
                 hasRole(ITEMS_BURN_ROLE, msg.sender)
             ) {
                 while (
@@ -337,8 +337,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
                 continue;
             }
             if (
-                id >= 10_000 &&
                 id <= 19_999 &&
+                id >= 10_000 &&
                 hasRole(TITLES_BURN_ROLE, msg.sender)
             ) {
                 while (
@@ -348,8 +348,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
                 continue;
             }
             if (
-                id >= 20_000 &&
                 id <= 99_999 &&
+                id >= 20_000 &&
                 hasRole(DECORATIONS_BURN_ROLE, msg.sender)
             ) {
                 while (
