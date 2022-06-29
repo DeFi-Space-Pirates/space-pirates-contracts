@@ -15,7 +15,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
      * Tokens' Ids distribution
      *      1 -     99 Projects tokens
      *    100 -    199 Wrapped tokens
-     *  1 000 -  9 999 Consumable
+     *  1 000 -  9 999 Items
      * 10 000 - 19 999 Titles
      * 20 000 - 99 999 Decorations
      */
@@ -26,6 +26,17 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
 
     // Minting role = keccak256(abi.encodePacked("MINT_ROLE_FOR_ID",id));
     // Burning role = keccak256(abi.encodePacked("BURN_ROLE_FOR_ID",id));
+    bytes32 public constant WRAPPED_MINT_ROLE = keccak256("WRAPPED_MINT_ROLE");
+    bytes32 public constant WRAPPED_BURN_ROLE = keccak256("WRAPPED_BURN_ROLE");
+    bytes32 public constant ITEMS_MINT_ROLE = keccak256("ITEMS_MINT_ROLE");
+    bytes32 public constant ITEMS_BURN_ROLE = keccak256("ITEMS_BURN_ROLE");
+    bytes32 public constant TITLES_MINT_ROLE = keccak256("TITLES_MINT_ROLE");
+    bytes32 public constant TITLES_BURN_ROLE = keccak256("TITLES_BURN_ROLE");
+    bytes32 public constant DECORATIONS_MINT_ROLE =
+        keccak256("DECORATIONS_MINT_ROLE");
+    bytes32 public constant DECORATIONS_BURN_ROLE =
+        keccak256("DECORATIONS_BURN_ROLE");
+
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
     bytes32 public constant CAN_PAUSE_ROLE = keccak256("CAN_PAUSE_ROLE");
     bytes32 public constant CAN_UNPAUSE_ROLE = keccak256("CAN_UNPAUSE_ROLE");
@@ -58,7 +69,7 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
     event UriUpdate(string newUri);
 
     constructor(string memory uri) ERC1155Custom(uri) {
-        _mint(msg.sender, DOUBLOONS, 1000000 * (10**18), "");
+        _mint(msg.sender, DOUBLOONS, 1_000_000 * (10**18), "");
         _mint(msg.sender, ASTEROIDS, 100 * (10**18), "");
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -109,7 +120,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         address to,
         uint256 amount,
         uint256 id
-    ) public onlyRole(keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id))) {
+    ) public {
+        _checkMintRole(id);
         _mint(to, id, amount, "");
         emit Mint(msg.sender, id, amount, to);
     }
@@ -118,41 +130,32 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         address from,
         uint256 amount,
         uint256 id
-    ) public onlyRole(keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", id))) {
+    ) public {
         require(
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
             "ERC1155: caller is not owner nor approved"
         );
+        _checkBurnRole(id);
         _burn(from, id, amount);
         emit Burn(from, id, amount);
     }
 
     function mintBatch(
         address to,
-        uint256[] memory ids,
-        uint256[] memory amounts
+        uint256[] calldata ids,
+        uint256[] calldata amounts
     ) public {
-        for (uint256 i = 0; i < ids.length; ++i) {
-            _checkRole(
-                keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", ids[i])),
-                msg.sender
-            );
-        }
+        _checkMintBatchRole(ids);
         _mintBatch(to, ids, amounts, "");
         emit MintBatch(msg.sender, ids, amounts, to);
     }
 
     function burnBatch(
         address from,
-        uint256[] memory ids,
-        uint256[] memory amounts
+        uint256[] calldata ids,
+        uint256[] calldata amounts
     ) public {
-        for (uint256 i = 0; i < ids.length; ++i) {
-            _checkRole(
-                keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", ids[i])),
-                msg.sender
-            );
-        }
+        _checkBurnBatchRole(ids);
         _burnBatch(from, ids, amounts);
         emit BurnBatch(from, ids, amounts);
     }
@@ -203,5 +206,65 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             _revokeRole(roles[i], accounts[i]);
         }
         emit RevokeMultiRole(roles, accounts);
+    }
+
+    function _checkMintRole(uint256 id) internal view {
+        if (
+            hasRole(
+                keccak256(abi.encodePacked("MINT_ROLE_FOR_ID", id)),
+                msg.sender
+            )
+        ) return;
+        if (id <= 199 && id >= 100 && hasRole(WRAPPED_MINT_ROLE, msg.sender))
+            return;
+        if (id <= 9_999 && id >= 1_000 && hasRole(ITEMS_MINT_ROLE, msg.sender))
+            return;
+        if (
+            id <= 19_999 &&
+            id >= 10_000 &&
+            hasRole(TITLES_MINT_ROLE, msg.sender)
+        ) return;
+        if (
+            id <= 99_999 &&
+            id >= 20_000 &&
+            hasRole(DECORATIONS_MINT_ROLE, msg.sender)
+        ) return;
+        revert("AccessControl: missing mint role");
+    }
+
+    function _checkBurnRole(uint256 id) internal view {
+        if (
+            hasRole(
+                keccak256(abi.encodePacked("BURN_ROLE_FOR_ID", id)),
+                msg.sender
+            )
+        ) return;
+        if (id <= 199 && id >= 100 && hasRole(WRAPPED_BURN_ROLE, msg.sender))
+            return;
+        if (id <= 9_999 && id >= 1_000 && hasRole(ITEMS_BURN_ROLE, msg.sender))
+            return;
+        if (
+            id <= 19_999 &&
+            id >= 10_000 &&
+            hasRole(TITLES_BURN_ROLE, msg.sender)
+        ) return;
+        if (
+            id <= 99_999 &&
+            id >= 20_000 &&
+            hasRole(DECORATIONS_BURN_ROLE, msg.sender)
+        ) return;
+        revert("AccessControl: missing burn role");
+    }
+
+    function _checkMintBatchRole(uint256[] calldata ids) internal view {
+        for (uint256 i = 0; i < ids.length; ++i) {
+            _checkMintRole(ids[i]);
+        }
+    }
+
+    function _checkBurnBatchRole(uint256[] calldata ids) internal view {
+        for (uint256 i = 0; i < ids.length; ++i) {
+            _checkBurnRole(ids[i]);
+        }
     }
 }
