@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "../libraries/Array.sol";
 
 /**
  * @title ERC1155 Batch Contract
@@ -16,28 +17,6 @@ contract ERC1155Batch {
         tokenContract = _tokenContract;
     }
 
-    function getArrayPair(uint256 x, uint256 y)
-        internal
-        pure
-        returns (uint256[] memory)
-    {
-        uint256[] memory array = new uint256[](2);
-        array[0] = x;
-        array[1] = y;
-        return array;
-    }
-
-    function getArrayPair(address x, address y)
-        internal
-        pure
-        returns (address[] memory)
-    {
-        address[] memory array = new address[](2);
-        array[0] = x;
-        array[1] = y;
-        return array;
-    }
-
     // avoids stack too deep errors
     function safeBatchTransferFromPair(
         address from,
@@ -50,8 +29,8 @@ contract ERC1155Batch {
         IERC1155(tokenContract).safeBatchTransferFrom(
             from,
             to,
-            getArrayPair(id0, id1),
-            getArrayPair(amount0, amount1),
+            Array.getArrayPair(id0, id1),
+            Array.getArrayPair(amount0, amount1),
             ""
         );
     }
@@ -65,8 +44,8 @@ contract ERC1155Batch {
         uint256[] memory batchBalances = new uint256[](2);
 
         batchBalances = IERC1155(tokenContract).balanceOfBatch(
-            getArrayPair(account, account),
-            getArrayPair(id0, id1)
+            Array.getArrayPair(account, account),
+            Array.getArrayPair(id0, id1)
         );
 
         balance0 = batchBalances[0];
