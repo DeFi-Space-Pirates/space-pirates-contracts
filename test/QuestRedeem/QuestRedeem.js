@@ -15,7 +15,7 @@ let signature;
 let domain;
 let types;
 
-describe.only("SpacePiratesQuestRedeem", () => {
+describe("SpacePiratesQuestRedeem", () => {
   before(async () => {
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
