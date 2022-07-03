@@ -3,9 +3,10 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "./SpacePiratesTokens.sol";
 
-contract SpacePiratesQuestRedeem is Ownable, EIP712 {
+contract SpacePiratesQuestRedeem is Ownable, EIP712, Pausable {
     string private constant SIGNING_DOMAIN = "Space Pirates";
     string private constant SIGNATURE_VERSION = "1";
 
@@ -33,7 +34,7 @@ contract SpacePiratesQuestRedeem is Ownable, EIP712 {
         uint256[] calldata ids,
         uint256[] calldata amounts,
         bytes calldata signature
-    ) public {
+    ) public whenNotPaused {
         require(
             !claimed[signature],
             "SpacePiratesQuestRedeem: quest already claimed"
@@ -88,6 +89,14 @@ contract SpacePiratesQuestRedeem is Ownable, EIP712 {
                     )
                 )
             );
+    }
+
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
     }
 
     function updateVerifier(address _addr) public onlyOwner {
