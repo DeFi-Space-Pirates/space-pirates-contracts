@@ -6,6 +6,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "./SpacePiratesTokens.sol";
 
+/**
+ * @title Space Pirates Quest Redeem Contract
+ * @author @Gr3it, @yuripaoloni (reviewer), @MatteoLeonesi (reviewer)
+ * @notice Let user claim their quest via a valid signature
+ */
+
 contract SpacePiratesQuestRedeem is Ownable, EIP712, Pausable {
     string private constant SIGNING_DOMAIN = "Space Pirates";
     string private constant SIGNATURE_VERSION = "1";
