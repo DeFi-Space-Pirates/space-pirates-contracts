@@ -33,7 +33,7 @@ contract SpacePiratesItemsMarketPlace is Ownable {
         uint128 price;
         uint64 itemQuantity;
         uint64 saleEnd; // 0 for a continued sale
-        uint64 available; // type(uint62).max for unlimited supply
+        uint64 available; // type(uint64).max for unlimited supply
     }
 
     mapping(uint256 => Sale[]) public sales;
