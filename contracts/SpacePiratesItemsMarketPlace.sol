@@ -12,7 +12,6 @@ import "./SpacePiratesTokens.sol";
 
 contract SpacePiratesItemsMarketPlace is Ownable {
     SpacePiratesTokens public immutable tokenContract;
-    uint256 saleCounter = 0;
 
     event AddItems(
         uint256 indexed itemId,
