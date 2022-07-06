@@ -38,7 +38,7 @@ contract SpacePiratesItemsMarketPlace is Ownable {
     }
 
     mapping(uint256 => Sale[]) public sales;
-    uint256[] public itemOnSale;
+    uint256[] public itemsOnSale;
 
     constructor(SpacePiratesTokens _tokenContract) {
         tokenContract = _tokenContract;
@@ -58,7 +58,7 @@ contract SpacePiratesItemsMarketPlace is Ownable {
             "SpacePiratesItemsMarketPlace: invalid id"
         );
         if (sales[itemId].length == 0) {
-            itemOnSale.push(itemId);
+            itemsOnSale.push(itemId);
         }
         sales[itemId].push(
             Sale(paymentId, price, itemQuantity, saleEnd, available)
