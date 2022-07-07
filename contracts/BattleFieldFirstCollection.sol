@@ -21,7 +21,7 @@ contract BattleFieldFirstCollection {
     uint256 public immutable startTime;
     uint256 public immutable duration;
 
-    uint256 mintId = 99_999;
+    uint256 public mintId = 99_999;
 
     mapping(address => uint256) public nbOfBFsMintedBy;
 
