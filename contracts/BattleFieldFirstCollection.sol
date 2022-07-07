@@ -25,6 +25,8 @@ contract BattleFieldFirstCollection {
 
     mapping(address => uint256) public nbOfBFsMintedBy;
 
+    event Mint(address indexed user, uint256 id);
+
     constructor(
         SpacePiratesTokens _tokenContract,
         uint256 _startTime,
@@ -73,6 +75,7 @@ contract BattleFieldFirstCollection {
         nbOfBFsMintedBy[msg.sender] += _quantity;
         for (uint256 i = 0; i < _quantity; i++) {
             tokenContract.mint(msg.sender, 1, ++mintId);
+            emit Mint(msg.sender, mintId);
         }
     }
 }
