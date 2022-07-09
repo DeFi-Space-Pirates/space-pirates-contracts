@@ -6,6 +6,7 @@ const faucetContractSetup = require("./setupScripts/faucetContract");
 const factoryContractSetup = require("./setupScripts/factoryContract");
 const masterChefContractSetup = require("./setupScripts/masterChefContract");
 const wrapperContractSetup = require("./setupScripts/wrapperContract");
+const battleFieldContractSetup = require("./setupScripts/battleFieldContract");
 
 async function main() {
   /* CONTRACT PARAMETERS */
@@ -14,6 +15,8 @@ async function main() {
   const feeAddress = "0x0000000000000000000000000000000000000000";
   const doubloonsPerBlock = 100;
   const startBlock = 0;
+  const BFMintStart = 1640995200; // 2020/1/1
+  const BFMintDuration = 31536000; // 1 year
 
   /* CONTRACTS CREATION */
   const TokensContract = await ethers.getContractFactory("SpacePiratesTokens");
@@ -42,6 +45,10 @@ async function main() {
     "SpacePiratesMasterChef"
   );
 
+  const BattleFieldMintContract = await ethers.getContractFactory(
+    "BattleFieldFirstCollection"
+  );
+
   /* CONTRACTS DEPLOY */
   console.log("\nDeploying contracts...\n");
 
@@ -58,7 +65,7 @@ async function main() {
   console.log("Faucet Contract deployed to:", faucetContract.address);
 
   const wrapperContract = await WrapperContract.deploy(tokensContract.address);
-  console.log("Faucet Contract deployed to:", wrapperContract.address);
+  console.log("Wrapper Contract deployed to:", wrapperContract.address);
 
   const factoryContract = await FactoryContract.deploy(tokensContract.address);
   console.log("Factory Contract deployed to:", factoryContract.address);
@@ -79,6 +86,13 @@ async function main() {
   );
   console.log("MasterChef Contract deployed to:", masterChefContract.address);
 
+  const battleFieldMintContract = await BattleFieldMintContract.deploy(
+    tokensContract.address,
+    BFMintStart,
+    BFMintDuration
+  );
+  console.log("BFMint Contract deployed to:", battleFieldMintContract.address);
+
   /* CONTRACTS SETUP */
   console.log("\nContracts setup...\n");
 
@@ -92,6 +106,7 @@ async function main() {
     factoryContract
   );
   await wrapperContractSetup(tokensContract, wrapperContract);
+  await battleFieldContractSetup(tokensContract, battleFieldMintContract);
 }
 
 main()
