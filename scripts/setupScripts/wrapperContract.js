@@ -10,5 +10,5 @@ module.exports = async function wrapperContractSetup(
   await tokensContract.grantRole(roles.mint.wrapped, wrapperContract.address);
   console.log("    granted mint role for the wrapped tokens");
   await tokensContract.grantRole(roles.burn.wrapped, wrapperContract.address);
-  console.log("    granted burn role for the wrapped tokens");
+  console.log("    granted burn role for the wrapped tokens\n");
 };
