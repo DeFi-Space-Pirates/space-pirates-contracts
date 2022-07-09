@@ -46,7 +46,7 @@ contract SpacePiratesQuestRedeem is Ownable, EIP712, Pausable {
             "SpacePiratesQuestRedeem: quest already claimed"
         );
         require(
-            signatureCheck(questName, ids, amounts, signature),
+            signatureVerification(questName, ids, amounts, signature),
             "SpacePiratesQuestRedeem: invalid signature"
         );
         claimed[signature] = true;
@@ -54,25 +54,14 @@ contract SpacePiratesQuestRedeem is Ownable, EIP712, Pausable {
         emit QuestClaim(msg.sender, questName, ids, amounts);
     }
 
-    function signatureCheck(
-        string calldata questName,
-        uint256[] calldata ids,
-        uint256[] calldata amounts,
-        bytes calldata signature
-    ) public view returns (bool) {
-        return
-            signatureVerification(questName, ids, amounts, signature) ==
-            verifier;
-    }
-
     function signatureVerification(
         string calldata questName,
         uint256[] calldata ids,
         uint256[] calldata amounts,
         bytes calldata signature
-    ) public view returns (address) {
+    ) public view returns (bool) {
         bytes32 digest = _hash(questName, ids, amounts, msg.sender);
-        return ECDSA.recover(digest, signature);
+        return ECDSA.recover(digest, signature) == verifier;
     }
 
     function _hash(
