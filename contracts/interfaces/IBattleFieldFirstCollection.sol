@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 /**
- * @title Space Pirates Faucet Interface
+ * @title Battle Field First Collection Mint Implementation
  * @author @Gr3it
  */
 

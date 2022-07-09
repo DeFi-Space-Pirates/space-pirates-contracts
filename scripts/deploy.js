@@ -6,6 +6,7 @@ const faucetContractSetup = require("./setupScripts/faucetContract");
 const factoryContractSetup = require("./setupScripts/factoryContract");
 const masterChefContractSetup = require("./setupScripts/masterChefContract");
 const wrapperContractSetup = require("./setupScripts/wrapperContract");
+const questRedeemContractSetup = require("./setupScripts/questRedeemContract");
 const battleFieldContractSetup = require("./setupScripts/battleFieldContract");
 
 async function main() {
@@ -45,6 +46,9 @@ async function main() {
     "SpacePiratesMasterChef"
   );
 
+  const QuestRedeemContract = await ethers.getContractFactory(
+    "SpacePiratesQuestRedeem"
+  );
   const BattleFieldMintContract = await ethers.getContractFactory(
     "BattleFieldFirstCollection"
   );
@@ -86,6 +90,14 @@ async function main() {
   );
   console.log("MasterChef Contract deployed to:", masterChefContract.address);
 
+  const questRedeemContract = await QuestRedeemContract.deploy(
+    tokensContract.address
+  );
+  console.log(
+    "Quest Redeem Contract deployed to:",
+    questRedeemContract.address
+  );
+
   const battleFieldMintContract = await BattleFieldMintContract.deploy(
     tokensContract.address,
     BFMintStart,
@@ -106,6 +118,7 @@ async function main() {
     factoryContract
   );
   await wrapperContractSetup(tokensContract, wrapperContract);
+  await questRedeemContractSetup(tokensContract, questRedeemContract);
   await battleFieldContractSetup(tokensContract, battleFieldMintContract);
 }
 
