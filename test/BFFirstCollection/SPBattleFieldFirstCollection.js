@@ -8,7 +8,7 @@ let tokensContract;
 let helperRoleContract;
 let mintContract;
 
-describe.only("SpacePiratesWrapper", () => {
+describe("SpacePiratesBattleFieldMint", () => {
   before(async () => {
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
