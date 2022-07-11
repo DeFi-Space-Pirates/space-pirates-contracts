@@ -7,7 +7,8 @@
     "wrapped": "0x570fae637af42631540d61792ad6c3a38622f6396680bd058c94992df958932e",
     "items": "0x8a971267dda73f2bbe888f9ed240c21afb5a5980f7b1e92aeafaad3880dac52f",
     "titles": "0xd241016ee141eea33ebd00967f7f7843377cf319f71a1070675110119fb86c01",
-    "decorations": "0x77fe00f5aaa81d64d9f55d8616be0398bce160f21a075e1635f854dc0c69a572"
+    "decorations": "0x77fe00f5aaa81d64d9f55d8616be0398bce160f21a075e1635f854dc0c69a572",
+    "battlefield": "0x6a5cf4fbc764663782b6c69f42c0b62dfba03c7e30fcffbf9480a5d3db112ef5"
   },
   "burn": {
     "doubloons": "0x79c4f19595d0f36d8c94f6d809decda230ff568defdd4e85ca989d8c603c2efb",
@@ -17,6 +18,7 @@
     "wrapped": "0xcc0ccd8bd17a2b44b8083daff945bb3afbdb74c75c0d0ade0c1d73872f3da2b7",
     "items": "0xc9753cc6a12b1d2aa87c7b66743185706ef6ec8328f4ea4f1bb99f0cac770457",
     "titles": "0x7b4d2faaff6bdaace990e24462dcf2739c3533574e81f2cb36eeec6d9d91a63e",
-    "decorations": "0xd1b4dc7e91c020dd9a22a12df8a310edc9b278f858f001ba89798b0309dc3666"
+    "decorations": "0xd1b4dc7e91c020dd9a22a12df8a310edc9b278f858f001ba89798b0309dc3666",
+    "battlefield": "0x72275d2d7cdf971af1091b6e0e4e2863c24b00b92a68a8e7184cc5d55ff619e2"
   }
 }
