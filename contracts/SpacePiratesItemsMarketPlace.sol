@@ -6,16 +6,16 @@ import "./SpacePiratesTokens.sol";
 
 /**
  * @title Space Pirates Items Market Place
- * @author @Gr3it, @yuripaoloni (reviewer), @MatteoLeonesi (reviewer)
- * @notice Split Asteroids tokens in their underlying tokens and vice versa
+ * @author @Gr3it, @yuripaoloni (reviewer)
+ * @notice Create sales of items, titles and battle fields
  */
 
 contract SpacePiratesItemsMarketPlace is Ownable {
     SpacePiratesTokens public immutable tokenContract;
 
     event AddItems(
-        uint32[] indexed itemsIds,
-        uint16[] itemsQuantities,
+        uint256[] indexed itemsIds,
+        uint256[] itemsQuantities,
         uint128 paymentId,
         uint128 price,
         uint120 saleEnd,
@@ -24,22 +24,23 @@ contract SpacePiratesItemsMarketPlace is Ownable {
     );
 
     event BuyItem(
-        uint32[] indexed itemsIds,
+        uint256[] indexed itemsIds,
         uint128 paymentId,
         uint128 price,
         uint64 quantity
     );
 
     struct Sale {
-        uint32[] itemsIds;
-        uint16[] itemsQuantities;
+        uint256[] itemsIds;
+        uint256[] itemsQuantities;
         uint128 paymentId;
         uint128 price;
         uint120 saleEnd; // 0 for a continued sale
-        uint120 available; // type(uint64).max for unlimited supply
+        uint120 available; // type(uint120).max for unlimited supply
         uint16 maxBuyPerAddress; // 0 for unlimited amount
-        mapping(address => uint256) Bought;
     }
+
+    mapping(uint256 => mapping(address => uint256)) bought; // SaleIndex -> Address -> Number Of Items bought
 
     Sale[] public sales;
     mapping(uint256 => uint256[]) public saleIndexes; // store the indexes of the sales that include the items
@@ -50,8 +51,8 @@ contract SpacePiratesItemsMarketPlace is Ownable {
     }
 
     function createSale(
-        uint32[] calldata itemsIds,
-        uint16[] calldata itemsQuantities,
+        uint256[] calldata itemsIds,
+        uint256[] calldata itemsQuantities,
         uint128 paymentId,
         uint128 price,
         uint120 saleEnd,
@@ -65,7 +66,7 @@ contract SpacePiratesItemsMarketPlace is Ownable {
 
         uint256 saleIndex = sales.length;
         for (uint256 i = 0; i < itemsIds.length; i++) {
-            uint32 itemsId = itemsIds[i];
+            uint256 itemsId = itemsIds[i];
             require(
                 (itemsId >= 20_000 && itemsId <= 99_999) ||
                     (itemsId >= 100_000 && itemsId <= 199_999) ||
@@ -78,14 +79,17 @@ contract SpacePiratesItemsMarketPlace is Ownable {
             saleIndexes[itemsId].push(saleIndex);
         }
 
-        Sale storage sale = sales.push();
-        sale.itemsIds = itemsIds;
-        sale.itemsQuantities = itemsQuantities;
-        sale.paymentId = paymentId;
-        sale.price = price;
-        sale.saleEnd = saleEnd;
-        sale.available = available;
-        sale.maxBuyPerAddress = maxBuyPerAddress;
+        sales.push(
+            Sale(
+                itemsIds,
+                itemsQuantities,
+                paymentId,
+                price,
+                saleEnd,
+                available,
+                maxBuyPerAddress
+            )
+        );
 
         emit AddItems(
             itemsIds,
@@ -98,26 +102,38 @@ contract SpacePiratesItemsMarketPlace is Ownable {
         );
     }
 
-    function buyItem(
-        uint256 itemId,
-        uint256 saleIndex,
-        uint64 quantity
-    ) external {
-        Sale memory sale = sales[itemId][saleIndex];
+    function buyItem(uint256 saleIndex, uint16 quantity) external {
+        Sale memory sale = sales[saleIndex];
         require(
             sale.saleEnd == 0 || sale.saleEnd >= block.timestamp,
             "SpacePiratesItemsMarketPlace: sale ended"
         );
-        if (sale.available != type(uint64).max) {
+        if (sale.available != type(uint120).max) {
             require(
                 quantity <= sale.available,
                 "SpacePiratesItemsMarketPlace: buy exceed available quantity"
             );
-            sales[itemId][saleIndex].available -= quantity;
+            sales[saleIndex].available -= quantity;
         }
-        tokenContract.burn(msg.sender, quantity * sale.price, sale.paymentId);
-        tokenContract.mint(msg.sender, quantity * sale.itemQuantity, itemId);
+        if (sale.maxBuyPerAddress != 0) {
+            require(
+                bought[saleIndex][msg.sender] + quantity <=
+                    sale.maxBuyPerAddress,
+                "SpacePiratesItemsMarketPlace: exceed user max mint"
+            );
+            bought[saleIndex][msg.sender] += quantity;
+        }
+        for (uint256 i = 0; i < sale.itemsQuantities.length; ++i) {
+            sale.itemsQuantities[i] *= quantity;
+        }
 
-        emit BuyItem(itemId, sale.paymentId, sale.price, quantity);
+        tokenContract.burn(msg.sender, quantity * sale.price, sale.paymentId);
+        tokenContract.mintBatch(
+            msg.sender,
+            sale.itemsIds,
+            sale.itemsQuantities
+        );
+
+        emit BuyItem(sale.itemsIds, sale.paymentId, sale.price, quantity);
     }
 }
