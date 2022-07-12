@@ -86,3 +86,9 @@ contract HelperDexContract {
         return keccak256(bytecode);
     }
 }
+
+contract HelperMaxUint {
+    function maxUint(uint256 identifier) external pure returns (uint256) {
+        return 2**identifier - 1;
+    }
+}

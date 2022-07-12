@@ -40,14 +40,47 @@ contract SpacePiratesItemsMarketPlace is Ownable {
         uint16 maxBuyPerAddress; // 0 for unlimited amount
     }
 
-    mapping(uint256 => mapping(address => uint256)) bought; // SaleIndex -> Address -> Number Of Items bought
-
     Sale[] public sales;
+    mapping(uint256 => mapping(address => uint256)) bought; // SaleIndex -> Address -> Number Of Items bought
     mapping(uint256 => uint256[]) public saleIndexes; // store the indexes of the sales that include the items
     uint256[] public itemsOnSale;
 
     constructor(SpacePiratesTokens _tokenContract) {
         tokenContract = _tokenContract;
+    }
+
+    function itemsOnSaleArray() external view returns (uint256[] memory) {
+        return itemsOnSale;
+    }
+
+    function salesIndexesFromId(uint256 id)
+        external
+        view
+        returns (uint256[] memory)
+    {
+        return saleIndexes[id];
+    }
+
+    function salesAmount() external view returns (uint256 amount) {
+        return sales.length;
+    }
+
+    function saleItemsIds(uint256 saleIndex)
+        external
+        view
+        returns (uint256[] memory)
+    {
+        Sale memory sale = sales[saleIndex];
+        return sale.itemsIds;
+    }
+
+    function saleItemsQuantities(uint256 saleIndex)
+        external
+        view
+        returns (uint256[] memory)
+    {
+        Sale memory sale = sales[saleIndex];
+        return sale.itemsQuantities;
     }
 
     function createSale(
