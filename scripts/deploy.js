@@ -7,6 +7,7 @@ const factoryContractSetup = require("./setupScripts/factoryContract");
 const masterChefContractSetup = require("./setupScripts/masterChefContract");
 const wrapperContractSetup = require("./setupScripts/wrapperContract");
 const questRedeemContractSetup = require("./setupScripts/questRedeemContract");
+const itemsMarketPlaceSetup = require("./setupScripts/itemsMarketPlace");
 
 async function main() {
   /* CONTRACT PARAMETERS */
@@ -45,6 +46,10 @@ async function main() {
 
   const QuestRedeemContract = await ethers.getContractFactory(
     "SpacePiratesQuestRedeem"
+  );
+
+  const ItemsMarketPlace = await ethers.getContractFactory(
+    "SpacePiratesItemsMarketPlace"
   );
 
   /* CONTRACTS DEPLOY */
@@ -92,6 +97,10 @@ async function main() {
     questRedeemContract.address
   );
 
+  const itemsMarketPlace = await ItemsMarketPlace.deploy(
+    tokensContract.address
+  );
+
   /* CONTRACTS SETUP */
   console.log("\nContracts setup...\n");
 
@@ -106,6 +115,7 @@ async function main() {
   );
   await wrapperContractSetup(tokensContract, wrapperContract);
   await questRedeemContractSetup(tokensContract, questRedeemContract);
+  await itemsMarketPlaceSetup(tokensContract, questRedeemContract);
 }
 
 main()
