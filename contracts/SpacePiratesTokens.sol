@@ -13,11 +13,12 @@ import "./ERC1155Custom.sol";
 contract SpacePiratesTokens is ERC1155Custom, AccessControl {
     /**
      * Tokens' Ids distribution
-     *      1 -     99 Projects tokens
-     *    100 -    199 Wrapped tokens
-     *  1 000 -  9 999 Items
-     * 10 000 - 19 999 Titles
-     * 20 000 - 99 999 Decorations
+     *       1 -      99 Projects tokens
+     *     100 -     199 Wrapped tokens
+     *   1 000 -   9 999 Items
+     *  10 000 -  19 999 Titles
+     *  20 000 -  99 999 Decorations
+     * 100 000 - 199 999 Battle Fields
      */
     uint256 public constant DOUBLOONS = 1;
     uint256 public constant ASTEROIDS = 2;
@@ -36,6 +37,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         keccak256("DECORATIONS_MINT_ROLE");
     bytes32 public constant DECORATIONS_BURN_ROLE =
         keccak256("DECORATIONS_BURN_ROLE");
+    bytes32 public constant BF_MINT_ROLE = keccak256("BF_MINT_ROLE");
+    bytes32 public constant BF_BURN_ROLE = keccak256("BF_BURN_ROLE");
 
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
     bytes32 public constant CAN_PAUSE_ROLE = keccak256("CAN_PAUSE_ROLE");
@@ -229,6 +232,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             id >= 20_000 &&
             hasRole(DECORATIONS_MINT_ROLE, msg.sender)
         ) return;
+        if (id <= 199_999 && id >= 100_000 && hasRole(BF_MINT_ROLE, msg.sender))
+            return;
         revert("AccessControl: missing mint role");
     }
 
@@ -253,6 +258,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
             id >= 20_000 &&
             hasRole(DECORATIONS_BURN_ROLE, msg.sender)
         ) return;
+        if (id <= 199_999 && id >= 100_000 && hasRole(BF_BURN_ROLE, msg.sender))
+            return;
         revert("AccessControl: missing burn role");
     }
 

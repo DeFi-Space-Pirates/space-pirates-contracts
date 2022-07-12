@@ -7,6 +7,7 @@ const factoryContractSetup = require("./setupScripts/factoryContract");
 const masterChefContractSetup = require("./setupScripts/masterChefContract");
 const wrapperContractSetup = require("./setupScripts/wrapperContract");
 const questRedeemContractSetup = require("./setupScripts/questRedeemContract");
+const battleFieldContractSetup = require("./setupScripts/battleFieldContract");
 const itemsMarketPlaceSetup = require("./setupScripts/itemsMarketPlace");
 
 async function main() {
@@ -16,6 +17,8 @@ async function main() {
   const feeAddress = "0x0000000000000000000000000000000000000000";
   const doubloonsPerBlock = 100;
   const startBlock = 0;
+  const BFMintStart = 1640995200; // 2020/1/1
+  const BFMintDuration = 31536000; // 1 year
 
   /* CONTRACTS CREATION */
   const TokensContract = await ethers.getContractFactory("SpacePiratesTokens");
@@ -47,6 +50,9 @@ async function main() {
   const QuestRedeemContract = await ethers.getContractFactory(
     "SpacePiratesQuestRedeem"
   );
+  const BattleFieldMintContract = await ethers.getContractFactory(
+    "BattleFieldFirstCollection"
+  );
 
   const ItemsMarketPlace = await ethers.getContractFactory(
     "SpacePiratesItemsMarketPlace"
@@ -68,7 +74,7 @@ async function main() {
   console.log("Faucet Contract deployed to:", faucetContract.address);
 
   const wrapperContract = await WrapperContract.deploy(tokensContract.address);
-  console.log("Faucet Contract deployed to:", wrapperContract.address);
+  console.log("Wrapper Contract deployed to:", wrapperContract.address);
 
   const factoryContract = await FactoryContract.deploy(tokensContract.address);
   console.log("Factory Contract deployed to:", factoryContract.address);
@@ -97,10 +103,17 @@ async function main() {
     questRedeemContract.address
   );
 
+  const battleFieldMintContract = await BattleFieldMintContract.deploy(
+    tokensContract.address,
+    BFMintStart,
+    BFMintDuration
+  );
+  console.log("BFMint Contract deployed to:", battleFieldMintContract.address);
+
   const itemsMarketPlace = await ItemsMarketPlace.deploy(
     tokensContract.address
   );
-
+  console.log("Market Place Contract deployed to:", itemsMarketPlace.address);
   /* CONTRACTS SETUP */
   console.log("\nContracts setup...\n");
 
@@ -115,6 +128,7 @@ async function main() {
   );
   await wrapperContractSetup(tokensContract, wrapperContract);
   await questRedeemContractSetup(tokensContract, questRedeemContract);
+  await battleFieldContractSetup(tokensContract, battleFieldMintContract);
   await itemsMarketPlaceSetup(tokensContract, questRedeemContract);
 }
 

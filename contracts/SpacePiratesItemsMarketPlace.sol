@@ -102,8 +102,8 @@ contract SpacePiratesItemsMarketPlace is Ownable {
             uint256 itemsId = itemsIds[i];
             require(
                 (itemsId >= 20_000 && itemsId <= 99_999) ||
-                    (itemsId >= 100_000 && itemsId <= 199_999) ||
-                    (itemsId >= 1_000 && itemsId <= 9_999),
+                    (itemsId >= 1_000 && itemsId <= 9_999) ||
+                    (itemsId >= 100_000 && itemsId <= 199_999),
                 "SpacePiratesItemsMarketPlace: invalid id"
             );
             if (saleIndexes[itemsId].length == 0) {

@@ -19,11 +19,14 @@ module.exports = async function itemsMarketPlaceSetup(
   console.log("    granted asteroids burn role");
   await tokensContract.grantRole(roles.mint.items, itemsMarketPlace.address);
   console.log("    granted items mint role");
-  await tokensContract.grantRole(roles.mint.titles, itemsMarketPlace.address);
-  console.log("    granted titles mint role");
   await tokensContract.grantRole(
     roles.mint.decorations,
     itemsMarketPlace.address
   );
-  console.log("    granted decorations mint role\n");
+  console.log("    granted decorations mint role");
+  await tokensContract.grantRole(
+    roles.mint.battlefield,
+    itemsMarketPlace.address
+  );
+  console.log("    granted battlefield mint role\n");
 };
