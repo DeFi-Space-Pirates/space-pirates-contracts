@@ -70,10 +70,10 @@ contract BattleFieldFirstCollection {
     }
 
     function _mintQuantity(uint256 _quantity) internal {
-        tokenContract.burn(msg.sender, _quantity * PRICE, PAYING_ID);
+        tokenContract.burn(msg.sender, PAYING_ID, _quantity * PRICE);
         nbOfBFsMintedBy[msg.sender] += _quantity;
         for (uint256 i = 0; i < _quantity; i++) {
-            tokenContract.mint(msg.sender, 1, ++mintId);
+            tokenContract.mint(msg.sender, ++mintId, 1);
             emit Mint(msg.sender, mintId);
         }
     }

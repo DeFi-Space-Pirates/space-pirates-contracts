@@ -61,7 +61,7 @@ describe("SpacePiratesStaking: basic features", () => {
       doubloons
     );
     await tokens.grantRole(DOUBLOONS_MINTER_ROLE, owner.address);
-    await tokens.mint(addr1.address, 10000, doubloons);
+    await tokens.mint(addr1.address, doubloons, 10000);
 
     // addr1 approve staking contract to operate on tokens
     await tokens.connect(addr1).setApprovalForAll(staking.address, true);

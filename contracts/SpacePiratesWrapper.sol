@@ -84,7 +84,7 @@ contract SpacePiratesWrapper is Ownable {
 
         IERC20(_addr).safeTransferFrom(msg.sender, address(this), _amount);
 
-        tokenContract.mint(msg.sender, _amount, id);
+        tokenContract.mint(msg.sender, id, _amount);
 
         emit ERC20Deposited(msg.sender, msg.sender, _addr, id, _amount);
     }
@@ -100,7 +100,7 @@ contract SpacePiratesWrapper is Ownable {
 
         IERC20(_addr).safeTransferFrom(msg.sender, address(this), _amount);
 
-        tokenContract.mint(_to, _amount, id);
+        tokenContract.mint(_to, id, _amount);
 
         emit ERC20Deposited(msg.sender, _to, _addr, id, _amount);
     }
@@ -118,7 +118,7 @@ contract SpacePiratesWrapper is Ownable {
             IERC20(_addr).safeTransfer(msg.sender, _amount);
         }
 
-        tokenContract.burn(msg.sender, _amount, id);
+        tokenContract.burn(msg.sender, id, _amount);
 
         emit ERC20Withdrawn(msg.sender, msg.sender, _addr, id, _amount);
     }
@@ -140,7 +140,7 @@ contract SpacePiratesWrapper is Ownable {
             IERC20(_addr).safeTransfer(_to, _amount);
         }
 
-        tokenContract.burn(msg.sender, _amount, id);
+        tokenContract.burn(msg.sender, id, _amount);
 
         emit ERC20Withdrawn(msg.sender, _to, _addr, id, _amount);
     }
@@ -150,19 +150,19 @@ contract SpacePiratesWrapper is Ownable {
     }
 
     function ethDeposit() public payable {
-        tokenContract.mint(msg.sender, msg.value, spaceETH);
+        tokenContract.mint(msg.sender, spaceETH, msg.value);
 
         emit ETHDeposited(msg.sender, msg.sender, spaceETH, msg.value);
     }
 
     function ethDepositTo(address _to) external payable {
-        tokenContract.mint(_to, msg.value, spaceETH);
+        tokenContract.mint(_to, spaceETH, msg.value);
 
         emit ETHDeposited(msg.sender, _to, spaceETH, msg.value);
     }
 
     function ethWithdraw(uint256 _amount) external {
-        tokenContract.burn(msg.sender, _amount, spaceETH);
+        tokenContract.burn(msg.sender, spaceETH, _amount);
 
         (bool success, ) = msg.sender.call{value: _amount}("");
         require(success, "SpacePiratesWrapper: withdraw failed");
@@ -171,7 +171,7 @@ contract SpacePiratesWrapper is Ownable {
     }
 
     function ethWithdrawTo(uint256 _amount, address _to) external {
-        tokenContract.burn(msg.sender, _amount, spaceETH);
+        tokenContract.burn(msg.sender, spaceETH, _amount);
 
         (bool success, ) = _to.call{value: _amount}("");
         require(success, "SpacePiratesWrapper: withdraw failed");

@@ -215,8 +215,8 @@ contract SpacePiratesMasterChef is Ownable, ReentrancyGuard {
         uint256 doubloonsReward = (multiplier *
             doubloonsPerBlock *
             pool.allocPoint) / totalAllocPoint;
-        doubloons.mint(devaddr, doubloonsReward / 10, DOUBLOONS_ID);
-        doubloons.mint(address(this), doubloonsReward, DOUBLOONS_ID);
+        doubloons.mint(devaddr, DOUBLOONS_ID, doubloonsReward / 10);
+        doubloons.mint(address(this), DOUBLOONS_ID, doubloonsReward);
         pool.accDoubloonsPerShare =
             pool.accDoubloonsPerShare +
             ((doubloonsReward * 1e12) / lpSupply);

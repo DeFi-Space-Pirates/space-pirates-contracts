@@ -25,7 +25,7 @@ contract AsteroidsSplitContract {
     }
 
     function splitAsteroids(uint256 amount) public {
-        tokenContract.burn(msg.sender, amount, ASTEROIDS);
+        tokenContract.burn(msg.sender, ASTEROIDS, amount);
         tokenContract.mintBatch(
             msg.sender,
             Array.getArrayPair(VE_ASTEROIDS, STK_ASTEROIDS),
@@ -41,7 +41,7 @@ contract AsteroidsSplitContract {
             Array.getArrayPair(VE_ASTEROIDS, STK_ASTEROIDS),
             Array.getArrayPair(amount, amount)
         );
-        tokenContract.mint(msg.sender, amount, ASTEROIDS);
+        tokenContract.mint(msg.sender, ASTEROIDS, amount);
 
         emit MergeAsteroids(msg.sender, amount);
     }

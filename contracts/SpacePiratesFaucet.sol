@@ -47,7 +47,7 @@ contract SpacePiratesFaucet is Ownable {
 
         mintedDoubloons[msg.sender] += mintableAmount;
 
-        tokenContract.mint(msg.sender, mintableAmount, DOUBLOONS);
+        tokenContract.mint(msg.sender, DOUBLOONS, mintableAmount);
         emit DoubloonsMint(msg.sender, mintableAmount);
     }
 
@@ -63,7 +63,7 @@ contract SpacePiratesFaucet is Ownable {
             : _amount;
         mintedAsteroids[msg.sender] += mintableAmount;
 
-        tokenContract.mint(msg.sender, mintableAmount, ASTEROIDS);
+        tokenContract.mint(msg.sender, ASTEROIDS, mintableAmount);
         emit AsteroidsMint(msg.sender, mintableAmount);
     }
 }

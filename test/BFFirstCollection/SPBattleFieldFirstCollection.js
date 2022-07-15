@@ -54,7 +54,7 @@ describe("SpacePiratesBattleFieldMint", () => {
     const startId = await mintContract.mintId();
     const price = await mintContract.PRICE();
 
-    await tokensContract.mint(ownerAddress, 2 * price, 1);
+    await tokensContract.mint(ownerAddress, 1, 2 * price);
 
     await mintContract.mint(2);
     expect(
@@ -69,7 +69,7 @@ describe("SpacePiratesBattleFieldMint", () => {
   it("should revert if tried to mint a third NFT", async () => {
     const price = await mintContract.PRICE();
 
-    await tokensContract.mint(ownerAddress, 3 * price, 1);
+    await tokensContract.mint(ownerAddress, 1, 3 * price);
     await mintContract.mint(2);
     await expect(mintContract.mint(1)).to.be.revertedWith(
       "BattleFieldFirstCollection: mint quantity exceeds allowance for this address"
@@ -78,7 +78,7 @@ describe("SpacePiratesBattleFieldMint", () => {
   it("should revert if not enough funds", async () => {
     const price = await mintContract.PRICE();
 
-    await tokensContract.mint(ownerAddress, 2 * price - 1, 1);
+    await tokensContract.mint(ownerAddress, 1, 2 * price - 1);
 
     await expect(mintContract.mint(2)).to.be.reverted;
   });
@@ -93,13 +93,13 @@ describe("SpacePiratesBattleFieldMint", () => {
         value: ethers.BigNumber.from("1000000000000000000"),
       });
       await tx;
-      await tokensContract.mint(wallet.address, price, 1);
+      await tokensContract.mint(wallet.address, 1, price);
       await tokensContract
         .connect(wallet)
         .setApprovalForAll(mintContract.address, true);
       await mintContract.connect(wallet).mint(1);
     }
-    await tokensContract.mint(ownerAddress, price, 1);
+    await tokensContract.mint(ownerAddress, 1, price);
     await expect(mintContract.mint(1)).to.be.revertedWith(
       "BattleFieldFirstCollection: mint quantity exceeds max supply"
     );
@@ -127,7 +127,7 @@ describe("SpacePiratesBattleFieldMint", () => {
 
     const price = await mintContract.PRICE();
 
-    await tokensContract.mint(ownerAddress, 2 * price, 1);
+    await tokensContract.mint(ownerAddress, 1, price);
 
     await expect(mintContract.mint(2)).to.be.revertedWith(
       "BattleFieldFirstCollection: mint not started yet"
@@ -137,7 +137,7 @@ describe("SpacePiratesBattleFieldMint", () => {
     await timeJump(604800 + 1);
     const price = await mintContract.PRICE();
 
-    await tokensContract.mint(ownerAddress, 2 * price, 1);
+    await tokensContract.mint(ownerAddress, 1, price);
 
     await expect(mintContract.mint(2)).to.be.revertedWith(
       "BattleFieldFirstCollection: mint already ended"
@@ -146,7 +146,7 @@ describe("SpacePiratesBattleFieldMint", () => {
   it("should revert if quantity equal to 0", async () => {
     const price = await mintContract.PRICE();
 
-    await tokensContract.mint(ownerAddress, 2 * price, 1);
+    await tokensContract.mint(ownerAddress, 1, price);
     await expect(mintContract.mint(2)).to.be.revertedWith(
       "BattleFieldFirstCollection: need to mint at least 1 NFT"
     );
