@@ -23,12 +23,8 @@ contract SpacePiratesFaucet is Ownable {
         tokenContract = _tokenContract;
     }
 
-    function setMintLimit(uint256 tokenId, uint256 mintLimit) public onlyOwner {
-        if (tokenMintLimit[tokenId] == 0) {
-            supportedTokens.push(tokenId);
-        }
-        tokenMintLimit[tokenId] = mintLimit;
-        emit SetMintLimit(tokenId, mintLimit);
+    function getSupportedTokens() external view returns (uint256[] memory) {
+        return supportedTokens;
     }
 
     function mintToken(uint256 tokenId, uint256 amount) public {
@@ -39,5 +35,13 @@ contract SpacePiratesFaucet is Ownable {
 
         tokenContract.mint(msg.sender, tokenId, amount);
         emit TokenMint(msg.sender, tokenId, amount);
+    }
+
+    function setMintLimit(uint256 tokenId, uint256 mintLimit) public onlyOwner {
+        if (tokenMintLimit[tokenId] == 0) {
+            supportedTokens.push(tokenId);
+        }
+        tokenMintLimit[tokenId] = mintLimit;
+        emit SetMintLimit(tokenId, mintLimit);
     }
 }
