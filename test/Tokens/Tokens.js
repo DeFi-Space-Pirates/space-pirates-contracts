@@ -70,7 +70,7 @@ describe("SpacePiratesTokens: Tokens", () => {
 
           const role = helperRoleContract.getMintRoleBytes(id);
           await tokensContract.grantRole(role, ownerAddress);
-          await tokensContract.mint(ownerAddress, 10, id);
+          await tokensContract.mint(ownerAddress, id, 10);
 
           expect(await tokensContract.exists(id)).to.be.true;
         });
@@ -83,7 +83,7 @@ describe("SpacePiratesTokens: Tokens", () => {
 
           const role = helperRoleContract.getMintRoleBytes(id);
           await tokensContract.grantRole(role, ownerAddress);
-          await tokensContract.mint(ownerAddress, amount, id);
+          await tokensContract.mint(ownerAddress, id, amount);
 
           expect(await tokensContract.totalSupply(id)).to.be.equal(amount);
         });
@@ -230,7 +230,7 @@ describe("SpacePiratesTokens: Tokens", () => {
           const role = helperRoleContract.getMintRoleBytes(id);
           await tokensContract.grantRole(role, ownerAddress);
 
-          await tokensContract.mint(ownerAddress, amount, id);
+          await tokensContract.mint(ownerAddress, id, amount);
           expect(await tokensContract.balanceOf(ownerAddress, id)).to.be.equal(
             initialBalance + amount
           );
@@ -239,7 +239,7 @@ describe("SpacePiratesTokens: Tokens", () => {
           const id = getRandomInteger();
           const amount = 100;
 
-          await expect(tokensContract.mint(ownerAddress, amount, id)).to.be
+          await expect(tokensContract.mint(ownerAddress, id, amount)).to.be
             .reverted;
         });
       });
@@ -252,14 +252,14 @@ describe("SpacePiratesTokens: Tokens", () => {
           const burnRole = helperRoleContract.getBurnRoleBytes(id);
           await tokensContract.grantRole(mintRole, ownerAddress);
           await tokensContract.grantRole(burnRole, ownerAddress);
-          await tokensContract.mint(ownerAddress, amount * 10, id);
+          await tokensContract.mint(ownerAddress, id, amount * 10);
 
           const initialBalance = await tokensContract.balanceOf(
             ownerAddress,
             id
           );
 
-          await tokensContract.burn(ownerAddress, amount, id);
+          await tokensContract.burn(ownerAddress, id, amount);
 
           expect(await tokensContract.balanceOf(ownerAddress, id)).to.be.equal(
             initialBalance - amount
@@ -273,7 +273,7 @@ describe("SpacePiratesTokens: Tokens", () => {
           const burnRole = helperRoleContract.getBurnRoleBytes(id);
           await tokensContract.grantRole(mintRole, ownerAddress);
           await tokensContract.grantRole(burnRole, accounts[1].getAddress());
-          await tokensContract.mint(ownerAddress, amount * 10, id);
+          await tokensContract.mint(ownerAddress, id, amount * 10);
 
           const initialBalance = await tokensContract.balanceOf(
             ownerAddress,
@@ -283,7 +283,7 @@ describe("SpacePiratesTokens: Tokens", () => {
           tokensContract.setApprovalForAll(accounts[1].getAddress(), true);
           await tokensContract
             .connect(accounts[1])
-            .burn(ownerAddress, amount, id);
+            .burn(ownerAddress, id, amount);
 
           expect(await tokensContract.balanceOf(ownerAddress, id)).to.be.equal(
             initialBalance - amount
@@ -295,9 +295,9 @@ describe("SpacePiratesTokens: Tokens", () => {
 
           const role = helperRoleContract.getMintRoleBytes(id);
           await tokensContract.grantRole(role, ownerAddress);
-          await tokensContract.mint(ownerAddress, amount, id);
+          await tokensContract.mint(ownerAddress, id, amount * 10);
 
-          await expect(tokensContract.burn(ownerAddress, amount, id)).to.be
+          await expect(tokensContract.burn(ownerAddress, id, amount * 10)).to.be
             .reverted;
         });
         it("Should revert if it is not owner nor approved", async () => {
@@ -308,10 +308,10 @@ describe("SpacePiratesTokens: Tokens", () => {
           const burnRole = helperRoleContract.getBurnRoleBytes(id);
           await tokensContract.grantRole(mintRole, ownerAddress);
           await tokensContract.grantRole(burnRole, accounts[1].getAddress());
-          await tokensContract.mint(ownerAddress, amount * 10, id);
+          await tokensContract.mint(ownerAddress, id, amount * 10);
 
           await expect(
-            tokensContract.connect(accounts[1]).burn(ownerAddress, amount, id)
+            tokensContract.connect(accounts[1]).burn(ownerAddress, id, amount)
           ).to.be.revertedWith("ERC1155: caller is not owner nor approved");
         });
       });
@@ -521,7 +521,7 @@ describe("SpacePiratesTokens: Tokens", () => {
           const mintRole = helperRoleContract.getMintRoleBytes(id);
           await tokensContract.grantRole(mintRole, ownerAddress);
 
-          await tokensContract.mint(ownerAddress, amount * 10, id);
+          await tokensContract.mint(ownerAddress, id, amount * 10);
 
           expect(await tokensContract.canBeTransferred(id)).to.be.true;
           await expect(tokensContract.lockTokenTransfer(id)).to.be.reverted;
@@ -542,7 +542,7 @@ describe("SpacePiratesTokens: Tokens", () => {
           const role = helperRoleContract.getMintRoleBytes(id);
           await tokensContract.grantRole(role, ownerAddress);
 
-          await tokensContract.mint(ownerAddress, amount * 10, id);
+          await tokensContract.mint(ownerAddress, id, amount * 10);
           await tokensContract.safeTransferFrom(
             ownerAddress,
             accounts[1].getAddress(),
@@ -562,7 +562,7 @@ describe("SpacePiratesTokens: Tokens", () => {
           await tokensContract.grantRole(role, ownerAddress);
           await tokensContract.lockTokenTransfer(id);
 
-          await tokensContract.mint(ownerAddress, amount * 10, id);
+          await tokensContract.mint(ownerAddress, id, amount * 10);
           await expect(
             tokensContract.safeTransferFrom(
               ownerAddress,

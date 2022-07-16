@@ -268,7 +268,7 @@ contract SpacePiratesStaking is ERC1155Holder, Ownable {
         uint256 rewardTokenId = stakingPools[_stakingTokenId].rewardTokenId;
         uint256 rewards = user.rewards;
         user.rewards = 0;
-        parentToken.mint(msg.sender, rewards, rewardTokenId);
+        parentToken.mint(msg.sender, rewardTokenId, rewards);
 
         emit RewardPaid(msg.sender, _stakingTokenId, rewardTokenId, rewards);
     }

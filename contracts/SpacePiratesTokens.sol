@@ -121,8 +121,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
 
     function mint(
         address to,
-        uint256 amount,
-        uint256 id
+        uint256 id,
+        uint256 amount
     ) public {
         _checkMintRole(id);
         _mint(to, id, amount, "");
@@ -131,8 +131,8 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
 
     function burn(
         address from,
-        uint256 amount,
-        uint256 id
+        uint256 id,
+        uint256 amount
     ) public {
         require(
             from == _msgSender() || isApprovedForAll(from, _msgSender()),

@@ -42,9 +42,9 @@ interface ISpacePiratesTokens is IERC1155 {
     function totalSupply(uint256 id ) external view returns(uint256);
     function exists(uint256 id) external view returns(bool);
     
-    function mint(address to, uint256 amount, uint256 id) external;
+    function mint(address to, uint256 id, uint256 amount) external;
     function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts) external;
-    function burn(address from, uint256 amount, uint256 id) external;
+    function burn(address from, uint256 id, uint256 amount) external;
     function burnBatch(address from, uint256[] memory ids, uint256[] memory amounts) external;
     
     function hasRole(bytes32 role, address account) external view returns(bool);
