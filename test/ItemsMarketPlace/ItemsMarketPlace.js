@@ -145,7 +145,7 @@ describe("SpacePiratesItemsMarketPlace", () => {
     ).to.be.revertedWith("SpacePiratesItemsMarketPlace: invalid id");
   });
   it("buy an item", async () => {
-    await tokensContract.mint(ownerAddress, 2000, 1);
+    await tokensContract.mint(ownerAddress, 1, 2000);
 
     const index = await marketPlace.salesAmount();
     await marketPlace.createSale(
@@ -165,7 +165,7 @@ describe("SpacePiratesItemsMarketPlace", () => {
   });
   it("revert if sale ended", async () => {
     const index = await marketPlace.salesAmount();
-    await tokensContract.mint(ownerAddress, 10000, 1);
+    await tokensContract.mint(ownerAddress, 1, 10000);
     await marketPlace.createSale(
       [20010, 20020],
       [1, 2],
@@ -182,7 +182,7 @@ describe("SpacePiratesItemsMarketPlace", () => {
   });
   it("revert if supply reached", async () => {
     const index = await marketPlace.salesAmount();
-    await tokensContract.mint(ownerAddress, 10000, 1);
+    await tokensContract.mint(ownerAddress, 1, 10000);
     await marketPlace.createSale(
       [20010, 20020],
       [1, 2],
@@ -201,8 +201,8 @@ describe("SpacePiratesItemsMarketPlace", () => {
   });
   it("revert if max per address reached", async () => {
     const index = await marketPlace.salesAmount();
-    await tokensContract.mint(ownerAddress, 10000, 1);
-    await tokensContract.mint(accounts[1].getAddress(), 10000, 1);
+    await tokensContract.mint(ownerAddress, 1, 10000);
+    await tokensContract.mint(accounts[1].getAddress(), 1, 10000);
     await marketPlace.createSale(
       [20010, 20020],
       [1, 2],

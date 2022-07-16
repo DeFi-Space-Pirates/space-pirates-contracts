@@ -160,7 +160,7 @@ contract SpacePiratesItemsMarketPlace is Ownable {
             sale.itemsQuantities[i] *= quantity;
         }
 
-        tokenContract.burn(msg.sender, quantity * sale.price, sale.paymentId);
+        tokenContract.burn(msg.sender, sale.paymentId, quantity * sale.price);
         tokenContract.mintBatch(
             msg.sender,
             sale.itemsIds,
