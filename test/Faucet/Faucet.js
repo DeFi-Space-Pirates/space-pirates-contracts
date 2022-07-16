@@ -9,7 +9,7 @@ let faucetContract;
 let asteroids;
 let doubloons;
 
-describe("SpacePiratesFaucet", () => {
+describe.only("SpacePiratesFaucet", () => {
   before(async () => {
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
@@ -27,7 +27,13 @@ describe("SpacePiratesFaucet", () => {
     );
     faucetContract = await FaucetContract.deploy(tokensContract.address);
   });
+  it("should add doubloons token", async () => {
+    await faucetContract.setMintLimit(doubloons, 100000);
+    expect(await faucetContract.tokenMintLimit(doubloons)).to.equal(100000);
+    expect(await faucetContract.supportedTokens(0)).to.be.equal(doubloons);
+  });
   it("should mint doubloons", async () => {
+    const balance = await tokensContract.balanceOf(ownerAddress, doubloons);
     const mintRoles = await helperRoleContract.getMultiMintRoleBytes([
       asteroids,
       doubloons,
@@ -38,30 +44,9 @@ describe("SpacePiratesFaucet", () => {
     }
     await tokensContract.grantMultiRole(mintRoles, mintAccounts);
 
-    await faucetContract.mintDoubloons(10);
-    expect(await faucetContract.mintedDoubloons(ownerAddress)).to.equal(10);
-  });
-  it("should mint asteroids", async () => {
-    await faucetContract.mintAsteroids(10);
-
-    expect(await faucetContract.mintedAsteroids(ownerAddress)).to.equal(10);
-  });
-  it("should mint maximum amount of doubloons", async () => {
-    await faucetContract.mintDoubloons(9985); // 10 already minted
-    expect(await faucetContract.mintedDoubloons(ownerAddress)).to.equal(9995);
-
-    await faucetContract.mintDoubloons(20);
-    expect(await faucetContract.mintedDoubloons(ownerAddress)).to.equal(10000);
-  });
-  it("should mint maximum amount of asteroids", async () => {
-    await faucetContract.mintAsteroids(9985); // 10 already minted
-    expect(await faucetContract.mintedAsteroids(ownerAddress)).to.equal(9995);
-
-    await faucetContract.mintAsteroids(20);
-    expect(await faucetContract.mintedAsteroids(ownerAddress)).to.equal(10000);
-  });
-  it("should set new mint limit", async () => {
-    await faucetContract.setMintLimit(20000);
-    expect(await faucetContract.mintLimit()).to.equal(20000);
+    await faucetContract.mintToken(doubloons, 100);
+    expect(await tokensContract.balanceOf(ownerAddress, doubloons)).to.equal(
+      ethers.BigNumber.from(balance).add(100)
+    );
   });
 });
