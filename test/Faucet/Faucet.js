@@ -9,7 +9,7 @@ let faucetContract;
 let asteroids;
 let doubloons;
 
-describe.only("SpacePiratesFaucet", () => {
+describe("SpacePiratesFaucet", () => {
   before(async () => {
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
