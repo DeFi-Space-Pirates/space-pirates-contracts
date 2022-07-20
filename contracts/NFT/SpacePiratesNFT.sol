@@ -6,6 +6,12 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+/**
+ * @title Space Pirates NFT Storage
+ * @author @Gr3it, @yuripaoloni (reviewer)
+ * @notice Storage all the NFTs data of the protocol
+ */
+
 contract SpacePiratesNFT is ERC721, AccessControl {
     using Counters for Counters.Counter;
     using Strings for uint256;
@@ -13,21 +19,24 @@ contract SpacePiratesNFT is ERC721, AccessControl {
     Counters.Counter private _tokenIdCounter;
     string private baseURI;
 
-    bytes32 public constant TRUSTED_TRANSFER = keccak256("TRUSTED_TRANSFER");
     bytes32 public constant CAN_MINT = keccak256("CAN_MINT");
     bytes32 public constant CAN_BURN = keccak256("CAN_BURN");
+    bytes32 public constant URI_SETTER = keccak256("URI_SETTER");
 
     struct AdditionalInfo {
         string collection;
-        uint128 charges;
-        uint64 lastRecovery;
         bool locked;
     }
     mapping(uint256 => AdditionalInfo) public nftData;
 
-    constructor() ERC721("Space Pirates NFTs", "SP-NFT") {}
+    event Mint(address indexed to, uint256 id, string collection, bool locked);
+    event SetBaseURI(string newUri);
 
-    function totalSupply() public view returns (uint256) {
+    constructor(string memory _baseURI) ERC721("Space Pirates NFTs", "SP-NFT") {
+        baseURI = _baseURI;
+    }
+
+    function supply() public view returns (uint256) {
         return _tokenIdCounter.current();
     }
 
@@ -42,10 +51,7 @@ contract SpacePiratesNFT is ERC721, AccessControl {
             "SpacePiratesNFT: URI query for nonexistent token"
         );
 
-        return
-            bytes(baseURI).length > 0
-                ? string(abi.encodePacked(baseURI, tokenId.toString()))
-                : "";
+        return string(abi.encodePacked(baseURI, tokenId.toString()));
     }
 
     function walletOfOwner(address _owner)
@@ -57,38 +63,33 @@ contract SpacePiratesNFT is ERC721, AccessControl {
         uint256[] memory ownedTokenIds = new uint256[](ownerTokenCount);
         uint256 currentTokenId = 1;
         uint256 ownedTokenIndex = 0;
-        uint256 supply = totalSupply();
+        uint256 currentSupply = supply();
 
-        while (ownedTokenIndex < ownerTokenCount && currentTokenId <= supply) {
+        while (
+            ownedTokenIndex < ownerTokenCount && currentTokenId <= currentSupply
+        ) {
             address currentTokenOwner = ownerOf(currentTokenId);
-
             if (currentTokenOwner == _owner) {
                 ownedTokenIds[ownedTokenIndex] = currentTokenId;
-
                 ownedTokenIndex++;
             }
-
             currentTokenId++;
         }
-
         return ownedTokenIds;
     }
 
     function mint(
-        uint256 quantity,
         string memory collection,
+        uint256 quantity,
         bool locked
     ) public onlyRole(CAN_MINT) {
         require(quantity > 0, "spacePiratesNFT: need to mint at least 1 NFT");
         for (uint256 i = 0; i < quantity; ++i) {
             _tokenIdCounter.increment();
-            nftData[_tokenIdCounter.current()] = AdditionalInfo(
-                collection,
-                0,
-                uint64(block.timestamp),
-                locked
-            );
-            _mint(msg.sender, _tokenIdCounter.current());
+            uint256 id = _tokenIdCounter.current();
+            nftData[id] = AdditionalInfo(collection, locked);
+            _mint(msg.sender, id);
+            emit Mint(msg.sender, id, collection, locked);
         }
     }
 
@@ -100,20 +101,23 @@ contract SpacePiratesNFT is ERC721, AccessControl {
         _burn(tokenId);
     }
 
+    function setBaseURI(string calldata _baseURI)
+        external
+        onlyRole(URI_SETTER)
+    {
+        baseURI = _baseURI;
+        emit SetBaseURI(_baseURI);
+    }
+
     function _beforeTokenTransfer(
         address from,
         address to,
         uint256 tokenId
     ) internal virtual override {
         require(
-            !nftData[tokenId].locked,
+            !nftData[tokenId].locked || from == address(0) || to == address(0),
             "SpacePiratesNFT: NFT not transferable"
         );
-        if (!hasRole(TRUSTED_TRANSFER, msg.sender)) {
-            AdditionalInfo storage nft = nftData[tokenId];
-            nft.lastRecovery = uint64(block.timestamp);
-            nft.charges = 0;
-        }
     }
 
     function supportsInterface(bytes4 interfaceId)
