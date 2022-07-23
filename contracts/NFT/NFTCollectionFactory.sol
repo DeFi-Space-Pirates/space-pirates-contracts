@@ -15,8 +15,9 @@ contract NFTCollectionFactory is Ownable {
     SpacePiratesNFT public immutable nftContract;
     SpacePiratesTokens public immutable tokenContract;
 
-    uint256 public constant doubloonsId = 1;
-    uint256 public constant asteroidsId = 2;
+    uint256 public constant DOUBLOONS = 1;
+    uint256 public constant ASTEROIDS = 2;
+    uint256 public constant EVOCATION_GEM = 1001;
 
     uint128 public doubloonsPrice = 10_000 * 1e18;
     uint128 public asteroidsPrice = 20 * 1e18;
@@ -87,6 +88,18 @@ contract NFTCollectionFactory is Ownable {
             );
             nbrOfCollectionMinted[name][msg.sender] += quantity;
         }
+
+        uint256[] memory ids = new uint256[](3);
+        ids[0] = DOUBLOONS;
+        ids[1] = ASTEROIDS;
+        ids[2] = EVOCATION_GEM;
+
+        uint256[] memory amounts = new uint256[](3);
+        amounts[0] = quantity * doubloonsPrice;
+        amounts[1] = quantity * asteroidsPrice;
+        amounts[2] = 1;
+
+        tokenContract.burnBatch(msg.sender, ids, amounts);
         nftContract.mint(name, quantity, false);
     }
 
