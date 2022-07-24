@@ -1,4 +1,5 @@
 const TronWeb = require("tronweb");
+const feeLimit = 1000000000;
 
 const stakingContractSetup = require("./setupScripts/stakingContract");
 const splitContractSetup = require("./setupScripts/splitContract");
@@ -17,8 +18,8 @@ async function main() {
     privateKey: process.env.TRON_PRIVATE_KEY,
   });
 
-  const devAddress = tronWeb.defaultAddress;
-  const feeAddress = "0x0000000000000000000000000000000000000000";
+  const devAddress = tronWeb.defaultAddress.hex;
+  const feeAddress = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb";
   const doubloonsPerBlock = 100;
   const startBlock = 0;
   const BFMintStart = 1640995200; // 2020/1/1
@@ -39,17 +40,18 @@ async function main() {
 
   /* CONTRACTS DEPLOY */
   console.log("\nDeploying contracts...\n");
-
   const tokensContract = await tronWeb.contract().new({
     abi: TokensContract.abi,
     bytecode: TokensContract.bytecode,
+    feeLimit: feeLimit,
     parameters: ["testuri.com/token/"],
   });
   console.log("Space Pirates Tokens deployed to:", tokensContract.address);
 
-  /*const stakingContract = await tronWeb.contract().new({
+  const stakingContract = await tronWeb.contract().new({
     abi: StakingContract.abi,
     bytecode: StakingContract.bytecode,
+    feeLimit: feeLimit,
     parameters: [tokensContract.address],
   });
   console.log("Space Pirates Staking deployed to:", stakingContract.address);
@@ -57,6 +59,7 @@ async function main() {
   const splitContract = await tronWeb.contract().new({
     abi: SplitContract.abi,
     bytecode: SplitContract.bytecode,
+    feeLimit: feeLimit,
     parameters: [tokensContract.address],
   });
   console.log("Asteroids Split Contract deployed to:", splitContract.address);
@@ -64,6 +67,7 @@ async function main() {
   const faucetContract = await tronWeb.contract().new({
     abi: FaucetContract.abi,
     bytecode: FaucetContract.bytecode,
+    feeLimit: feeLimit,
     parameters: [tokensContract.address],
   });
   console.log("Faucet Contract deployed to:", faucetContract.address);
@@ -71,6 +75,7 @@ async function main() {
   const wrapperContract = await tronWeb.contract().new({
     abi: WrapperContract.abi,
     bytecode: WrapperContract.bytecode,
+    feeLimit: feeLimit,
     parameters: [tokensContract.address],
   });
   console.log("Wrapper Contract deployed to:", wrapperContract.address);
@@ -78,6 +83,7 @@ async function main() {
   const factoryContract = await tronWeb.contract().new({
     abi: FactoryContract.abi,
     bytecode: FactoryContract.bytecode,
+    feeLimit: feeLimit,
     parameters: [tokensContract.address],
   });
   console.log("Factory Contract deployed to:", factoryContract.address);
@@ -85,6 +91,7 @@ async function main() {
   const routerContract = await tronWeb.contract().new({
     abi: RouterContract.abi,
     bytecode: RouterContract.bytecode,
+    feeLimit: feeLimit,
     parameters: [
       factoryContract.address,
       tokensContract.address,
@@ -96,6 +103,7 @@ async function main() {
   const masterChefContract = await tronWeb.contract().new({
     abi: MasterChefContract.abi,
     bytecode: MasterChefContract.bytecode,
+    feeLimit: feeLimit,
     parameters: [
       tokensContract.address,
       devAddress,
@@ -109,6 +117,7 @@ async function main() {
   const questRedeemContract = await tronWeb.contract().new({
     abi: QuestRedeemContract.abi,
     bytecode: QuestRedeemContract.bytecode,
+    feeLimit: feeLimit,
     parameters: [tokensContract.address],
   });
   console.log(
@@ -119,6 +128,7 @@ async function main() {
   const battleFieldMintContract = await tronWeb.contract().new({
     abi: BattleFieldMintContract.abi,
     bytecode: BattleFieldMintContract.bytecode,
+    feeLimit: feeLimit,
     parameters: [tokensContract.address, BFMintStart, BFMintDuration],
   });
   console.log("BFMint Contract deployed to:", battleFieldMintContract.address);
@@ -126,11 +136,12 @@ async function main() {
   const itemsMarketPlace = await tronWeb.contract().new({
     abi: ItemsMarketPlace.abi,
     bytecode: ItemsMarketPlace.bytecode,
+    feeLimit: feeLimit,
     parameters: [tokensContract.address],
   });
   console.log("Market Place Contract deployed to:", itemsMarketPlace.address);
   /* CONTRACTS SETUP */
-  /*console.log("\nContracts setup...\n");
+  console.log("\nContracts setup...\n");
 
   await stakingContractSetup(tokensContract, stakingContract);
   await splitContractSetup(tokensContract, splitContract);
@@ -144,7 +155,7 @@ async function main() {
   await wrapperContractSetup(tokensContract, wrapperContract);
   await questRedeemContractSetup(tokensContract, questRedeemContract);
   await battleFieldContractSetup(tokensContract, battleFieldMintContract);
-  await itemsMarketPlaceSetup(tokensContract, questRedeemContract);*/
+  await itemsMarketPlaceSetup(tokensContract, questRedeemContract);
 }
 
 main()
