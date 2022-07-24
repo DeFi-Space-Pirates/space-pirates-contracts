@@ -1,0 +1,372 @@
+{
+  "contractName": "ChainId",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "CHAIN_ID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60a060405234801561001057600080fd5b50d3801561001d57600080fd5b50d2801561002a57600080fd5b504660805260805160b361004760003960006049015260b36000f3fe6080604052348015600f57600080fd5b50d38015601b57600080fd5b50d28015602757600080fd5b506004361060405760003560e01c806385e1f4d0146045575b600080fd5b606b7f000000000000000000000000000000000000000000000000000000000000000081565b60405190815260200160405180910390f3fea26474726f6e5822122082513f46dc195c9101dfc14ba281220172678de46d534f191810c610204b918264736f6c63430008060033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b50d38015601b57600080fd5b50d28015602757600080fd5b506004361060405760003560e01c806385e1f4d0146045575b600080fd5b606b7f000000000000000000000000000000000000000000000000000000000000000081565b60405190815260200160405180910390f3fea26474726f6e5822122082513f46dc195c9101dfc14ba281220172678de46d534f191810c610204b918264736f6c63430008060033",
+  "sourceMap": "162:126:37:-:0;;;228:57;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;264:13:37;253:24;;162:126;;;;;;;;;;",
+  "deployedSourceMap": "162:126:37:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;186:33;;;;;;;;160:25:60;;;148:2;133:18;186:33:37;;;;;;",
+  "source": "// SPDX-License-Identifier: unlicense\r\npragma solidity ^0.8.0;\r\n\r\n/**\r\n * @title Chain Id Contract\r\n * @author @Gr3it\r\n * @notice Get Chain Id (for tron)\r\n */\r\n\r\ncontract ChainId {\r\n    uint256 public immutable CHAIN_ID;\r\n\r\n    constructor() {\r\n        CHAIN_ID = block.chainid;\r\n    }\r\n}\r\n",
+  "sourcePath": "C:/Users/emanu/space-pirates-contracts/contracts/utils/ChainId.sol",
+  "ast": {
+    "absolutePath": "/C/Users/emanu/space-pirates-contracts/contracts/utils/ChainId.sol",
+    "exportedSymbols": {
+      "ChainId": [
+        11953
+      ]
+    },
+    "id": 11954,
+    "license": "unlicense",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 11940,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:23:37"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 11941,
+          "nodeType": "StructuredDocumentation",
+          "src": "66:92:37",
+          "text": " @title Chain Id Contract\n @author @Gr3it\n @notice Get Chain Id (for tron)"
+        },
+        "fullyImplemented": true,
+        "id": 11953,
+        "linearizedBaseContracts": [
+          11953
+        ],
+        "name": "ChainId",
+        "nameLocation": "171:7:37",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "85e1f4d0",
+            "id": 11943,
+            "mutability": "immutable",
+            "name": "CHAIN_ID",
+            "nameLocation": "211:8:37",
+            "nodeType": "VariableDeclaration",
+            "scope": 11953,
+            "src": "186:33:37",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 11942,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "186:7:37",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 11951,
+              "nodeType": "Block",
+              "src": "242:43:37",
+              "statements": [
+                {
+                  "expression": {
+                    "id": 11949,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 11946,
+                      "name": "CHAIN_ID",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 11943,
+                      "src": "253:8:37",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "expression": {
+                        "id": 11947,
+                        "name": "block",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4294967292,
+                        "src": "264:5:37",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_magic_block",
+                          "typeString": "block"
+                        }
+                      },
+                      "id": 11948,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "chainid",
+                      "nodeType": "MemberAccess",
+                      "src": "264:13:37",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "253:24:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 11950,
+                  "nodeType": "ExpressionStatement",
+                  "src": "253:24:37"
+                }
+              ]
+            },
+            "id": 11952,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 11944,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "239:2:37"
+            },
+            "returnParameters": {
+              "id": 11945,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "242:0:37"
+            },
+            "scope": 11953,
+            "src": "228:57:37",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 11954,
+        "src": "162:126:37",
+        "usedErrors": []
+      }
+    ],
+    "src": "39:251:37"
+  },
+  "legacyAST": {
+    "absolutePath": "/C/Users/emanu/space-pirates-contracts/contracts/utils/ChainId.sol",
+    "exportedSymbols": {
+      "ChainId": [
+        11953
+      ]
+    },
+    "id": 11954,
+    "license": "unlicense",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 11940,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:23:37"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 11941,
+          "nodeType": "StructuredDocumentation",
+          "src": "66:92:37",
+          "text": " @title Chain Id Contract\n @author @Gr3it\n @notice Get Chain Id (for tron)"
+        },
+        "fullyImplemented": true,
+        "id": 11953,
+        "linearizedBaseContracts": [
+          11953
+        ],
+        "name": "ChainId",
+        "nameLocation": "171:7:37",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "85e1f4d0",
+            "id": 11943,
+            "mutability": "immutable",
+            "name": "CHAIN_ID",
+            "nameLocation": "211:8:37",
+            "nodeType": "VariableDeclaration",
+            "scope": 11953,
+            "src": "186:33:37",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 11942,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "186:7:37",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 11951,
+              "nodeType": "Block",
+              "src": "242:43:37",
+              "statements": [
+                {
+                  "expression": {
+                    "id": 11949,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 11946,
+                      "name": "CHAIN_ID",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 11943,
+                      "src": "253:8:37",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "expression": {
+                        "id": 11947,
+                        "name": "block",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4294967292,
+                        "src": "264:5:37",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_magic_block",
+                          "typeString": "block"
+                        }
+                      },
+                      "id": 11948,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "chainid",
+                      "nodeType": "MemberAccess",
+                      "src": "264:13:37",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "253:24:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 11950,
+                  "nodeType": "ExpressionStatement",
+                  "src": "253:24:37"
+                }
+              ]
+            },
+            "id": 11952,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 11944,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "239:2:37"
+            },
+            "returnParameters": {
+              "id": 11945,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "242:0:37"
+            },
+            "scope": 11953,
+            "src": "228:57:37",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 11954,
+        "src": "162:126:37",
+        "usedErrors": []
+      }
+    ],
+    "src": "39:251:37"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.6+commit.0e36fba0.mod.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2022-07-23T23:58:53.828Z"
+}

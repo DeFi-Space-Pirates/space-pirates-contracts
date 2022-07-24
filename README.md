@@ -16,6 +16,7 @@ DeFi Space Pirates is a platform built around the idea of an imaginary space wor
 
 - [Read the roadmap](./docs/roadmap.md)
 - [Contribute](./docs/contribute.md)
+- [Tron deploy](./docs/tronDeploy.md)
 
 ### Team
 

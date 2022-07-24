@@ -1,0 +1,24 @@
+{
+  "mint": {
+    "doubloons": "0x9a04e0fe6fc58d8074e1248913ba8264db0172239ac5ac3abda2b5e4a8a27af9",
+    "asteroids": "0x42022b3e22a3f63ab4a0e302cf7ce1d6e831030f7c855971ca06f03e4fb64a13",
+    "veAsteroids": "0x7d1bc46768adf5d9a616f5861464c69b52a127c2e9556c30849d4bf0b7fa4ab6",
+    "stkAsteroids": "0x703597dfc54126721ca0fd2ce66d6492d582277d4d03e6d28d2a6eb83ac0ce27",
+    "wrapped": "0x570fae637af42631540d61792ad6c3a38622f6396680bd058c94992df958932e",
+    "items": "0x8a971267dda73f2bbe888f9ed240c21afb5a5980f7b1e92aeafaad3880dac52f",
+    "titles": "0xd241016ee141eea33ebd00967f7f7843377cf319f71a1070675110119fb86c01",
+    "decorations": "0x77fe00f5aaa81d64d9f55d8616be0398bce160f21a075e1635f854dc0c69a572",
+    "battlefield": "0x6a5cf4fbc764663782b6c69f42c0b62dfba03c7e30fcffbf9480a5d3db112ef5"
+  },
+  "burn": {
+    "doubloons": "0x79c4f19595d0f36d8c94f6d809decda230ff568defdd4e85ca989d8c603c2efb",
+    "asteroids": "0x04e7dbb09964207f3e636c44a6382d7c4039da67c4e3871c9f6449223932c3ef",
+    "veAsteroids": "0x51c76052d392ddec02e013aedf9e0a13cbd1ecb9beb01fefb2c6d2daca83a094",
+    "stkAsteroids": "0x5625c8b30c2fd31c25c3fb1b4416d04597f98b8dfd78e8e245afa237d5590749",
+    "wrapped": "0xcc0ccd8bd17a2b44b8083daff945bb3afbdb74c75c0d0ade0c1d73872f3da2b7",
+    "items": "0xc9753cc6a12b1d2aa87c7b66743185706ef6ec8328f4ea4f1bb99f0cac770457",
+    "titles": "0x7b4d2faaff6bdaace990e24462dcf2739c3533574e81f2cb36eeec6d9d91a63e",
+    "decorations": "0xd1b4dc7e91c020dd9a22a12df8a310edc9b278f858f001ba89798b0309dc3666",
+    "battlefield": "0x72275d2d7cdf971af1091b6e0e4e2863c24b00b92a68a8e7184cc5d55ff619e2"
+  }
+}

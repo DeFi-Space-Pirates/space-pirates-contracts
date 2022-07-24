@@ -1,0 +1,1184 @@
+{
+  "contractName": "IAsteroidsSplitContract",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MergeAsteroids",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "SplitAsteroids",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ASTEROIDS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "STK_ASTEROIDS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "VE_ASTEROIDS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "mergeAsteroids",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "splitAsteroids",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "tokenContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\n\r\n/**\r\n * @title Asteroids Split Contract Interface\r\n * @author @Gr3it\r\n */\r\n\r\ninterface IAsteroidsSplitContract {\r\n    event SplitAsteroids(address indexed sender, uint256 amount);\r\n    event MergeAsteroids(address indexed sender, uint256 amount);\r\n    \r\n    function ASTEROIDS() external view returns (uint256);\r\n    function STK_ASTEROIDS() external view returns (uint256);\r\n    function VE_ASTEROIDS() external view returns (uint256);\r\n\r\n    function tokenContract() external view returns (address);\r\n\r\n    function mergeAsteroids(uint256 amount) external;\r\n    function splitAsteroids(uint256 amount) external;\r\n}\r\n",
+  "sourcePath": "C:/Users/emanu/space-pirates-contracts/contracts/interfaces/IAsteroidsSplitContract.sol",
+  "ast": {
+    "absolutePath": "/C/Users/emanu/space-pirates-contracts/contracts/interfaces/IAsteroidsSplitContract.sol",
+    "exportedSymbols": {
+      "IAsteroidsSplitContract": [
+        8984
+      ]
+    },
+    "id": 8985,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 8940,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:15"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 8941,
+          "nodeType": "StructuredDocumentation",
+          "src": "60:73:15",
+          "text": " @title Asteroids Split Contract Interface\n @author @Gr3it"
+        },
+        "fullyImplemented": false,
+        "id": 8984,
+        "linearizedBaseContracts": [
+          8984
+        ],
+        "name": "IAsteroidsSplitContract",
+        "nameLocation": "147:23:15",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "id": 8947,
+            "name": "SplitAsteroids",
+            "nameLocation": "184:14:15",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 8946,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8943,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "sender",
+                  "nameLocation": "215:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8947,
+                  "src": "199:22:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 8942,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "199:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 8945,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "231:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8947,
+                  "src": "223:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8944,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "223:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "198:40:15"
+            },
+            "src": "178:61:15"
+          },
+          {
+            "anonymous": false,
+            "id": 8953,
+            "name": "MergeAsteroids",
+            "nameLocation": "251:14:15",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 8952,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8949,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "sender",
+                  "nameLocation": "282:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8953,
+                  "src": "266:22:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 8948,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "266:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 8951,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "298:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8953,
+                  "src": "290:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8950,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "290:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "265:40:15"
+            },
+            "src": "245:61:15"
+          },
+          {
+            "functionSelector": "6712627d",
+            "id": 8958,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "ASTEROIDS",
+            "nameLocation": "327:9:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8954,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "336:2:15"
+            },
+            "returnParameters": {
+              "id": 8957,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8956,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8958,
+                  "src": "362:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8955,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "362:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "361:9:15"
+            },
+            "scope": 8984,
+            "src": "318:53:15",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "3c71cfa2",
+            "id": 8963,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "STK_ASTEROIDS",
+            "nameLocation": "386:13:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8959,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "399:2:15"
+            },
+            "returnParameters": {
+              "id": 8962,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8961,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8963,
+                  "src": "425:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8960,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "425:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "424:9:15"
+            },
+            "scope": 8984,
+            "src": "377:57:15",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "31e61ea6",
+            "id": 8968,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "VE_ASTEROIDS",
+            "nameLocation": "449:12:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8964,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "461:2:15"
+            },
+            "returnParameters": {
+              "id": 8967,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8966,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8968,
+                  "src": "487:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8965,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "487:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "486:9:15"
+            },
+            "scope": 8984,
+            "src": "440:56:15",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "55a373d6",
+            "id": 8973,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tokenContract",
+            "nameLocation": "513:13:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8969,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "526:2:15"
+            },
+            "returnParameters": {
+              "id": 8972,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8971,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8973,
+                  "src": "552:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 8970,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "552:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "551:9:15"
+            },
+            "scope": 8984,
+            "src": "504:57:15",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "ce19e834",
+            "id": 8978,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "mergeAsteroids",
+            "nameLocation": "578:14:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8976,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8975,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "601:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8978,
+                  "src": "593:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8974,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "593:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "592:16:15"
+            },
+            "returnParameters": {
+              "id": 8977,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "617:0:15"
+            },
+            "scope": 8984,
+            "src": "569:49:15",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "b2b9f032",
+            "id": 8983,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "splitAsteroids",
+            "nameLocation": "633:14:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8981,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8980,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "656:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8983,
+                  "src": "648:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8979,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "648:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "647:16:15"
+            },
+            "returnParameters": {
+              "id": 8982,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "672:0:15"
+            },
+            "scope": 8984,
+            "src": "624:49:15",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 8985,
+        "src": "137:539:15",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:645:15"
+  },
+  "legacyAST": {
+    "absolutePath": "/C/Users/emanu/space-pirates-contracts/contracts/interfaces/IAsteroidsSplitContract.sol",
+    "exportedSymbols": {
+      "IAsteroidsSplitContract": [
+        8984
+      ]
+    },
+    "id": 8985,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 8940,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:15"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 8941,
+          "nodeType": "StructuredDocumentation",
+          "src": "60:73:15",
+          "text": " @title Asteroids Split Contract Interface\n @author @Gr3it"
+        },
+        "fullyImplemented": false,
+        "id": 8984,
+        "linearizedBaseContracts": [
+          8984
+        ],
+        "name": "IAsteroidsSplitContract",
+        "nameLocation": "147:23:15",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "id": 8947,
+            "name": "SplitAsteroids",
+            "nameLocation": "184:14:15",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 8946,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8943,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "sender",
+                  "nameLocation": "215:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8947,
+                  "src": "199:22:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 8942,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "199:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 8945,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "231:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8947,
+                  "src": "223:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8944,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "223:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "198:40:15"
+            },
+            "src": "178:61:15"
+          },
+          {
+            "anonymous": false,
+            "id": 8953,
+            "name": "MergeAsteroids",
+            "nameLocation": "251:14:15",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 8952,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8949,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "sender",
+                  "nameLocation": "282:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8953,
+                  "src": "266:22:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 8948,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "266:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 8951,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "298:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8953,
+                  "src": "290:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8950,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "290:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "265:40:15"
+            },
+            "src": "245:61:15"
+          },
+          {
+            "functionSelector": "6712627d",
+            "id": 8958,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "ASTEROIDS",
+            "nameLocation": "327:9:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8954,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "336:2:15"
+            },
+            "returnParameters": {
+              "id": 8957,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8956,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8958,
+                  "src": "362:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8955,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "362:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "361:9:15"
+            },
+            "scope": 8984,
+            "src": "318:53:15",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "3c71cfa2",
+            "id": 8963,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "STK_ASTEROIDS",
+            "nameLocation": "386:13:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8959,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "399:2:15"
+            },
+            "returnParameters": {
+              "id": 8962,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8961,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8963,
+                  "src": "425:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8960,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "425:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "424:9:15"
+            },
+            "scope": 8984,
+            "src": "377:57:15",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "31e61ea6",
+            "id": 8968,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "VE_ASTEROIDS",
+            "nameLocation": "449:12:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8964,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "461:2:15"
+            },
+            "returnParameters": {
+              "id": 8967,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8966,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8968,
+                  "src": "487:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8965,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "487:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "486:9:15"
+            },
+            "scope": 8984,
+            "src": "440:56:15",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "55a373d6",
+            "id": 8973,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tokenContract",
+            "nameLocation": "513:13:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8969,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "526:2:15"
+            },
+            "returnParameters": {
+              "id": 8972,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8971,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8973,
+                  "src": "552:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 8970,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "552:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "551:9:15"
+            },
+            "scope": 8984,
+            "src": "504:57:15",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "ce19e834",
+            "id": 8978,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "mergeAsteroids",
+            "nameLocation": "578:14:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8976,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8975,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "601:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8978,
+                  "src": "593:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8974,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "593:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "592:16:15"
+            },
+            "returnParameters": {
+              "id": 8977,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "617:0:15"
+            },
+            "scope": 8984,
+            "src": "569:49:15",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "b2b9f032",
+            "id": 8983,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "splitAsteroids",
+            "nameLocation": "633:14:15",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 8981,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8980,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "656:6:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 8983,
+                  "src": "648:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8979,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "648:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "647:16:15"
+            },
+            "returnParameters": {
+              "id": 8982,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "672:0:15"
+            },
+            "scope": 8984,
+            "src": "624:49:15",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 8985,
+        "src": "137:539:15",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:645:15"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.6+commit.0e36fba0.mod.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2022-07-23T23:58:53.795Z"
+}
