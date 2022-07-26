@@ -63,6 +63,10 @@ contract NFTCollectionFactory is Ownable {
         external
     {
         require(quantity > 0, "NFTCollectionFactory: can't mint 0 NFT");
+        require(
+            exist[name],
+            "NFTCollectionFactory: the collection does not exist"
+        );
         Collection memory collection = collections[name];
         require(
             block.timestamp >= collection.start,
@@ -87,6 +91,13 @@ contract NFTCollectionFactory is Ownable {
             );
             nbrOfCollectionMinted[name][msg.sender] += quantity;
         }
+        uint256[] memory ids = new uint256[](2);
+        ids[0] = doubloonsId;
+        ids[1] = asteroidsId;
+        uint256[] memory amounts = new uint256[](2);
+        amounts[0] = doubloonsPrice;
+        amounts[1] = asteroidsPrice;
+        tokenContract.burnBatch(msg.sender, ids, amounts);
         nftContract.mint(name, quantity, false);
     }
 

@@ -31,9 +31,13 @@ contract SpacePiratesNFT is ERC721, AccessControl {
 
     event Mint(address indexed to, uint256 id, string collection, bool locked);
     event SetBaseURI(string newUri);
+    event GrantRole(bytes32 indexed role, address account);
+    event RevokeRole(bytes32 indexed role, address account);
 
     constructor(string memory _baseURI) ERC721("Space Pirates NFTs", "SP-NFT") {
         baseURI = _baseURI;
+
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     function supply() public view returns (uint256) {
@@ -118,6 +122,24 @@ contract SpacePiratesNFT is ERC721, AccessControl {
             !nftData[tokenId].locked || from == address(0) || to == address(0),
             "SpacePiratesNFT: NFT not transferable"
         );
+    }
+
+    function grantRole(bytes32 role, address account)
+        public
+        override
+        onlyRole(getRoleAdmin(role))
+    {
+        _grantRole(role, account);
+        emit GrantRole(role, account);
+    }
+
+    function revokeRole(bytes32 role, address account)
+        public
+        override
+        onlyRole(getRoleAdmin(role))
+    {
+        _revokeRole(role, account);
+        emit RevokeRole(role, account);
     }
 
     function supportsInterface(bytes4 interfaceId)
