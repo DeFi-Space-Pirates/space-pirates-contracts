@@ -12,7 +12,7 @@ let helperRoleContract;
 let nftStarterBanner;
 let uintMax112;
 
-describe.only("NFTStarterBannerContract", () => {
+describe("NFTStarterBannerContract", () => {
   before(async () => {
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
@@ -40,6 +40,8 @@ describe.only("NFTStarterBannerContract", () => {
 
     role = await nftContract.CAN_MINT();
     nftContract.grantRole(role, nftStarterBanner.address);
+
+    tokensContract.setApprovalForAll(nftStarterBanner.address, true);
   });
   it("mint NFT", async () => {
     const balance = await tokensContract.balanceOf(ownerAddress, 1000);
@@ -51,14 +53,16 @@ describe.only("NFTStarterBannerContract", () => {
 
     await nftStarterBanner.mintCollectionItem(2);
 
-    expect(await nftContract.walletOfOwner(ownerAddress)).to.be.deep,
-      equal([BigNumber.from("1"), BigNumber.from("2")]);
+    expect(await nftContract.walletOfOwner(ownerAddress)).to.be.deep.equal([
+      BigNumber.from("1"),
+      BigNumber.from("2"),
+    ]);
     expect(await tokensContract.balanceOf(ownerAddress, 1000)).to.be.equal(
       balance
     );
 
-    /*await expect(
+    await expect(
       nftContract.transferFrom(ownerAddress, dest, 1)
-    ).to.be.revertedWith("SpacePiratesNFT: NFT not transferable");*/
+    ).to.be.revertedWith("SpacePiratesNFT: NFT not transferable");
   });
 });

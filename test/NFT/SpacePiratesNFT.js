@@ -31,11 +31,12 @@ describe("SpacePiratesNFTContract", () => {
     await expect(nftContract.tokenURI(1)).to.be.revertedWith(
       "SpacePiratesNFT: URI query for nonexistent token"
     );
-    await expect(nftContract.mint("Test collection", 2, false)).to.be.reverted;
+    await expect(nftContract.mint(ownerAddress, "Test collection", 2, false)).to
+      .be.reverted;
     const mintRole = await nftContract.CAN_MINT();
     await nftContract.grantRole(mintRole, ownerAddress);
 
-    await nftContract.mint("Test collection", 2, false);
+    await nftContract.mint(ownerAddress, "Test collection", 2, false);
     expect(await nftContract.supply()).to.be.equal(2);
     expect(await nftContract.tokenURI(1)).to.be.equal(uri + "1");
   });
@@ -51,7 +52,7 @@ describe("SpacePiratesNFTContract", () => {
     expect(await nftContract.tokenURI(1)).to.be.equal(newUri + "1");
   });
   it("walletOfOwner", async () => {
-    await nftContract.mint("Second collection", 3, false);
+    await nftContract.mint(ownerAddress, "Second collection", 3, false);
 
     expect(await nftContract.walletOfOwner(ownerAddress)).to.be.deep.equal([
       BigNumber.from("1"),
@@ -67,7 +68,7 @@ describe("SpacePiratesNFTContract", () => {
   });
   it("can not be transferred if locked", async () => {
     const destAddr = await accounts[1].getAddress();
-    await nftContract.mint("Non transferable", 1, true);
+    await nftContract.mint(ownerAddress, "Non transferable", 1, true);
     await expect(
       nftContract.transferFrom(ownerAddress, destAddr, 6)
     ).to.be.revertedWith("SpacePiratesNFT: NFT not transferable");

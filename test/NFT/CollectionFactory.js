@@ -12,7 +12,7 @@ let helperRoleContract;
 let nftCollectionFactory;
 let uintMax112;
 
-describe.only("SpacePiratesNFTFactoryContract", () => {
+describe("SpacePiratesNFTFactoryContract", () => {
   before(async () => {
     const HelperRoleContract = await ethers.getContractFactory(
       "HelperRoleContract"
@@ -50,6 +50,8 @@ describe.only("SpacePiratesNFTFactoryContract", () => {
 
     role = await nftContract.CAN_MINT();
     nftContract.grantRole(role, nftCollectionFactory.address);
+
+    tokensContract.setApprovalForAll(nftCollectionFactory.address, true);
   });
   it("createCollection", async () => {
     expect(await nftCollectionFactory.getCollectionsList()).to.be.deep.equal(
@@ -257,7 +259,18 @@ describe.only("SpacePiratesNFTFactoryContract", () => {
       (await nftCollectionFactory.collections("Unlimited collection")).available
     ).to.be.equal(uintMax112);
   });
-  it("set price", async () => {});
+  it("set price", async () => {
+    const dblNewPrice = 1000;
+    const astNewPrice = 10;
+    await nftCollectionFactory.setPrice(dblNewPrice, astNewPrice);
+
+    expect(await nftCollectionFactory.doubloonsPrice()).to.be.equal(
+      BigNumber.from(dblNewPrice)
+    );
+    expect(await nftCollectionFactory.asteroidsPrice()).to.be.equal(
+      BigNumber.from(astNewPrice)
+    );
+  });
 });
 
 const getTimeStamp = async () => {
