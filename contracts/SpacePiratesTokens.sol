@@ -158,6 +158,10 @@ contract SpacePiratesTokens is ERC1155Custom, AccessControl {
         uint256[] calldata ids,
         uint256[] calldata amounts
     ) public {
+        require(
+            from == _msgSender() || isApprovedForAll(from, _msgSender()),
+            "ERC1155: caller is not owner nor approved"
+        );
         _checkBurnBatchRole(ids);
         _burnBatch(from, ids, amounts);
         emit BurnBatch(from, ids, amounts);
