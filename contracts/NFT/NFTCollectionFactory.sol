@@ -101,10 +101,10 @@ contract NFTCollectionFactory is Ownable {
         uint256[] memory amounts = new uint256[](3);
         amounts[0] = quantity * doubloonsPrice;
         amounts[1] = quantity * asteroidsPrice;
-        amounts[2] = 1;
+        amounts[2] = quantity;
 
         tokenContract.burnBatch(msg.sender, ids, amounts);
-        nftContract.mint(name, quantity, false);
+        nftContract.mint(msg.sender, name, quantity, false);
     }
 
     function createCollection(
@@ -137,7 +137,7 @@ contract NFTCollectionFactory is Ownable {
         uint64 end,
         uint16 maxMintPerAddress
     ) external onlyOwner {
-        require(exist[name], "NFTCollectionFactory: collection already exist");
+        require(exist[name], "NFTCollectionFactory: collection does not exist");
         require(
             available != 0,
             "NFTCollectionFactory: collection of 0 element"

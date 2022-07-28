@@ -83,6 +83,7 @@ contract SpacePiratesNFT is ERC721, AccessControl {
     }
 
     function mint(
+        address to,
         string memory collection,
         uint256 quantity,
         bool locked
@@ -92,8 +93,8 @@ contract SpacePiratesNFT is ERC721, AccessControl {
             _tokenIdCounter.increment();
             uint256 id = _tokenIdCounter.current();
             nftData[id] = AdditionalInfo(collection, locked);
-            _mint(msg.sender, id);
-            emit Mint(msg.sender, id, collection, locked);
+            _mint(to, id);
+            emit Mint(to, id, collection, locked);
         }
     }
 

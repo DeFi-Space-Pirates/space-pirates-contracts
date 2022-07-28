@@ -25,7 +25,7 @@ contract NFTStarterBanner is Ownable {
 
     function mintCollectionItem(uint256 quantity) external {
         require(quantity > 0, "NFTCollectionFactory: can't mint 0 NFT");
-        tokenContract.burn(msg.sender, starterGemId, 1);
-        nftContract.mint("Starter collection", quantity, false);
+        tokenContract.burn(msg.sender, starterGemId, quantity);
+        nftContract.mint(msg.sender, "Starter collection", quantity, true);
     }
 }
