@@ -9,6 +9,8 @@ const wrapperContractSetup = require("./setupScripts/wrapperContract");
 const questRedeemContractSetup = require("./setupScripts/questRedeemContract");
 const battleFieldContractSetup = require("./setupScripts/battleFieldContract");
 const itemsMarketPlaceSetup = require("./setupScripts/itemsMarketPlace");
+const nftCollectionContractSetup = require("./setupScripts/nftCollection");
+const nftStarterContractSetup = require("./setupScripts/nftStarter");
 
 async function main() {
   /* CONTRACT PARAMETERS */
@@ -56,6 +58,16 @@ async function main() {
 
   const ItemsMarketPlace = await ethers.getContractFactory(
     "SpacePiratesItemsMarketPlace"
+  );
+
+  const NFTContract = await ethers.getContractFactory("SpacePiratesNFT");
+
+  const NFTCollectionContract = await ethers.getContractFactory(
+    "NFTCollectionFactory"
+  );
+
+  const NFTStarterContract = await ethers.getContractFactory(
+    "NFTStarterBanner"
   );
 
   /* CONTRACTS DEPLOY */
@@ -114,6 +126,30 @@ async function main() {
     tokensContract.address
   );
   console.log("Market Place Contract deployed to:", itemsMarketPlace.address);
+
+  const nftContract = await NFTContract.deploy(
+    "https://metadata.space-pirates-testnet.com/familiars/"
+  );
+  console.log("NFT Contract deployed to:", nftContract.address);
+
+  const nftCollectionContract = await NFTCollectionContract.deploy(
+    tokensContract.address,
+    nftContract.address
+  );
+  console.log(
+    "NFT Collection Factory Contract deployed to:",
+    nftCollectionContract.address
+  );
+
+  const nftStarterContract = await NFTStarterContract.deploy(
+    tokensContract.address,
+    nftContract.address
+  );
+  console.log(
+    "NFT Starter Collection Contract deployed to:",
+    nftStarterContract.address
+  );
+
   /* CONTRACTS SETUP */
   console.log("\nContracts setup...\n");
 
@@ -130,6 +166,16 @@ async function main() {
   await questRedeemContractSetup(tokensContract, questRedeemContract);
   await battleFieldContractSetup(tokensContract, battleFieldMintContract);
   await itemsMarketPlaceSetup(tokensContract, questRedeemContract);
+  await nftCollectionContractSetup(
+    tokensContract,
+    nftContract,
+    nftCollectionContract
+  );
+  await nftStarterContractSetup(
+    tokensContract,
+    nftContract,
+    nftStarterContract
+  );
 }
 
 main()
