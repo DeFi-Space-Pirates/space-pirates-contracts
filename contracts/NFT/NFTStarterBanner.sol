@@ -6,9 +6,9 @@ import "../SpacePiratesTokens.sol";
 import "./SpacePiratesNFT.sol";
 
 /**
- * @title Space Pirates NFT Collection Factory
+ * @title Space Pirates NFT Starter Collection
  * @author @Gr3it, @yuripaoloni (reviewer)
- * @notice Create collection settig parameters like start, end, supply
+ * @notice NFT Starter collection
  */
 
 contract NFTStarterBanner is Ownable {
