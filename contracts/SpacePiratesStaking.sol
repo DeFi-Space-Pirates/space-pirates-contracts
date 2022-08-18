@@ -113,8 +113,7 @@ contract SpacePiratesStaking is ERC1155Holder, Ownable {
         );
 
         if (stakingPools[_pid].rewardRate != _rewardRate) {
-            // update pool
-
+            updatePool(_pid);
             stakingPools[_pid].rewardRate = _rewardRate;
         }
 
