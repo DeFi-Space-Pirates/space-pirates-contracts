@@ -8,9 +8,7 @@
 
 DeFi Space Pirates is a platform built around the idea of an imaginary space world where DeFi pirates can interact by earning 2 tokens (Doubloons and Asteroids). The ecosystem consists of a DeFi and an Nft Game section.
 
-**We are going to participate to the [2022 Tron Hackaton](https://trondao.org/hackathon/) and we are looking for new team members to help us on this challenge. Contact us in the[**Discord Channel**](https://discord.gg/jfGUh6w6) if you are willing to join us.**
-
-- [Tron Hackaton project's page](https://devpost.com/software/space-pirates-7cs4vb)
+**We are looking for new team members to help us on this challenge. Contact us in the [**Discord Channel**](https://discord.gg/jfGUh6w6) if you are willing to join us.**
 
 ### Sections
 
